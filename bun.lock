@@ -64,6 +64,7 @@
         "@convex-dev/better-auth": "catalog:",
         "better-auth": "catalog:",
         "convex": "catalog:",
+        "convex-helpers": "^0.1.104",
       },
       "devDependencies": {
         "@types/node": "^24.3.0",

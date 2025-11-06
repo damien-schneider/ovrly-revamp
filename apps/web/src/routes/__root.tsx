@@ -12,16 +12,13 @@ import {
   Outlet,
   Scripts,
   useRouteContext,
-  useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getRequest } from "@tanstack/react-start/server";
 import type { ConvexReactClient } from "convex/react";
-import Loader from "@/components/loader";
 import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
-import Header from "../components/header";
 import appCss from "../index.css?url";
 
 const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
@@ -38,6 +35,8 @@ export interface RouterAppContext {
   queryClient: QueryClient;
   convexClient: ConvexReactClient;
   convexQueryClient: ConvexQueryClient;
+  userId?: string;
+  token?: string;
 }
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
@@ -73,7 +72,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootDocument() {
-  const isFetching = useRouterState({ select: (s) => s.isLoading });
   const context = useRouteContext({ from: Route.id });
   return (
     <ConvexBetterAuthProvider
@@ -85,10 +83,7 @@ function RootDocument() {
           <HeadContent />
         </head>
         <body>
-          <div className="grid h-svh grid-rows-[auto_1fr]">
-            <Header />
-            {isFetching ? <Loader /> : <Outlet />}
-          </div>
+          <Outlet />
           <Toaster richColors />
           <TanStackRouterDevtools position="bottom-left" />
           <Scripts />

@@ -9,88 +9,164 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TodosRouteImport } from './routes/todos'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as with_navbarRouteRouteImport } from './routes/(with_navbar)/route'
+import { Route as with_navbarIndexRouteImport } from './routes/(with_navbar)/index'
+import { Route as ChatIdRouteImport } from './routes/chat.$id'
+import { Route as with_navbarOverlaysRouteImport } from './routes/(with_navbar)/overlays'
+import { Route as with_navbarLoginRouteImport } from './routes/(with_navbar)/login'
+import { Route as with_navbarDashboardRouteImport } from './routes/(with_navbar)/dashboard'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as with_navbarEditChatIdRouteImport } from './routes/(with_navbar)/edit/chat/$id'
 
-const TodosRoute = TodosRouteImport.update({
-  id: '/todos',
-  path: '/todos',
+const with_navbarRouteRoute = with_navbarRouteRouteImport.update({
+  id: '/(with_navbar)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const with_navbarIndexRoute = with_navbarIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const ChatIdRoute = ChatIdRouteImport.update({
+  id: '/chat/$id',
+  path: '/chat/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const with_navbarOverlaysRoute = with_navbarOverlaysRouteImport.update({
+  id: '/overlays',
+  path: '/overlays',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const with_navbarLoginRoute = with_navbarLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const with_navbarDashboardRoute = with_navbarDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => with_navbarRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const with_navbarEditChatIdRoute = with_navbarEditChatIdRouteImport.update({
+  id: '/edit/chat/$id',
+  path: '/edit/chat/$id',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/todos': typeof TodosRoute
+  '/dashboard': typeof with_navbarDashboardRoute
+  '/login': typeof with_navbarLoginRoute
+  '/overlays': typeof with_navbarOverlaysRoute
+  '/chat/$id': typeof ChatIdRoute
+  '/': typeof with_navbarIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/edit/chat/$id': typeof with_navbarEditChatIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/todos': typeof TodosRoute
+  '/dashboard': typeof with_navbarDashboardRoute
+  '/login': typeof with_navbarLoginRoute
+  '/overlays': typeof with_navbarOverlaysRoute
+  '/chat/$id': typeof ChatIdRoute
+  '/': typeof with_navbarIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/edit/chat/$id': typeof with_navbarEditChatIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/todos': typeof TodosRoute
+  '/(with_navbar)': typeof with_navbarRouteRouteWithChildren
+  '/(with_navbar)/dashboard': typeof with_navbarDashboardRoute
+  '/(with_navbar)/login': typeof with_navbarLoginRoute
+  '/(with_navbar)/overlays': typeof with_navbarOverlaysRoute
+  '/chat/$id': typeof ChatIdRoute
+  '/(with_navbar)/': typeof with_navbarIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(with_navbar)/edit/chat/$id': typeof with_navbarEditChatIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/todos' | '/api/auth/$'
+  fullPaths:
+    | '/dashboard'
+    | '/login'
+    | '/overlays'
+    | '/chat/$id'
+    | '/'
+    | '/api/auth/$'
+    | '/edit/chat/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/todos' | '/api/auth/$'
-  id: '__root__' | '/' | '/dashboard' | '/todos' | '/api/auth/$'
+  to:
+    | '/dashboard'
+    | '/login'
+    | '/overlays'
+    | '/chat/$id'
+    | '/'
+    | '/api/auth/$'
+    | '/edit/chat/$id'
+  id:
+    | '__root__'
+    | '/(with_navbar)'
+    | '/(with_navbar)/dashboard'
+    | '/(with_navbar)/login'
+    | '/(with_navbar)/overlays'
+    | '/chat/$id'
+    | '/(with_navbar)/'
+    | '/api/auth/$'
+    | '/(with_navbar)/edit/chat/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  TodosRoute: typeof TodosRoute
+  with_navbarRouteRoute: typeof with_navbarRouteRouteWithChildren
+  ChatIdRoute: typeof ChatIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/todos': {
-      id: '/todos'
-      path: '/todos'
-      fullPath: '/todos'
-      preLoaderRoute: typeof TodosRouteImport
+    '/(with_navbar)': {
+      id: '/(with_navbar)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof with_navbarRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/(with_navbar)/': {
+      id: '/(with_navbar)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof with_navbarIndexRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/chat/$id': {
+      id: '/chat/$id'
+      path: '/chat/$id'
+      fullPath: '/chat/$id'
+      preLoaderRoute: typeof ChatIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(with_navbar)/overlays': {
+      id: '/(with_navbar)/overlays'
+      path: '/overlays'
+      fullPath: '/overlays'
+      preLoaderRoute: typeof with_navbarOverlaysRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/(with_navbar)/login': {
+      id: '/(with_navbar)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof with_navbarLoginRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/(with_navbar)/dashboard': {
+      id: '/(with_navbar)/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof with_navbarDashboardRouteImport
+      parentRoute: typeof with_navbarRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -99,13 +175,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(with_navbar)/edit/chat/$id': {
+      id: '/(with_navbar)/edit/chat/$id'
+      path: '/edit/chat/$id'
+      fullPath: '/edit/chat/$id'
+      preLoaderRoute: typeof with_navbarEditChatIdRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
   }
 }
 
+interface with_navbarRouteRouteChildren {
+  with_navbarDashboardRoute: typeof with_navbarDashboardRoute
+  with_navbarLoginRoute: typeof with_navbarLoginRoute
+  with_navbarOverlaysRoute: typeof with_navbarOverlaysRoute
+  with_navbarIndexRoute: typeof with_navbarIndexRoute
+  with_navbarEditChatIdRoute: typeof with_navbarEditChatIdRoute
+}
+
+const with_navbarRouteRouteChildren: with_navbarRouteRouteChildren = {
+  with_navbarDashboardRoute: with_navbarDashboardRoute,
+  with_navbarLoginRoute: with_navbarLoginRoute,
+  with_navbarOverlaysRoute: with_navbarOverlaysRoute,
+  with_navbarIndexRoute: with_navbarIndexRoute,
+  with_navbarEditChatIdRoute: with_navbarEditChatIdRoute,
+}
+
+const with_navbarRouteRouteWithChildren =
+  with_navbarRouteRoute._addFileChildren(with_navbarRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  TodosRoute: TodosRoute,
+  with_navbarRouteRoute: with_navbarRouteRouteWithChildren,
+  ChatIdRoute: ChatIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

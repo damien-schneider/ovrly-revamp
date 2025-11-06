@@ -11,8 +11,10 @@
 import type * as auth from "../auth.js";
 import type * as healthCheck from "../healthCheck.js";
 import type * as http from "../http.js";
+import type * as overlays from "../overlays.js";
 import type * as privateData from "../privateData.js";
-import type * as todos from "../todos.js";
+import type * as provider from "../provider.js";
+import type * as rls from "../rls.js";
 
 import type {
   ApiFromModules,
@@ -32,8 +34,10 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   healthCheck: typeof healthCheck;
   http: typeof http;
+  overlays: typeof overlays;
   privateData: typeof privateData;
-  todos: typeof todos;
+  provider: typeof provider;
+  rls: typeof rls;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

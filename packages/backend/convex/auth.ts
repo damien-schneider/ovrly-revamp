@@ -6,7 +6,7 @@ import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 
-const siteUrl = process.env.SITE_URL!;
+const siteUrl = process.env.SITE_URL || "";
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
@@ -22,8 +22,15 @@ function createAuth(
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: false,
+      enabled: false,
+    },
+    socialProviders: {
+      twitch: {
+        clientId: process.env.TWITCH_CLIENT_ID as string,
+        clientSecret: process.env.TWITCH_CLIENT_SECRET as string,
+        redirectURI: `${siteUrl}/api/auth/callback/twitch`,
+        scope: ["chat:read", "chat:edit", "user:read:email", "user:read:chat"],
+      },
     },
     plugins: [convex()],
   });
@@ -34,7 +41,6 @@ export { createAuth };
 export const getCurrentUser = query({
   args: {},
   returns: v.any(),
-  async handler(ctx, args) {
-    return authComponent.getAuthUser(ctx);
-  },
+  handler: async (ctx) =>
+    await authComponent.getAuthUser(ctx as unknown as GenericCtx<DataModel>),
 });

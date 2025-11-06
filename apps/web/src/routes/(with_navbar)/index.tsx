@@ -3,7 +3,7 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/(with_navbar)/")({
   component: HomeComponent,
 });
 
