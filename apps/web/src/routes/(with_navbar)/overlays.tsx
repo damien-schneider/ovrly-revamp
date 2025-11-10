@@ -1,7 +1,7 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "convex/react";
+import { useState } from "react";
 import { toast } from "sonner";
 import OverlayForm from "@/components/overlay-form";
 import OverlayList from "@/components/overlay-list";
@@ -19,7 +19,7 @@ import { authClient } from "@/lib/auth-client";
 export const Route = createFileRoute("/(with_navbar)/overlays")({
   beforeLoad: ({ context, location }) => {
     // Access userId from parent route context (set in __root.tsx beforeLoad)
-    const userId = (context as any).userId;
+    const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
       throw redirect({
@@ -35,78 +35,18 @@ export const Route = createFileRoute("/(with_navbar)/overlays")({
 
 function RouteComponent() {
   const [showForm, setShowForm] = useState(false);
-  const {
-    providerToken,
-    twitchUsername,
-    isLoading: isLoadingProvider,
-  } = useProviderData();
-  const upsertProvider = useMutation(api.provider.upsert);
-
-  const syncTokensFromBetterAuth = useCallback(async () => {
-    try {
-      // Get access token from better-auth
-      const tokenResponse = await authClient.getAccessToken({
-        providerId: "twitch",
-      });
-
-      if (tokenResponse.error || !tokenResponse.data) {
-        return {
-          success: false,
-          message: "No Twitch access token found",
-        };
-      }
-
-      const accessToken = tokenResponse.data.accessToken;
-
-      if (!accessToken) {
-        return { success: false, message: "No Twitch access token found" };
-      }
-
-      // Get account info to retrieve refresh token
-      const accountsResponse = await authClient.listAccounts();
-      const twitchAccount = accountsResponse.data?.find(
-        (account) => account.providerId === "twitch"
-      );
-
-      if (!twitchAccount) {
-        return { success: false, message: "No Twitch account found" };
-      }
-
-      // Note: better-auth doesn't expose refreshToken directly in listAccounts
-      // We'll use the access token for both, and better-auth handles refresh internally
-      await upsertProvider({
-        twitchToken: accessToken,
-        twitchRefreshToken: accessToken, // better-auth handles refresh internally
-      });
-
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : "Unknown error",
-      };
-    }
-  }, [upsertProvider]);
-
-  // Attempt to sync tokens when component loads and no provider token exists
-  useEffect(() => {
-    if (isLoadingProvider || providerToken) {
-      return;
-    }
-
-    syncTokensFromBetterAuth().catch(() => {
-      // Silently fail - user may not have connected Twitch yet
-    });
-  }, [isLoadingProvider, providerToken, syncTokensFromBetterAuth]);
-
-  const SYNC_DELAY_MS = 2000;
+  const { twitchUsername, isLoading: isLoadingProvider } = useProviderData();
+  const provider = useQuery(api.auth.getCurrentProvider);
 
   const renderTwitchConnection = () => {
-    if (isLoadingProvider) {
+    if (isLoadingProvider || provider === undefined) {
       return <p>Loading...</p>;
     }
 
-    if (providerToken) {
+    // Show connected if Better Auth has Twitch account (token is automatically available via getAccessToken)
+    const isConnected = provider === "twitch";
+
+    if (isConnected) {
       return (
         <div className="flex items-center justify-between">
           <div>
@@ -133,15 +73,6 @@ function RouteComponent() {
         provider: "twitch",
         callbackURL: "/overlays",
       });
-      // After successful sign-in, wait a bit then sync tokens
-      setTimeout(async () => {
-        const result = await syncTokensFromBetterAuth();
-        if (result.success) {
-          toast.success("Twitch account connected successfully!");
-        } else {
-          toast.error(result.message || "Failed to sync tokens");
-        }
-      }, SYNC_DELAY_MS);
     } catch {
       toast.error("Failed to connect Twitch account");
     }

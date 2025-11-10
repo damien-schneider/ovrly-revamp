@@ -1,20 +1,23 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { useQuery } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
 
 function useProviderToken() {
-  const providerData = useQuery({
-    ...convexQuery(api.provider.get, {}),
+  return useQuery({
+    queryKey: ["twitch-access-token"],
+    queryFn: async () => {
+      const tokenResponse = await authClient.getAccessToken({
+        providerId: "twitch",
+      });
+
+      if (tokenResponse.error || !tokenResponse.data) {
+        return null;
+      }
+
+      return tokenResponse.data.accessToken ?? null;
+    },
     retry: false,
     throwOnError: false,
   });
-
-  return {
-    providerToken: providerData?.data?.twitchToken ?? null,
-    providerRefreshToken: providerData?.data?.twitchRefreshToken ?? null,
-    isLoading: providerData.isLoading,
-    error: providerData.error,
-  };
 }
 
 function useTwitchUsername(providerToken: string | null | undefined) {
@@ -51,7 +54,7 @@ function useTwitchUsername(providerToken: string | null | undefined) {
 
 export function useProviderData() {
   const {
-    providerToken,
+    data: providerToken,
     isLoading: isLoadingToken,
     error: tokenError,
   } = useProviderToken();
@@ -60,11 +63,11 @@ export function useProviderData() {
     data: twitchUsername,
     isLoading: isLoadingUsername,
     error: usernameError,
-  } = useTwitchUsername(providerToken);
+  } = useTwitchUsername(providerToken ?? null);
 
   return {
-    providerToken,
-    twitchUsername,
+    providerToken: providerToken ?? null,
+    twitchUsername: twitchUsername ?? null,
     isLoading: isLoadingToken || isLoadingUsername,
     error: tokenError || usernameError,
   };

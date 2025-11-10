@@ -2,11 +2,17 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  // Note: userId and idUser fields reference better-auth user IDs (strings)
-  // Better-auth manages its user table internally, so we use string IDs
-  // Use authComponent.getAnyUserById() or authComponent.getAuthUser() to fetch users
+  profiles: defineTable({
+    authId: v.string(), // Better Auth user ID (from authUser._id) - used to look up profile from tokenIdentifier
+    email: v.union(v.string(), v.null()),
+    name: v.union(v.string(), v.null()),
+    image: v.union(v.string(), v.null()),
+    emailVerified: v.optional(v.boolean()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+  }).index("by_authId", ["authId"]),
   overlays: defineTable({
-    userId: v.string(), // References better-auth user ID (tokenIdentifier)
+    userId: v.id("profiles"), // Foreign key to profiles table
     name: v.string(),
     settings: v.any(),
     channel: v.optional(v.string()),
@@ -14,9 +20,4 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_channel", ["channel"]),
-  provider: defineTable({
-    idUser: v.string(), // References better-auth user ID (tokenIdentifier)
-    twitchToken: v.string(),
-    twitchRefreshToken: v.string(),
-  }).index("by_idUser", ["idUser"]),
 });

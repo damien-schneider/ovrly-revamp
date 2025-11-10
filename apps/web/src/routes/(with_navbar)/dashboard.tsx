@@ -3,11 +3,12 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Button } from "@/components/ui/button";
 import UserMenu from "@/components/user-menu";
+import type { RouterAppContext } from "@/routes/__root";
 
 export const Route = createFileRoute("/(with_navbar)/dashboard")({
   beforeLoad: ({ context, location }) => {
     // Access userId from parent route context (set in __root.tsx beforeLoad)
-    const userId = (context as any).userId;
+    const userId = (context as RouterAppContext).userId;
 
     if (!userId) {
       throw redirect({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/(with_navbar)/dashboard")({
 
 function RouteComponent() {
   const privateData = useQuery(api.privateData.get);
+  const allUsers = useQuery(api.profiles.list);
 
   return (
     <div className="container mx-auto max-w-4xl space-y-6 py-8">
@@ -51,6 +53,38 @@ function RouteComponent() {
             {privateData?.message || "No private data"}
           </p>
         </div>
+      </div>
+      <div className="rounded-lg border p-6">
+        <h2 className="mb-4 font-semibold text-lg">All Users</h2>
+        {allUsers === undefined && (
+          <p className="text-muted-foreground text-sm">Loading users...</p>
+        )}
+        {allUsers !== undefined && allUsers.length === 0 && (
+          <p className="text-muted-foreground text-sm">No users found</p>
+        )}
+        {allUsers !== undefined && allUsers.length > 0 && (
+          <div className="space-y-2">
+            {allUsers.map(
+              (user: {
+                id: string;
+                email: string | null;
+                name: string | null;
+              }) => (
+                <div
+                  className="flex items-center justify-between rounded border p-3"
+                  key={user.id}
+                >
+                  <div>
+                    <p className="font-medium">{user.name || "No name"}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {user.email || "No email"}
+                    </p>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
