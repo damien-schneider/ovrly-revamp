@@ -2,6 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
+import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useProviderData } from "@/hooks/use-provider-token";
 import { useTwitchChat } from "@/hooks/use-twitch-chat";
@@ -43,6 +44,98 @@ const INITIAL_MESSAGE_DELAY_MS = 500;
 const MIN_INTERVAL_MS = 3000;
 const MAX_INTERVAL_MS = 5000;
 const DEFAULT_FONT_SIZE = 16;
+const DEFAULT_CONTAINER_GAP = 4;
+const DEFAULT_MESSAGE_BORDER_RADIUS = 8;
+const DEFAULT_MESSAGE_PADDING_X = 8;
+const DEFAULT_MESSAGE_PADDING_Y = 4;
+const DEFAULT_GRADIENT_MASK_HEIGHT = 100;
+
+type CSSVars = CSSProperties & Record<string, string>;
+
+type ChatSettingsData = {
+  // Container settings
+  containerBackgroundColor?: string;
+  containerBackgroundTransparent?: boolean;
+  containerBorderColor?: string;
+  containerBorderTransparent?: boolean;
+  containerBorderWidth?: number;
+  containerBorderRadius?: number;
+  containerPaddingX?: number;
+  containerPaddingY?: number;
+  containerGap?: number;
+  containerGradientMaskEnabled?: boolean;
+  containerGradientMaskHeight?: number;
+
+  // Message settings
+  messageBackgroundColor?: string;
+  messageBackgroundTransparent?: boolean;
+  messageBorderColor?: string;
+  messageBorderTransparent?: boolean;
+  messageBorderWidth?: number;
+  messageBorderRadius?: number;
+  messagePaddingX?: number;
+  messagePaddingY?: number;
+  messageFontSize?: number;
+  messageColor?: string;
+};
+
+function px(value: number | undefined, fallback: number): string {
+  return `${value ?? fallback}px`;
+}
+
+function transparentOr(
+  isTransparent?: boolean,
+  color?: string,
+  fallback = "transparent"
+): string {
+  return isTransparent ? "transparent" : (color ?? fallback);
+}
+
+function buildStyleVars(config: ChatSettingsData | null): CSSVars {
+  if (!config) {
+    return {} as CSSVars;
+  }
+
+  return {
+    "--gap-chat-container": px(config.containerGap, DEFAULT_CONTAINER_GAP),
+    "--font-size-chat-message": px(config.messageFontSize, DEFAULT_FONT_SIZE),
+    "--padding-x-chat-container": px(config.containerPaddingX, 0),
+    "--padding-y-chat-container": px(config.containerPaddingY, 0),
+    "--border-width-chat-container": px(config.containerBorderWidth, 0),
+    "--border-radius-chat-container": px(config.containerBorderRadius, 0),
+    "--background-color-chat-container": transparentOr(
+      config.containerBackgroundTransparent,
+      config.containerBackgroundColor,
+      "#000000"
+    ),
+    "--border-color-chat-container": transparentOr(
+      config.containerBorderTransparent,
+      config.containerBorderColor
+    ),
+    "--background-color-chat-message": transparentOr(
+      config.messageBackgroundTransparent,
+      config.messageBackgroundColor
+    ),
+    "--border-color-chat-message": transparentOr(
+      config.messageBorderTransparent,
+      config.messageBorderColor
+    ),
+    "--border-width-chat-message": px(config.messageBorderWidth, 0),
+    "--border-radius-chat-message": px(
+      config.messageBorderRadius,
+      DEFAULT_MESSAGE_BORDER_RADIUS
+    ),
+    "--padding-x-chat-message": px(
+      config.messagePaddingX,
+      DEFAULT_MESSAGE_PADDING_X
+    ),
+    "--padding-y-chat-message": px(
+      config.messagePaddingY,
+      DEFAULT_MESSAGE_PADDING_Y
+    ),
+    "--color-chat-message": config.messageColor ?? "#ffffff",
+  } as CSSVars;
+}
 
 export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   const overlayQuery = useQuery(
@@ -55,11 +148,7 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const settings = overlay
-    ? (overlay.settings as {
-        fontSize?: number;
-        fontFamily?: string;
-        textColor?: string;
-        backgroundColor?: string;
+    ? (overlay.settings as ChatSettingsData & {
         maxMessages?: number;
         testMessagesEnabled?: boolean;
       })
@@ -95,7 +184,9 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   }, [realMessages, testMessages, maxMessages]);
 
   useEffect(() => {
-    scrollToBottom();
+    if (allMessages.length > 0) {
+      scrollToBottom();
+    }
   }, [allMessages.length, scrollToBottom]);
 
   // Reset test messages when test mode is toggled off
@@ -181,55 +272,109 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
     );
   }
 
+  const styleVars = buildStyleVars(settings);
+
+  // Apply gradient mask if enabled
+  const gradientMaskStyle = settings?.containerGradientMaskEnabled
+    ? {
+        maskImage: `linear-gradient(to bottom, transparent 0%, black ${settings.containerGradientMaskHeight ?? DEFAULT_GRADIENT_MASK_HEIGHT}px)`,
+        WebkitMaskImage: `linear-gradient(to bottom, transparent 0%, black ${settings.containerGradientMaskHeight ?? DEFAULT_GRADIENT_MASK_HEIGHT}px)`,
+      }
+    : {};
+
   return (
     <div
       className="size-full overflow-hidden"
       style={{
-        backgroundColor: settings?.backgroundColor || "transparent",
-        color: settings?.textColor || "#ffffff",
-        fontFamily: settings?.fontFamily || "Inter, sans-serif",
-        fontSize: `${settings?.fontSize || DEFAULT_FONT_SIZE}px`,
+        ...styleVars,
+        ...gradientMaskStyle,
+        backgroundColor: "var(--background-color-chat-container)",
+        padding:
+          "var(--padding-y-chat-container) var(--padding-x-chat-container)",
+        borderWidth: "var(--border-width-chat-container)",
+        borderStyle: "solid",
+        borderColor: "var(--border-color-chat-container)",
+        borderRadius: "var(--border-radius-chat-container)",
+        gap: "var(--gap-chat-container)",
       }}
     >
-      <div className="flex h-full flex-col justify-end p-4">
-        <div className="space-y-2">
-          {allMessages.length === 0 ? (
-            <>
-              {/* Initial placeholder messages */}
-              <div className="rounded-lg bg-black/20 px-3 py-2 backdrop-blur-sm">
-                <span className="font-semibold">username:</span> Hello chat!
-              </div>
-              <div className="rounded-lg bg-black/20 px-3 py-2 backdrop-blur-sm">
-                <span className="font-semibold">viewer:</span> Great stream!
-              </div>
-            </>
-          ) : (
-            allMessages.map((msg) => (
-              <div
-                className="fade-in slide-in-from-bottom-2 animate-in rounded-lg bg-black/20 px-3 py-2 backdrop-blur-sm"
-                key={msg.id}
+      <div
+        className="flex h-full flex-col justify-end"
+        style={{
+          gap: "var(--gap-chat-container)",
+        }}
+      >
+        {allMessages.length === 0 ? (
+          <>
+            {/* Initial placeholder messages */}
+            <div
+              className="fade-in slide-in-from-bottom-2 animate-in"
+              style={{
+                backgroundColor: "var(--background-color-chat-message)",
+                borderWidth: "var(--border-width-chat-message)",
+                borderStyle: "solid",
+                borderColor: "var(--border-color-chat-message)",
+                borderRadius: "var(--border-radius-chat-message)",
+                padding:
+                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
+                color: "var(--color-chat-message)",
+                fontSize: "var(--font-size-chat-message)",
+              }}
+            >
+              <span className="font-semibold">username:</span> Hello chat!
+            </div>
+            <div
+              className="fade-in slide-in-from-bottom-2 animate-in"
+              style={{
+                backgroundColor: "var(--background-color-chat-message)",
+                borderWidth: "var(--border-width-chat-message)",
+                borderStyle: "solid",
+                borderColor: "var(--border-color-chat-message)",
+                borderRadius: "var(--border-radius-chat-message)",
+                padding:
+                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
+                color: "var(--color-chat-message)",
+                fontSize: "var(--font-size-chat-message)",
+              }}
+            >
+              <span className="font-semibold">viewer:</span> Great stream!
+            </div>
+          </>
+        ) : (
+          allMessages.map((msg) => (
+            <div
+              className="fade-in slide-in-from-bottom-2 animate-in"
+              key={msg.id}
+              style={{
+                backgroundColor: "var(--background-color-chat-message)",
+                borderWidth: "var(--border-width-chat-message)",
+                borderStyle: "solid",
+                borderColor: "var(--border-color-chat-message)",
+                borderRadius: "var(--border-radius-chat-message)",
+                padding:
+                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
+                color: "var(--color-chat-message)",
+                fontSize: "var(--font-size-chat-message)",
+                ...(msg.color && !msg.isTest
+                  ? {
+                      borderLeft: `3px solid ${msg.color}`,
+                    }
+                  : {}),
+              }}
+            >
+              <span
+                className="font-semibold"
                 style={
-                  msg.color && !msg.isTest
-                    ? {
-                        borderLeft: `3px solid ${msg.color}`,
-                      }
-                    : undefined
+                  msg.color && !msg.isTest ? { color: msg.color } : undefined
                 }
               >
-                <span
-                  className="font-semibold"
-                  style={
-                    msg.color && !msg.isTest ? { color: msg.color } : undefined
-                  }
-                >
-                  {msg.displayName || msg.username}:
-                </span>{" "}
-                {msg.message}
-              </div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+                {msg.displayName || msg.username}:
+              </span>{" "}
+              {msg.message}
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );

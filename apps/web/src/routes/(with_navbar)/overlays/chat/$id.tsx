@@ -1,9 +1,8 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import ChatOverlay from "@/components/chat-overlay";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/(with_navbar)/overlays/chat/$id")({
   beforeLoad: ({ context, location }) => {
@@ -35,21 +34,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b p-4">
-        <div>
-          <h1 className="font-bold text-2xl">Chat Overlay Preview</h1>
-          <p className="text-muted-foreground text-sm">
-            {overlay.name || "Untitled Chat Overlay"}
-          </p>
-        </div>
-        <Link to="/overlays">
-          <Button variant="outline">Back to Overlays</Button>
-        </Link>
-      </div>
-      <div className="flex-1 overflow-hidden">
-        <ChatOverlay overlayId={id as Id<"overlays">} />
-      </div>
+    <div className="flex size-full flex-col overflow-hidden">
+      <ChatOverlay overlayId={id as Id<"overlays">} />
     </div>
   );
 }
