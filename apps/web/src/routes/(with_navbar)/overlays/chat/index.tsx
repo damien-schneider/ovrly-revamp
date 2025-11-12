@@ -1,5 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(with_navbar)/overlays/chat/")({
   beforeLoad: ({ context, location }) => {
@@ -19,20 +18,10 @@ export const Route = createFileRoute("/(with_navbar)/overlays/chat/")({
 
 function RouteComponent() {
   return (
-    <div className="container mx-auto max-w-6xl space-y-6 py-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-bold text-3xl">Chat Overlays</h1>
-          <p className="mt-2 text-muted-foreground">
-            Manage your chat overlays
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link to="/overlays">
-            <Button variant="outline">All Overlays</Button>
-          </Link>
-        </div>
-      </div>
+    <div className="grid size-full place-content-center">
+      <p className="text-muted-foreground text-sm">
+        Select a chat to get start
+      </p>
     </div>
   );
 }

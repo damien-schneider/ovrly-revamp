@@ -1,9 +1,9 @@
 import { UserIcon } from "@phosphor-icons/react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import ThemeSwitcher from "@/components/theme-switcher";
-import OverlayListCompact from "@/components/overlay-list-compact";
 import OverlayForm from "@/components/overlay-form";
+import OverlayListCompact from "@/components/overlay-list-compact";
+import ThemeSwitcher from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 
 export default function LeftSidemenu() {
@@ -14,21 +14,27 @@ export default function LeftSidemenu() {
   const isWallEmoteRoute = pathname.startsWith("/overlays/wall-emote");
 
   const shouldShowOverlayList = isChatRoute || isWallEmoteRoute;
-  const overlayType = isChatRoute ? "chat" : isWallEmoteRoute ? "emoji-wall" : null;
+  const overlayType = isChatRoute
+    ? "chat"
+    : isWallEmoteRoute
+      ? "emoji-wall"
+      : null;
 
   const handleFormSuccess = () => {
     setShowForm(false);
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex h-full flex-col gap-1">
       <div className="flex h-full w-72 min-w-72 flex-col rounded-xl bg-background-2">
         {shouldShowOverlayList && overlayType ? (
           <div className="flex flex-col overflow-hidden">
-            <div className="border-b border-border p-4">
+            <div className="border-border border-b p-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm">
-                  {overlayType === "chat" ? "Chat Overlays" : "Wall Emote Overlays"}
+                  {overlayType === "chat"
+                    ? "Chat Overlays"
+                    : "Wall Emote Overlays"}
                 </h3>
               </div>
               {!showForm && (
@@ -37,7 +43,8 @@ export default function LeftSidemenu() {
                   onClick={() => setShowForm(true)}
                   size="sm"
                 >
-                  Create {overlayType === "chat" ? "Chat" : "Wall Emote"} Overlay
+                  Create {overlayType === "chat" ? "Chat" : "Wall Emote"}{" "}
+                  Overlay
                 </Button>
               )}
             </div>
