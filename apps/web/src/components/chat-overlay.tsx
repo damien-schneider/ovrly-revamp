@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useProviderData } from "@/hooks/use-provider-token";
 import { useTwitchChat } from "@/hooks/use-twitch-chat";
 
-interface ChatMessage {
+type ChatMessage = {
   id: string;
   username: string;
   message: string;
@@ -14,11 +14,11 @@ interface ChatMessage {
   displayName?: string;
   color?: string;
   isTest?: boolean;
-}
+};
 
-interface ChatOverlayProps {
+type ChatOverlayProps = {
   overlayId: Id<"overlays">;
-}
+};
 
 const TEST_USERNAMES = [
   "TestUser",
@@ -38,6 +38,12 @@ const TEST_MESSAGES = [
   "Keep it up!",
 ];
 
+const DEFAULT_MAX_MESSAGES = 50;
+const INITIAL_MESSAGE_DELAY_MS = 500;
+const MIN_INTERVAL_MS = 3000;
+const MAX_INTERVAL_MS = 5000;
+const DEFAULT_FONT_SIZE = 16;
+
 export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   const overlayQuery = useQuery(
     convexQuery(api.overlays.getById, { id: overlayId })
@@ -48,50 +54,36 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const settings = overlay
+    ? (overlay.settings as {
+        fontSize?: number;
+        fontFamily?: string;
+        textColor?: string;
+        backgroundColor?: string;
+        maxMessages?: number;
+        testMessagesEnabled?: boolean;
+      })
+    : null;
 
-  if (overlayQuery.isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  const maxMessages = settings?.maxMessages || DEFAULT_MAX_MESSAGES;
+  const testMessagesEnabled = settings?.testMessagesEnabled ?? false;
+  const channel = overlay?.channel || null;
 
-  if (!overlay) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>Overlay not found</p>
-      </div>
-    );
-  }
-
-  const settings = overlay.settings as {
-    fontSize?: number;
-    fontFamily?: string;
-    textColor?: string;
-    backgroundColor?: string;
-    maxMessages?: number;
-    testMessagesEnabled?: boolean;
-  };
-
-  const maxMessages = settings.maxMessages || 50;
-  const testMessagesEnabled = settings.testMessagesEnabled ?? false;
-  const channel = overlay.channel || null;
-
-  // Connect to Twitch chat
+  // Connect to Twitch chat - must be called before any early returns
   const {
     messages: realMessages,
-    isConnected: isChatConnected,
-    error: chatError,
+    isConnected: _isChatConnected,
+    error: _chatError,
   } = useTwitchChat({
     channel,
     accessToken: providerToken || undefined,
     username: twitchUsername || undefined,
     enabled: Boolean(channel && providerToken && twitchUsername),
   });
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   // Merge real and test messages, sorted by timestamp
   const allMessages = useMemo(() => {
@@ -104,7 +96,7 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [allMessages]);
+  }, [allMessages.length, scrollToBottom]);
 
   // Reset test messages when test mode is toggled off
   useEffect(() => {
@@ -139,15 +131,15 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
       // Send initial message after a short delay
       const initialTimeout = setTimeout(() => {
         sendTestMessage();
-      }, 500);
+      }, INITIAL_MESSAGE_DELAY_MS);
 
       // Set up interval to send messages every 3-5 seconds
       const intervalId = setInterval(
         () => {
           sendTestMessage();
         },
-        Math.random() * 2000 + 3000
-      ); // Random between 3-5 seconds
+        Math.random() * (MAX_INTERVAL_MS - MIN_INTERVAL_MS) + MIN_INTERVAL_MS
+      );
 
       intervalRef.current = intervalId;
 
@@ -165,6 +157,22 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
     }
   }, [testMessagesEnabled, sendTestMessage]);
 
+  if (overlayQuery.isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!overlay) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Overlay not found</p>
+      </div>
+    );
+  }
+
   if (overlay.type !== "chat") {
     return (
       <div className="flex h-full items-center justify-center">
@@ -175,12 +183,12 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
 
   return (
     <div
-      className="h-screen w-screen overflow-hidden"
+      className="size-full overflow-hidden"
       style={{
-        backgroundColor: settings.backgroundColor || "transparent",
-        color: settings.textColor || "#ffffff",
-        fontFamily: settings.fontFamily || "Inter, sans-serif",
-        fontSize: `${settings.fontSize || 16}px`,
+        backgroundColor: settings?.backgroundColor || "transparent",
+        color: settings?.textColor || "#ffffff",
+        fontFamily: settings?.fontFamily || "Inter, sans-serif",
+        fontSize: `${settings?.fontSize || DEFAULT_FONT_SIZE}px`,
       }}
     >
       <div className="flex h-full flex-col justify-end p-4">

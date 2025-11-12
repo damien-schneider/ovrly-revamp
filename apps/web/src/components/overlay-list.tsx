@@ -4,7 +4,7 @@ import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
-import { Copy, Trash2 } from "lucide-react";
+import { Copy, Trash } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,9 +15,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function OverlayList() {
+interface OverlayListProps {
+  typeFilter?: "chat" | "emoji-wall";
+}
+
+export default function OverlayList({ typeFilter }: OverlayListProps = {}) {
   const overlaysQuery = useSuspenseQuery(convexQuery(api.overlays.list, {}));
-  const overlays = overlaysQuery.data ?? [];
+  const allOverlays = overlaysQuery.data ?? [];
+  const overlays = typeFilter
+    ? allOverlays.filter((overlay) => overlay.type === typeFilter)
+    : allOverlays;
 
   const removeOverlay = useMutation(api.overlays.remove);
 
@@ -37,20 +44,27 @@ export default function OverlayList() {
     }
   };
 
-  const handleCopyOBSLink = (id: Id<"overlays">) => {
-    const obsUrl = `${siteUrl}/chat/${id}`;
+  const handleCopyOBSLink = (overlay: {
+    _id: Id<"overlays">;
+    type: string;
+  }) => {
+    const obsUrl =
+      overlay.type === "chat"
+        ? `${siteUrl}/chat/${overlay._id}`
+        : `${siteUrl}/wall-emote/${overlay._id}`;
     navigator.clipboard.writeText(obsUrl);
     toast.success("OBS link copied to clipboard");
   };
 
   if (overlays.length === 0) {
+    const emptyMessage = typeFilter
+      ? `No ${typeFilter === "chat" ? "chat" : "wall emote"} overlays yet. Create one to get started!`
+      : "No overlays yet. Create one to get started!";
     return (
       <Card>
         <CardHeader>
           <CardTitle>Your Overlays</CardTitle>
-          <CardDescription>
-            No overlays yet. Create one to get started!
-          </CardDescription>
+          <CardDescription>{emptyMessage}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -72,7 +86,13 @@ export default function OverlayList() {
             <CardContent className="flex flex-col gap-2">
               <div className="flex flex-wrap gap-2">
                 {overlay.type === "chat" ? (
-                  <Link asChild to={`/edit/chat/${overlay._id}`}>
+                  <Link asChild to={`/overlays/chat/${overlay._id}`}>
+                    <Button size="sm" variant="outline">
+                      Edit
+                    </Button>
+                  </Link>
+                ) : overlay.type === "emoji-wall" ? (
+                  <Link asChild to={`/overlays/wall-emote/${overlay._id}`}>
                     <Button size="sm" variant="outline">
                       Edit
                     </Button>
@@ -83,7 +103,7 @@ export default function OverlayList() {
                   </Button>
                 )}
                 <Button
-                  onClick={() => handleCopyOBSLink(overlay._id)}
+                  onClick={() => handleCopyOBSLink(overlay)}
                   size="sm"
                   variant="outline"
                 >
@@ -95,7 +115,7 @@ export default function OverlayList() {
                   size="sm"
                   variant="destructive"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash className="h-4 w-4" />
                 </Button>
               </div>
             </CardContent>

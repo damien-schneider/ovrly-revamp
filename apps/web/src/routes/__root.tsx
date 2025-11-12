@@ -17,6 +17,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getRequest } from "@tanstack/react-start/server";
 import type { ConvexReactClient } from "convex/react";
+import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 import appCss from "../index.css?url";
@@ -31,13 +32,13 @@ const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
   };
 });
 
-export interface RouterAppContext {
+export type RouterAppContext = {
   queryClient: QueryClient;
   convexClient: ConvexReactClient;
   convexQueryClient: ConvexQueryClient;
   userId?: string;
   token?: string;
-}
+};
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
@@ -78,17 +79,19 @@ function RootDocument() {
       authClient={authClient}
       client={context.convexClient}
     >
-      <html className="dark" lang="en">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          <Outlet />
-          <Toaster richColors />
-          <TanStackRouterDevtools position="bottom-left" />
-          <Scripts />
-        </body>
-      </html>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <html lang="en" suppressHydrationWarning>
+          <head>
+            <HeadContent />
+          </head>
+          <body>
+            <Outlet />
+            <Toaster richColors />
+            <TanStackRouterDevtools position="bottom-right" />
+            <Scripts />
+          </body>
+        </html>
+      </ThemeProvider>
     </ConvexBetterAuthProvider>
   );
 }

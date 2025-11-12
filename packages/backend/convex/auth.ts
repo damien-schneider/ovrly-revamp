@@ -153,8 +153,10 @@ export const getCurrentProvider = query({
   args: {},
   returns: v.union(v.string(), v.null()),
   handler: async (ctx) => {
-    // Reuse the getAuthUser helper
-    const authUser = await getAuthUser(ctx as unknown as GenericCtx<DataModel>);
+    // Use safeGetAuthUser to handle unauthenticated users gracefully
+    const authUser = await authComponent.safeGetAuthUser(
+      ctx as unknown as GenericCtx<DataModel>
+    );
     if (!authUser) {
       return null;
     }
@@ -165,8 +167,8 @@ export const getCurrentProvider = query({
       where: [
         {
           field: "userId",
-          value: authUser._id,
           operator: "eq",
+          value: authUser._id,
         },
       ],
     });
