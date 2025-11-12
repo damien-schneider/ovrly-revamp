@@ -1,24 +1,10 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Button } from "@/components/ui/button";
 import UserMenu from "@/components/user-menu";
-import type { RouterAppContext } from "@/routes/__root";
 
 export const Route = createFileRoute("/(with_navbar)/dashboard")({
-  beforeLoad: ({ context, location }) => {
-    // Access userId from parent route context (set in __root.tsx beforeLoad)
-    const userId = (context as RouterAppContext).userId;
-
-    if (!userId) {
-      throw redirect({
-        to: "/login",
-        search: {
-          redirect: location.href,
-        },
-      });
-    }
-  },
   component: RouteComponent,
 });
 
