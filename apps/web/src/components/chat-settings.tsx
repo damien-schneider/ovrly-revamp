@@ -9,14 +9,21 @@ import {
   Square,
   TextT,
 } from "@phosphor-icons/react";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
+import {
+  getChatSettingsAtom,
+  isChatSettingsInitialized,
+  setChatSettingsInitialized,
+  type ChatSettingsData,
+} from "@/atoms/chat-settings-atoms";
+import { useDebouncedConvexUpdate } from "@/hooks/use-debounced-convex-update";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import {
   Tabs,
   TabsContent,
@@ -33,33 +40,6 @@ import { SpacingControl } from "@/components/spacing-control";
 
 type ChatSettingsProps = {
   overlayId: Id<"overlays">;
-};
-
-type ChatSettingsData = {
-  // Container settings
-  containerBackgroundColor?: string;
-  containerBackgroundTransparent?: boolean;
-  containerBorderColor?: string;
-  containerBorderTransparent?: boolean;
-  containerBorderWidth?: number;
-  containerBorderRadius?: number;
-  containerPaddingX?: number;
-  containerPaddingY?: number;
-  containerGap?: number;
-  containerGradientMaskEnabled?: boolean;
-  containerGradientMaskHeight?: number;
-
-  // Message settings
-  messageBackgroundColor?: string;
-  messageBackgroundTransparent?: boolean;
-  messageBorderColor?: string;
-  messageBorderTransparent?: boolean;
-  messageBorderWidth?: number;
-  messageBorderRadius?: number;
-  messagePaddingX?: number;
-  messagePaddingY?: number;
-  messageFontSize?: number;
-  messageColor?: string;
 };
 
 const DEFAULT_FONT_SIZE = 16;
@@ -90,17 +70,25 @@ function Section({
 
 export function ChatSettings({ overlayId }: ChatSettingsProps) {
   const overlay = useQuery(api.overlays.getById, { id: overlayId });
-  const updateOverlay = useMutation(api.overlays.update);
+  const settingsAtom = getChatSettingsAtom(overlayId);
+  const [settings, setSettings] = useAtom(settingsAtom);
 
-  const [settings, setSettings] = useState<ChatSettingsData>({});
-
-  // Load settings from overlay
+  // Initialize atom from Convex data on first load
   useEffect(() => {
-    if (overlay?.settings) {
+    if (overlay?.settings && !isChatSettingsInitialized(overlayId)) {
       const loadedSettings = overlay.settings as ChatSettingsData;
       setSettings(loadedSettings);
+      setChatSettingsInitialized(overlayId, true);
     }
-  }, [overlay]);
+  }, [overlay, overlayId, setSettings]);
+
+  // Debounced update to Convex
+  useDebouncedConvexUpdate({
+    overlayId,
+    settingsAtom,
+    delay: 1000,
+    enabled: Boolean(overlay),
+  });
 
   // Local state for sliders to prevent focus loss during dragging
   const [localContainerBorderWidth, setLocalContainerBorderWidth] = useState(
@@ -187,25 +175,8 @@ export function ChatSettings({ overlayId }: ChatSettingsProps) {
     });
   }, [settings.messagePaddingX, settings.messagePaddingY]);
 
-  const updateSetting = async (updates: Partial<ChatSettingsData>) => {
-    if (!overlay) return;
-
-    const currentSettings = (overlay.settings || {}) as Record<string, unknown>;
-    const newSettings = { ...currentSettings, ...settings, ...updates };
-    setSettings(newSettings as ChatSettingsData);
-
-    try {
-      await updateOverlay({
-        id: overlayId,
-        settings: newSettings,
-      });
-    } catch (error) {
-      console.error("Failed to update settings:", error);
-      // Revert on error - reload from overlay
-      if (overlay?.settings) {
-        setSettings(overlay.settings as ChatSettingsData);
-      }
-    }
+  const updateSetting = (updates: Partial<ChatSettingsData>) => {
+    setSettings((prev) => ({ ...prev, ...updates }));
   };
 
   if (!overlay) {
@@ -382,27 +353,37 @@ export function ChatSettings({ overlayId }: ChatSettingsProps) {
                     label="Padding"
                     max={50}
                     onChange={(values) => {
-                      setLocalContainerPadding(values);
+                      const newPadding = {
+                        top: values.top ?? localContainerPadding.top,
+                        right: values.right ?? localContainerPadding.right,
+                        bottom: values.bottom ?? localContainerPadding.bottom,
+                        left: values.left ?? localContainerPadding.left,
+                      };
+                      setLocalContainerPadding(newPadding);
                       // Determine which value changed
                       const rightChanged =
+                        values.right !== undefined &&
                         values.right !== localContainerPadding.right;
                       const leftChanged =
+                        values.left !== undefined &&
                         values.left !== localContainerPadding.left;
                       const topChanged =
+                        values.top !== undefined &&
                         values.top !== localContainerPadding.top;
                       const bottomChanged =
+                        values.bottom !== undefined &&
                         values.bottom !== localContainerPadding.bottom;
 
-                      if (leftChanged) {
-                        updateSetting({ containerPaddingX: values.left ?? 0 });
-                      } else if (rightChanged) {
-                        updateSetting({ containerPaddingX: values.right ?? 0 });
+                      if (leftChanged && values.left !== undefined) {
+                        updateSetting({ containerPaddingX: values.left });
+                      } else if (rightChanged && values.right !== undefined) {
+                        updateSetting({ containerPaddingX: values.right });
                       }
 
-                      if (bottomChanged) {
-                        updateSetting({ containerPaddingY: values.bottom ?? 0 });
-                      } else if (topChanged) {
-                        updateSetting({ containerPaddingY: values.top ?? 0 });
+                      if (bottomChanged && values.bottom !== undefined) {
+                        updateSetting({ containerPaddingY: values.bottom });
+                      } else if (topChanged && values.top !== undefined) {
+                        updateSetting({ containerPaddingY: values.top });
                       }
                     }}
                     values={localContainerPadding}
@@ -694,27 +675,37 @@ export function ChatSettings({ overlayId }: ChatSettingsProps) {
                     label="Padding"
                     max={50}
                     onChange={(values) => {
-                      setLocalMessagePadding(values);
+                      const newPadding = {
+                        top: values.top ?? localMessagePadding.top,
+                        right: values.right ?? localMessagePadding.right,
+                        bottom: values.bottom ?? localMessagePadding.bottom,
+                        left: values.left ?? localMessagePadding.left,
+                      };
+                      setLocalMessagePadding(newPadding);
                       // Determine which value changed
                       const rightChanged =
+                        values.right !== undefined &&
                         values.right !== localMessagePadding.right;
                       const leftChanged =
+                        values.left !== undefined &&
                         values.left !== localMessagePadding.left;
                       const topChanged =
+                        values.top !== undefined &&
                         values.top !== localMessagePadding.top;
                       const bottomChanged =
+                        values.bottom !== undefined &&
                         values.bottom !== localMessagePadding.bottom;
 
-                      if (leftChanged) {
-                        updateSetting({ messagePaddingX: values.left ?? 0 });
-                      } else if (rightChanged) {
-                        updateSetting({ messagePaddingX: values.right ?? 0 });
+                      if (leftChanged && values.left !== undefined) {
+                        updateSetting({ messagePaddingX: values.left });
+                      } else if (rightChanged && values.right !== undefined) {
+                        updateSetting({ messagePaddingX: values.right });
                       }
 
-                      if (bottomChanged) {
-                        updateSetting({ messagePaddingY: values.bottom ?? 0 });
-                      } else if (topChanged) {
-                        updateSetting({ messagePaddingY: values.top ?? 0 });
+                      if (bottomChanged && values.bottom !== undefined) {
+                        updateSetting({ messagePaddingY: values.bottom });
+                      } else if (topChanged && values.top !== undefined) {
+                        updateSetting({ messagePaddingY: values.top });
                       }
                     }}
                     values={localMessagePadding}

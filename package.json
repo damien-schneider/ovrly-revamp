@@ -25,7 +25,8 @@
     "dev:setup": "turbo -F @ovrly-revamp/backend dev:setup"
   },
   "dependencies": {
-    "nitro": "^3.0.1-alpha.0"
+    "nitro": "^3.0.1-alpha.0",
+    "re-resizable": "^6.11.2"
   },
   "devDependencies": {
     "bun-types": "^1.3.1",

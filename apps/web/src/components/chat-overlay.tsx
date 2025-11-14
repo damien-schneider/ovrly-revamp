@@ -2,8 +2,15 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
+import { useAtomValue, useSetAtom } from "jotai";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ChatSettingsData,
+  getChatSettingsAtom,
+  isChatSettingsInitialized,
+  setChatSettingsInitialized,
+} from "@/atoms/chat-settings-atoms";
 import { useProviderData } from "@/hooks/use-provider-token";
 import { useTwitchChat } from "@/hooks/use-twitch-chat";
 
@@ -19,6 +26,7 @@ type ChatMessage = {
 
 type ChatOverlayProps = {
   overlayId: Id<"overlays">;
+  useEditMode?: boolean; // If true, uses atoms for instant updates. If false, uses Convex query directly.
 };
 
 const TEST_USERNAMES = [
@@ -51,33 +59,6 @@ const DEFAULT_MESSAGE_PADDING_Y = 4;
 const DEFAULT_GRADIENT_MASK_HEIGHT = 100;
 
 type CSSVars = CSSProperties & Record<string, string>;
-
-type ChatSettingsData = {
-  // Container settings
-  containerBackgroundColor?: string;
-  containerBackgroundTransparent?: boolean;
-  containerBorderColor?: string;
-  containerBorderTransparent?: boolean;
-  containerBorderWidth?: number;
-  containerBorderRadius?: number;
-  containerPaddingX?: number;
-  containerPaddingY?: number;
-  containerGap?: number;
-  containerGradientMaskEnabled?: boolean;
-  containerGradientMaskHeight?: number;
-
-  // Message settings
-  messageBackgroundColor?: string;
-  messageBackgroundTransparent?: boolean;
-  messageBorderColor?: string;
-  messageBorderTransparent?: boolean;
-  messageBorderWidth?: number;
-  messageBorderRadius?: number;
-  messagePaddingX?: number;
-  messagePaddingY?: number;
-  messageFontSize?: number;
-  messageColor?: string;
-};
 
 function px(value: number | undefined, fallback: number): string {
   return `${value ?? fallback}px`;
@@ -114,7 +95,8 @@ function buildStyleVars(config: ChatSettingsData | null): CSSVars {
     ),
     "--background-color-chat-message": transparentOr(
       config.messageBackgroundTransparent,
-      config.messageBackgroundColor
+      config.messageBackgroundColor,
+      "#000000"
     ),
     "--border-color-chat-message": transparentOr(
       config.messageBorderTransparent,
@@ -137,7 +119,10 @@ function buildStyleVars(config: ChatSettingsData | null): CSSVars {
   } as CSSVars;
 }
 
-export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
+export default function ChatOverlay({
+  overlayId,
+  useEditMode = false,
+}: ChatOverlayProps) {
   const overlayQuery = useQuery(
     convexQuery(api.overlays.getById, { id: overlayId })
   );
@@ -147,15 +132,40 @@ export default function ChatOverlay({ overlayId }: ChatOverlayProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const settings = overlay
-    ? (overlay.settings as ChatSettingsData & {
+  // Get settings from atom for instant updates (edit mode) or directly from Convex (public view)
+  const settingsAtom = getChatSettingsAtom(overlayId);
+  const atomSettings = useAtomValue(settingsAtom);
+  const setAtomSettings = useSetAtom(settingsAtom);
+
+  // Initialize atom from Convex data on first load (only in edit mode)
+  useEffect(() => {
+    if (
+      useEditMode &&
+      overlay?.settings &&
+      !isChatSettingsInitialized(overlayId)
+    ) {
+      const loadedSettings = overlay.settings as ChatSettingsData;
+      setAtomSettings(loadedSettings);
+      setChatSettingsInitialized(overlayId, true);
+    }
+  }, [useEditMode, overlay, overlayId, setAtomSettings]);
+
+  // Use atom settings in edit mode, otherwise use Convex query settings directly
+  const settings = useEditMode
+    ? atomSettings
+    : ((overlay?.settings as ChatSettingsData | undefined) ??
+      ({} as ChatSettingsData));
+
+  // Get other settings from overlay (not in atom)
+  const overlaySettings = overlay?.settings as
+    | {
         maxMessages?: number;
         testMessagesEnabled?: boolean;
-      })
-    : null;
+      }
+    | undefined;
 
-  const maxMessages = settings?.maxMessages || DEFAULT_MAX_MESSAGES;
-  const testMessagesEnabled = settings?.testMessagesEnabled ?? false;
+  const maxMessages = overlaySettings?.maxMessages || DEFAULT_MAX_MESSAGES;
+  const testMessagesEnabled = overlaySettings?.testMessagesEnabled ?? false;
   const channel = overlay?.channel || null;
 
   // Connect to Twitch chat - must be called before any early returns

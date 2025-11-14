@@ -1,5 +1,5 @@
+import { ChatCircle, Sparkle } from "@phosphor-icons/react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { MessageSquare, Sparkles } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 import type { FileRouteTypes } from "@/routeTree.gen";
 
 const overlayMenuItems = [
-  { to: "/overlays/chat", label: "Chat", icon: MessageSquare },
-  { to: "/overlays/wall-emote", label: "Wall Emote", icon: Sparkles },
+  { to: "/overlays/chat", label: "Chat", icon: ChatCircle },
+  { to: "/overlays/wall-emote", label: "Wall Emote", icon: Sparkle },
   // { to: "/music", label: "Music" },
 ] as const satisfies {
   to: FileRouteTypes["to"];
   label: string;
-  icon: typeof MessageSquare;
+  icon: typeof ChatCircle;
 }[];
 
 export default function Header() {
@@ -43,7 +43,7 @@ const MenuItem = ({
 }: {
   to: FileRouteTypes["to"];
   label: string;
-  icon: typeof MessageSquare;
+  icon: typeof ChatCircle;
 }) => {
   const isActive = useRouterState().location.pathname.includes(to);
   return (
@@ -56,7 +56,7 @@ const MenuItem = ({
           )}
           to={to}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4 w-4" weight="regular" />
           <span>{label}</span>
         </Link>
       </TooltipTrigger>

@@ -4,9 +4,11 @@ import { Copy } from "@phosphor-icons/react";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { WallEmoteSettings } from "@/components/wall-emote-settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type WallEmoteRightPanelSettingsProps = {
   overlayId: Id<"overlays"> | undefined;
@@ -87,59 +89,68 @@ export default function WallEmoteRightPanelSettings({
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
-      <div className="space-y-4">
-        <div>
-          <h2 className="font-semibold text-lg">Settings</h2>
-          <p className="text-muted-foreground text-sm">
-            Configure your wall emote overlay
-          </p>
-        </div>
-
+    <ScrollArea className="h-full">
+      <ScrollBar orientation="vertical" />
+      <div className="flex flex-col gap-4 p-4">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              onChange={(e) => setName(e.target.value)}
-              placeholder="My Wall Emote Overlay"
-              value={name}
-            />
+          <div>
+            <h2 className="font-semibold text-lg">Settings</h2>
+            <p className="text-muted-foreground text-sm">
+              Configure your wall emote overlay
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="channel">Twitch Channel</Label>
-            <Input
-              id="channel"
-              onChange={(e) => setChannel(e.target.value)}
-              placeholder="channelname"
-              value={channel}
-            />
-          </div>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                onChange={(e) => setName(e.target.value)}
+                placeholder="My Wall Emote Overlay"
+                value={name}
+              />
+            </div>
 
-          <Button className="w-full" onClick={handleUpdate}>
-            Save Changes
-          </Button>
-        </div>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="channel">Twitch Channel</Label>
+              <Input
+                id="channel"
+                onChange={(e) => setChannel(e.target.value)}
+                placeholder="channelname"
+                value={channel}
+              />
+            </div>
 
-      <div className="space-y-4 border-t pt-4">
-        <div>
-          <h2 className="font-semibold text-lg">OBS Browser Source</h2>
-          <p className="text-muted-foreground text-sm">
-            Use this URL in OBS as a Browser Source
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <Input className="text-xs" readOnly value={obsUrl} />
-            <Button onClick={handleCopyOBSLink} size="icon" variant="outline">
-              <Copy className="h-4 w-4" />
+            <Button className="w-full" onClick={handleUpdate}>
+              Save Changes
             </Button>
           </div>
         </div>
+
+        <div className="space-y-4 border-t pt-4">
+          <div>
+            <h2 className="font-semibold text-lg">OBS Browser Source</h2>
+            <p className="text-muted-foreground text-sm">
+              Use this URL in OBS as a Browser Source
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Input className="text-xs" readOnly value={obsUrl} />
+              <Button onClick={handleCopyOBSLink} size="icon" variant="outline">
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {overlayId && (
+          <div className="border-t pt-4">
+            <WallEmoteSettings overlayId={overlayId} />
+          </div>
+        )}
       </div>
-    </div>
+    </ScrollArea>
   );
 }
