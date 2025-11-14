@@ -83,6 +83,13 @@ function RootDocument() {
         <html lang="en" suppressHydrationWarning>
           <head>
             <HeadContent />
+            {import.meta.env.DEV && (
+              <script
+                crossOrigin="anonymous"
+                data-enabled="true"
+                src="//unpkg.com/react-grab/dist/index.global.js"
+              />
+            )}
           </head>
           <body>
             <Outlet />
