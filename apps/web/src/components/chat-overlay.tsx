@@ -91,7 +91,8 @@ function buildStyleVars(config: ChatSettingsData | null): CSSVars {
     ),
     "--border-color-chat-container": transparentOr(
       config.containerBorderTransparent,
-      config.containerBorderColor
+      config.containerBorderColor,
+      "#000000"
     ),
     "--background-color-chat-message": transparentOr(
       config.messageBackgroundTransparent,
@@ -308,12 +309,7 @@ export default function ChatOverlay({
         gap: "var(--gap-chat-container)",
       }}
     >
-      <div
-        className="flex h-full flex-col justify-end"
-        style={{
-          gap: "var(--gap-chat-container)",
-        }}
-      >
+      <div className="flex h-full flex-col justify-end">
         {allMessages.length === 0 ? (
           <>
             {/* Initial placeholder messages */}
@@ -329,6 +325,7 @@ export default function ChatOverlay({
                   "var(--padding-y-chat-message) var(--padding-x-chat-message)",
                 color: "var(--color-chat-message)",
                 fontSize: "var(--font-size-chat-message)",
+                marginBottom: "var(--gap-chat-container)",
               }}
             >
               <span className="font-semibold">username:</span> Hello chat!
@@ -351,7 +348,7 @@ export default function ChatOverlay({
             </div>
           </>
         ) : (
-          allMessages.map((msg) => (
+          allMessages.map((msg, index) => (
             <div
               className="fade-in slide-in-from-bottom-2 animate-in"
               key={msg.id}
@@ -365,6 +362,10 @@ export default function ChatOverlay({
                   "var(--padding-y-chat-message) var(--padding-x-chat-message)",
                 color: "var(--color-chat-message)",
                 fontSize: "var(--font-size-chat-message)",
+                marginBottom:
+                  index < allMessages.length - 1
+                    ? "var(--gap-chat-container)"
+                    : undefined,
                 ...(msg.color && !msg.isTest
                   ? {
                       borderLeft: `3px solid ${msg.color}`,
