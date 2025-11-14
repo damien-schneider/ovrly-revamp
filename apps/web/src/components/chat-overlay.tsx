@@ -285,7 +285,7 @@ export default function ChatOverlay({
 
   const styleVars = buildStyleVars(settings);
 
-  // Apply gradient mask if enabled
+  // Apply gradient mask if enabled (only on messages container, not the main container)
   const gradientMaskStyle = settings?.containerGradientMaskEnabled
     ? {
         maskImage: `linear-gradient(to bottom, transparent 0%, black ${settings.containerGradientMaskHeight ?? DEFAULT_GRADIENT_MASK_HEIGHT}px)`,
@@ -298,7 +298,6 @@ export default function ChatOverlay({
       className="size-full overflow-hidden"
       style={{
         ...styleVars,
-        ...gradientMaskStyle,
         backgroundColor: "var(--background-color-chat-container)",
         padding:
           "var(--padding-y-chat-container) var(--padding-x-chat-container)",
@@ -309,7 +308,10 @@ export default function ChatOverlay({
         gap: "var(--gap-chat-container)",
       }}
     >
-      <div className="flex h-full flex-col justify-end">
+      <div
+        className="flex h-full flex-col justify-end"
+        style={gradientMaskStyle}
+      >
         {allMessages.length === 0 ? (
           <>
             {/* Initial placeholder messages */}
