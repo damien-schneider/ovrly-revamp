@@ -8,6 +8,7 @@ import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import Header from "@/components/header";
 import LeftSidemenu from "@/features/left-sidemenu";
 import RightSidemenu from "@/features/right-sidemenu";
+import { TopbarTools } from "@/features/topbar-tools";
 
 export const Route = createFileRoute("/(with_navbar)")({
   component: LayoutComponent,
@@ -32,7 +33,8 @@ function LayoutComponent() {
             <LeftSidemenu />
           </div>
           <div className="flex-1 p-1">
-            <div className="h-full w-full">
+            <div className="flex h-full w-full flex-col gap-1">
+              <TopbarTools />
               <Outlet />
             </div>
           </div>
