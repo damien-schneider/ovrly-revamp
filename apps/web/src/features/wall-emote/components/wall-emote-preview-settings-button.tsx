@@ -81,7 +81,7 @@ export function WallEmotePreviewSettingsButton({
           <TooltipTrigger asChild={true}>
             <PopoverTrigger asChild>
               <Button aria-label="Preview settings" size="sm" variant="secondary">
-                <Smile className="h-4 w-4" weight="regular" />
+                <Smiley className="h-4 w-4" weight="regular" />
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>

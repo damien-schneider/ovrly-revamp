@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { EmojiData } from "@/lib/emoji-extractor";
-import type { EmojiWallEffect, GravityRemovalMode } from "@/components/emoji-wall-display";
+import type { EmojiWallEffect, GravityRemovalMode } from "@/features/wall-emote/components/emoji-wall-display";
 
 type EmojiGravityDisplayProps = {
   emojis: EmojiData[];

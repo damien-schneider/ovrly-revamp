@@ -3,6 +3,7 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
+import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -312,81 +313,46 @@ export default function ChatOverlay({
         className="flex h-full flex-col justify-end"
         style={gradientMaskStyle}
       >
-        {allMessages.length === 0 ? (
-          <>
-            {/* Initial placeholder messages */}
-            <div
-              className="fade-in slide-in-from-bottom-2 animate-in"
-              style={{
-                backgroundColor: "var(--background-color-chat-message)",
-                borderWidth: "var(--border-width-chat-message)",
-                borderStyle: "solid",
-                borderColor: "var(--border-color-chat-message)",
-                borderRadius: "var(--border-radius-chat-message)",
-                padding:
-                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
-                color: "var(--color-chat-message)",
-                fontSize: "var(--font-size-chat-message)",
-                marginBottom: "var(--gap-chat-container)",
-              }}
+        {allMessages.map((msg, index) => (
+          <motion.div
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(10px)" }}
+            key={msg.id}
+            layout={true}
+            layoutId={msg.id}
+            style={{
+              backgroundColor: "var(--background-color-chat-message)",
+              borderWidth: "var(--border-width-chat-message)",
+              borderStyle: "solid",
+              borderColor: "var(--border-color-chat-message)",
+              borderRadius: "var(--border-radius-chat-message)",
+              padding:
+                "var(--padding-y-chat-message) var(--padding-x-chat-message)",
+              color: "var(--color-chat-message)",
+              fontSize: "var(--font-size-chat-message)",
+              marginBottom:
+                index < allMessages.length - 1
+                  ? "var(--gap-chat-container)"
+                  : undefined,
+              ...(msg.color && !msg.isTest
+                ? {
+                    borderLeft: `3px solid ${msg.color}`,
+                  }
+                : {}),
+            }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          >
+            <span
+              className="font-semibold"
+              style={
+                msg.color && !msg.isTest ? { color: msg.color } : undefined
+              }
             >
-              <span className="font-semibold">username:</span> Hello chat!
-            </div>
-            <div
-              className="fade-in slide-in-from-bottom-2 animate-in"
-              style={{
-                backgroundColor: "var(--background-color-chat-message)",
-                borderWidth: "var(--border-width-chat-message)",
-                borderStyle: "solid",
-                borderColor: "var(--border-color-chat-message)",
-                borderRadius: "var(--border-radius-chat-message)",
-                padding:
-                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
-                color: "var(--color-chat-message)",
-                fontSize: "var(--font-size-chat-message)",
-              }}
-            >
-              <span className="font-semibold">viewer:</span> Great stream!
-            </div>
-          </>
-        ) : (
-          allMessages.map((msg, index) => (
-            <div
-              className="fade-in slide-in-from-bottom-2 animate-in"
-              key={msg.id}
-              style={{
-                backgroundColor: "var(--background-color-chat-message)",
-                borderWidth: "var(--border-width-chat-message)",
-                borderStyle: "solid",
-                borderColor: "var(--border-color-chat-message)",
-                borderRadius: "var(--border-radius-chat-message)",
-                padding:
-                  "var(--padding-y-chat-message) var(--padding-x-chat-message)",
-                color: "var(--color-chat-message)",
-                fontSize: "var(--font-size-chat-message)",
-                marginBottom:
-                  index < allMessages.length - 1
-                    ? "var(--gap-chat-container)"
-                    : undefined,
-                ...(msg.color && !msg.isTest
-                  ? {
-                      borderLeft: `3px solid ${msg.color}`,
-                    }
-                  : {}),
-              }}
-            >
-              <span
-                className="font-semibold"
-                style={
-                  msg.color && !msg.isTest ? { color: msg.color } : undefined
-                }
-              >
-                {msg.displayName || msg.username}:
-              </span>{" "}
-              {msg.message}
-            </div>
-          ))
-        )}
+              {msg.displayName || msg.username}:
+            </span>{" "}
+            {msg.message}
+          </motion.div>
+        ))}
         <div ref={messagesEndRef} />
       </div>
     </div>

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function UserMenu() {
   const navigate = useNavigate();
@@ -34,6 +34,7 @@ export default function UserMenu() {
                   onSuccess: () => {
                     navigate({
                       to: "/login",
+                      search: { redirect: "/dashboard" },
                     });
                   },
                 },

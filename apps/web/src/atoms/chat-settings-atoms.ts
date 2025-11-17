@@ -1,5 +1,5 @@
-import { atom } from "jotai";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
+import { atom } from "jotai";
 
 export type ChatSettingsData = {
   // Container settings
@@ -29,7 +29,10 @@ export type ChatSettingsData = {
 };
 
 // Map to store atoms per overlayId
-const chatSettingsAtomMap = new Map<Id<"overlays">, ReturnType<typeof atom<ChatSettingsData>>>();
+const chatSettingsAtomMap = new Map<
+  Id<"overlays">,
+  ReturnType<typeof atom<ChatSettingsData>>
+>();
 
 // Flag to track if atom has been initialized from Convex
 const initializationMap = new Map<Id<"overlays">, boolean>();
@@ -42,7 +45,11 @@ export function getChatSettingsAtom(overlayId: Id<"overlays">) {
     chatSettingsAtomMap.set(overlayId, atom<ChatSettingsData>({}));
     initializationMap.set(overlayId, false);
   }
-  return chatSettingsAtomMap.get(overlayId)!;
+  const atomValue = chatSettingsAtomMap.get(overlayId);
+  if (!atomValue) {
+    throw new Error(`Failed to get chat settings atom for ${overlayId}`);
+  }
+  return atomValue;
 }
 
 /**
@@ -55,7 +62,10 @@ export function isChatSettingsInitialized(overlayId: Id<"overlays">): boolean {
 /**
  * Mark the atom for an overlay as initialized
  */
-export function setChatSettingsInitialized(overlayId: Id<"overlays">, initialized: boolean): void {
+export function setChatSettingsInitialized(
+  overlayId: Id<"overlays">,
+  initialized: boolean
+): void {
   initializationMap.set(overlayId, initialized);
 }
 
@@ -66,4 +76,3 @@ export function clearChatSettingsAtom(overlayId: Id<"overlays">): void {
   chatSettingsAtomMap.delete(overlayId);
   initializationMap.delete(overlayId);
 }
-

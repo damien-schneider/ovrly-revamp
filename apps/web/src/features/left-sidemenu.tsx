@@ -2,10 +2,10 @@ import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { UserIcon } from "@phosphor-icons/react";
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import OverlayForm from "@/components/overlay-form";
-import OverlayListCompact from "@/components/overlay-list-compact";
-import ThemeSwitcher from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
+import ThemeSwitcher from "@/features/layout/components/theme-switcher";
+import OverlayForm from "@/features/overlay/components/overlay-form";
+import OverlayListCompact from "@/features/overlay/components/overlay-list-compact";
 import { OverlayBasicSettings } from "@/features/overlay-basic-settings";
 
 export default function LeftSidemenu() {

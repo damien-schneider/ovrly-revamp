@@ -3,8 +3,8 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import WallEmoteOverlay from "@/components/wall-emote-overlay";
-import { ObsOverlayContainer } from "@/components/obs-overlay-container";
+import WallEmoteOverlay from "@/features/wall-emote/components/wall-emote-overlay";
+import { ObsOverlayContainer } from "@/features/overlay/components/obs-overlay-container";
 
 export const Route = createFileRoute("/wall-emote/$id")({
   component: RouteComponent,

@@ -3,8 +3,8 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import OverlayForm from "@/components/overlay-form";
-import OverlayList from "@/components/overlay-list";
+import OverlayForm from "@/features/overlay/components/overlay-form";
+import OverlayList from "@/features/overlay/components/overlay-list";
 import { Button } from "@/components/ui/button";
 import {
   Card,

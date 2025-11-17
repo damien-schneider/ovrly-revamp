@@ -2,7 +2,7 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import WallEmoteOverlay from "@/components/wall-emote-overlay";
+import WallEmoteOverlay from "@/features/wall-emote/components/wall-emote-overlay";
 
 export const Route = createFileRoute("/(with_navbar)/overlays/wall-emote/$id")({
   beforeLoad: ({ context, location }) => {

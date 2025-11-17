@@ -19,7 +19,7 @@ import {
   isChatSettingsInitialized,
   setChatSettingsInitialized,
 } from "@/atoms/chat-settings-atoms";
-import { SpacingControl } from "@/components/spacing-control";
+import { SpacingControl } from "@/features/overlay/components/spacing-control";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";

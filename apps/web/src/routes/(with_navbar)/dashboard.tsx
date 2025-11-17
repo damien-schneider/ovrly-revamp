@@ -2,7 +2,7 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Button } from "@/components/ui/button";
-import UserMenu from "@/components/user-menu";
+import UserMenu from "@/features/auth/components/user-menu";
 
 export const Route = createFileRoute("/(with_navbar)/dashboard")({
   component: RouteComponent,

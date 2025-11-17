@@ -5,8 +5,8 @@ import { useQuery } from "convex/react";
 import { useAtomValue } from "jotai";
 import { Resizable } from "re-resizable";
 import { getChatSettingsAtom } from "@/atoms/chat-settings-atoms";
-import ChatOverlay from "@/components/chat-overlay";
-import { ResizeHandle } from "@/components/resize-handle";
+import ChatOverlay from "@/features/chat/components/chat-overlay";
+import { ResizeHandle } from "@/features/overlay/components/resize-handle";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/(with_navbar)/overlays/chat/$id")({

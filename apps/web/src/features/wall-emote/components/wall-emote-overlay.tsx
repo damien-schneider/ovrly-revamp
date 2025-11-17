@@ -3,9 +3,14 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { EmojiWallDisplay, type EmojiWallEffect, type GravityRemovalMode } from "@/components/emoji-wall-display";
-import type { FireworkPosition } from "@/components/firework-position-selector";
-import { extractEmojisFromMessage, generatePreviewEmoji, type EmojiData } from "@/lib/emoji-extractor";
+import { EmojiWallDisplay, type EmojiWallEffect, type GravityRemovalMode } from "@/features/wall-emote/components/emoji-wall-display";
+import type { FireworkPosition } from "@/features/wall-emote/components/firework-position-selector";
+import {
+  extractEmojisFromMessage,
+  generatePreviewEmoji,
+  generateTestMessageWithEmojis,
+  type EmojiData,
+} from "@/lib/emoji-extractor";
 import { useProviderData } from "@/hooks/use-provider-token";
 import { useTwitchChat } from "@/hooks/use-twitch-chat";
 
@@ -27,6 +32,7 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
   
   // Extract emojis from real chat messages
   const processedMessageIdsRef = useRef<Set<string>>(new Set());
+  const testMessageIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Extract settings and channel - use safe defaults
   const settings = overlay?.settings as {
@@ -51,9 +57,11 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
     previewEmojisEnabled?: boolean;
     emojisPerSecond?: number;
     previewBackgroundDark?: boolean;
+    testMessagesEnabled?: boolean;
   } | undefined;
 
   const previewEmojisEnabled = settings?.previewEmojisEnabled ?? false;
+  const testMessagesEnabled = settings?.testMessagesEnabled ?? false;
   const channel = overlay?.channel ?? null;
 
   // Extract computed values for use in effects (with safe defaults) - MUST be before hooks
@@ -77,6 +85,7 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
   const emojisPerSecond = settings?.emojisPerSecond ?? 1;
 
   // Connect to Twitch chat - MUST be called before any early returns
+  // Disable real chat when test messages or preview emojis are enabled
   const {
     messages: realMessages,
     isConnected: _isChatConnected,
@@ -85,19 +94,25 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
     channel,
     accessToken: providerToken || undefined,
     username: twitchUsername || undefined,
-    enabled: Boolean(channel && providerToken && twitchUsername && !previewEmojisEnabled),
+    enabled: Boolean(
+      channel &&
+        providerToken &&
+        twitchUsername &&
+        !previewEmojisEnabled &&
+        !testMessagesEnabled
+    ),
   });
 
   // Reset processed messages when switching modes
   useEffect(() => {
     processedMessageIdsRef.current.clear();
-    if (previewEmojisEnabled) {
+    if (previewEmojisEnabled || testMessagesEnabled) {
       setEmojis([]);
     }
-  }, [previewEmojisEnabled]);
+  }, [previewEmojisEnabled, testMessagesEnabled]);
   
   useEffect(() => {
-    if (previewEmojisEnabled || !channel) {
+    if (previewEmojisEnabled || testMessagesEnabled || !channel) {
       return;
     }
 
@@ -128,7 +143,7 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
         ]);
       }
     }
-  }, [realMessages, previewEmojisEnabled, channel, minEmojiLifetime, maxEmojiLifetime, minGravityBounceCount, maxGravityBounceCount, maxEmojis]);
+  }, [realMessages, previewEmojisEnabled, testMessagesEnabled, channel, minEmojiLifetime, maxEmojiLifetime, minGravityBounceCount, maxGravityBounceCount, maxEmojis]);
 
   // Clean up expired emojis based on lifetime (only for time-based mode)
   useEffect(() => {
@@ -186,6 +201,64 @@ export default function WallEmoteOverlay({ overlayId }: WallEmoteOverlayProps) {
       clearInterval(interval);
     };
   }, [previewEmojisEnabled, emojisPerSecond, minEmojiLifetime, maxEmojiLifetime, minGravityBounceCount, maxGravityBounceCount, maxEmojis]);
+
+  // Test messages mode - generate emoji-rich test messages
+  useEffect(() => {
+    if (!testMessagesEnabled) {
+      // Clear interval if disabled
+      if (testMessageIntervalRef.current) {
+        clearInterval(testMessageIntervalRef.current);
+        testMessageIntervalRef.current = null;
+      }
+      return;
+    }
+
+    const MIN_INTERVAL_MS = 2000;
+    const MAX_INTERVAL_MS = 4000;
+
+    const sendTestMessage = () => {
+      const { message, emotes } = generateTestMessageWithEmojis();
+      const messageEmojis = extractEmojisFromMessage(
+        message,
+        emotes,
+        {
+          min: minEmojiLifetime,
+          max: maxEmojiLifetime,
+        },
+        {
+          min: minGravityBounceCount,
+          max: maxGravityBounceCount,
+        }
+      );
+
+      if (messageEmojis.length > 0) {
+        setEmojis((prev) => [
+          ...prev.slice(-(maxEmojis - messageEmojis.length)),
+          ...messageEmojis,
+        ]);
+      }
+    };
+
+    // Send initial message after a short delay
+    const initialTimeout = setTimeout(() => {
+      sendTestMessage();
+    }, 500);
+
+    // Set up interval to send messages every 2-4 seconds
+    const interval = setInterval(() => {
+      sendTestMessage();
+    }, Math.random() * (MAX_INTERVAL_MS - MIN_INTERVAL_MS) + MIN_INTERVAL_MS);
+
+    testMessageIntervalRef.current = interval;
+
+    return () => {
+      clearTimeout(initialTimeout);
+      if (testMessageIntervalRef.current) {
+        clearInterval(testMessageIntervalRef.current);
+        testMessageIntervalRef.current = null;
+      }
+    };
+  }, [testMessagesEnabled, minEmojiLifetime, maxEmojiLifetime, minGravityBounceCount, maxGravityBounceCount, maxEmojis]);
 
   if (overlayQuery.isLoading) {
     return (

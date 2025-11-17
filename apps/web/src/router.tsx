@@ -3,7 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
-import Loader from "./components/loader";
+import Loader from "@/features/layout/components/loader";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 

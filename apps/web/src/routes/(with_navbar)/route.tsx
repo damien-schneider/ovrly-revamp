@@ -5,7 +5,7 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import Header from "@/components/header";
+import Header from "@/features/layout/components/header";
 import LeftSidemenu from "@/features/left-sidemenu";
 import RightSidemenu from "@/features/right-sidemenu";
 import { TopbarTools } from "@/features/topbar-tools";

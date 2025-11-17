@@ -1,7 +1,7 @@
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useParams, useRouterState } from "@tanstack/react-router";
-import ChatRightPanelSettings from "@/components/chat-right-panel-settings";
-import WallEmoteRightPanelSettings from "@/components/wall-emote-right-panel-settings";
+import ChatRightPanelSettings from "@/features/chat/components/chat-right-panel-settings";
+import WallEmoteRightPanelSettings from "@/features/wall-emote/components/wall-emote-right-panel-settings";
 
 export default function RightSidemenu() {
   const pathname = useRouterState().location.pathname;

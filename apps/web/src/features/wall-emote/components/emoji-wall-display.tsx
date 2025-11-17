@@ -1,8 +1,8 @@
 import type { EmojiData } from "@/lib/emoji-extractor";
-import { EmojiBouncingDisplay } from "@/components/emoji-bouncing-display";
-import { EmojiFireworkDisplay } from "@/components/emoji-firework-display";
-import { EmojiGravityDisplay } from "@/components/emoji-gravity-display";
-import type { FireworkPosition } from "@/components/firework-position-selector";
+import { EmojiBouncingDisplay } from "@/features/wall-emote/components/emoji-bouncing-display";
+import { EmojiFireworkDisplay } from "@/features/wall-emote/components/emoji-firework-display";
+import { EmojiGravityDisplay } from "@/features/wall-emote/components/emoji-gravity-display";
+import type { FireworkPosition } from "@/features/wall-emote/components/firework-position-selector";
 
 export type EmojiWallEffect = "gravity" | "bouncing-dvd" | "firework";
 export type GravityRemovalMode = "time" | "bounce";

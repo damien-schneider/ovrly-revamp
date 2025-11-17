@@ -3,8 +3,8 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import ChatOverlay from "@/components/chat-overlay";
-import { ObsOverlayContainer } from "@/components/obs-overlay-container";
+import ChatOverlay from "@/features/chat/components/chat-overlay";
+import { ObsOverlayContainer } from "@/features/overlay/components/obs-overlay-container";
 
 export const Route = createFileRoute("/chat/$id")({
   component: RouteComponent,

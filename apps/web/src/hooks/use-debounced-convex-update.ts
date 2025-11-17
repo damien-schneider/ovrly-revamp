@@ -1,33 +1,38 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import type { ChatSettingsData } from "@/atoms/chat-settings-atoms";
 import type { Atom } from "jotai";
 
-type UseDebouncedConvexUpdateOptions = {
+type UseDebouncedConvexUpdateOptions<T extends Record<string, unknown>> = {
   overlayId: Id<"overlays">;
-  settingsAtom: Atom<ChatSettingsData>;
+  settingsAtom: Atom<T>;
   delay?: number;
   enabled?: boolean;
+  mergeWithExisting?: boolean;
 };
 
 /**
- * Hook that debounces updates to Convex when chat settings change.
+ * Hook that debounces updates to Convex when settings change.
  * Updates are sent to the database after settings haven't changed for the specified delay.
  */
-export function useDebouncedConvexUpdate({
+export function useDebouncedConvexUpdate<T extends Record<string, unknown>>({
   overlayId,
   settingsAtom,
   delay = 1000,
   enabled = true,
-}: UseDebouncedConvexUpdateOptions) {
+  mergeWithExisting = false,
+}: UseDebouncedConvexUpdateOptions<T>) {
   const settings = useAtomValue(settingsAtom);
   const updateOverlay = useMutation(api.overlays.update);
+  const overlay = useQuery(
+    api.overlays.getById,
+    mergeWithExisting && enabled ? { id: overlayId } : "skip"
+  );
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSavedRef = useRef<ChatSettingsData | null>(null);
+  const lastSavedRef = useRef<T | null>(null);
   const isInitialMountRef = useRef(true);
 
   useEffect(() => {
@@ -53,9 +58,16 @@ export function useDebouncedConvexUpdate({
       try {
         // Only save if settings have actually changed
         if (JSON.stringify(lastSavedRef.current) !== JSON.stringify(settings)) {
+          const settingsToSave = mergeWithExisting && overlay?.settings
+            ? {
+                ...(overlay.settings as Record<string, unknown>),
+                ...settings,
+              }
+            : settings;
+
           await updateOverlay({
             id: overlayId,
-            settings: settings as Record<string, unknown>,
+            settings: settingsToSave,
           });
           lastSavedRef.current = settings;
         }
@@ -74,6 +86,6 @@ export function useDebouncedConvexUpdate({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [settings, overlayId, updateOverlay, delay, enabled]);
+  }, [settings, overlayId, updateOverlay, delay, enabled, mergeWithExisting, overlay]);
 }
 

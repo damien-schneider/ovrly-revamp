@@ -3,19 +3,20 @@ import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { ArrowDown, Sparkle, Television } from "@phosphor-icons/react";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { FireworkPositionSelector, type FireworkPosition } from "@/components/firework-position-selector";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type {
+  EmojiWallEffect,
+  GravityRemovalMode,
+} from "@/features/wall-emote/components/emoji-wall-display";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import type { EmojiWallEffect, GravityRemovalMode } from "@/components/emoji-wall-display";
+  type FireworkPosition,
+  FireworkPositionSelector,
+} from "@/features/wall-emote/components/firework-position-selector";
 
 type WallEmoteSettingsProps = {
   overlayId: Id<"overlays">;
@@ -51,10 +52,8 @@ const DEFAULT_GRAVITY_INITIAL_VELOCITY = 30;
 const DEFAULT_BOUNCING_POWER = 50;
 const DEFAULT_BOUNCING_SPEED = 2;
 const DEFAULT_FIREWORK_RADIUS = 200;
-const DEFAULT_EMOJI_LIFETIME = 5;
 const DEFAULT_MIN_EMOJI_LIFETIME = 2;
 const DEFAULT_MAX_EMOJI_LIFETIME = 8;
-const DEFAULT_GRAVITY_BOUNCE_COUNT = 3;
 const DEFAULT_MIN_GRAVITY_BOUNCE_COUNT = 1;
 const DEFAULT_MAX_GRAVITY_BOUNCE_COUNT = 5;
 const DEFAULT_EMOJIS_PER_SECOND = 1;
@@ -78,7 +77,9 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
     settings.gravityPower ?? DEFAULT_GRAVITY_POWER
   );
   const [localGravityInitialVelocity, setLocalGravityInitialVelocity] =
-    useState(settings.gravityInitialVelocity ?? DEFAULT_GRAVITY_INITIAL_VELOCITY);
+    useState(
+      settings.gravityInitialVelocity ?? DEFAULT_GRAVITY_INITIAL_VELOCITY
+    );
   const [localGravityBounceCountRange, setLocalGravityBounceCountRange] =
     useState([
       settings.minGravityBounceCount ?? DEFAULT_MIN_GRAVITY_BOUNCE_COUNT,
@@ -379,7 +380,8 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs">Emoji Lifetime Range</Label>
                     <span className="text-muted-foreground text-xs">
-                      {localEmojiLifetimeRange[0]}s - {localEmojiLifetimeRange[1]}s
+                      {localEmojiLifetimeRange[0]}s -{" "}
+                      {localEmojiLifetimeRange[1]}s
                     </span>
                   </div>
                   <Slider
@@ -457,7 +459,9 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
                       max={100}
                       min={0}
                       onValueChange={(value) =>
-                        setLocalBouncingPower(value[0] || DEFAULT_BOUNCING_POWER)
+                        setLocalBouncingPower(
+                          value[0] || DEFAULT_BOUNCING_POWER
+                        )
                       }
                       onValueCommit={(value) =>
                         updateSetting({
@@ -518,7 +522,9 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
                       max={10}
                       min={1}
                       onValueChange={(value) =>
-                        setLocalBouncingSpeed(value[0] || DEFAULT_BOUNCING_SPEED)
+                        setLocalBouncingSpeed(
+                          value[0] || DEFAULT_BOUNCING_SPEED
+                        )
                       }
                       onValueCommit={(value) =>
                         updateSetting({
@@ -608,7 +614,9 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
                     max={10}
                     min={0.1}
                     onValueChange={(value) =>
-                      setLocalEmojisPerSecond(value[0] || DEFAULT_EMOJIS_PER_SECOND)
+                      setLocalEmojisPerSecond(
+                        value[0] || DEFAULT_EMOJIS_PER_SECOND
+                      )
                     }
                     onValueCommit={(value) =>
                       updateSetting({
@@ -628,4 +636,3 @@ export function WallEmoteSettings({ overlayId }: WallEmoteSettingsProps) {
     </div>
   );
 }
-
