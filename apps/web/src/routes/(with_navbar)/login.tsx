@@ -23,7 +23,7 @@ import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/(with_navbar)/login")({
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || "/dashboard",
+    redirect: (search.redirect as string) || "/overlays",
   }),
   component: LoginComponent,
 });
@@ -37,7 +37,7 @@ function LoginComponent() {
     try {
       await authClient.signIn.social({
         provider: "twitch",
-        callbackURL: redirect || "/dashboard",
+        callbackURL: redirect || "/overlays",
       });
     } catch {
       // Error handling is done by authClient
@@ -61,7 +61,7 @@ function LoginComponent() {
           {
             onSuccess: () => {
               navigate({
-                to: redirect || "/dashboard",
+                to: redirect || "/overlays",
               });
               toast.success("Sign up successful");
             },
@@ -79,7 +79,7 @@ function LoginComponent() {
           {
             onSuccess: () => {
               navigate({
-                to: redirect || "/dashboard",
+                to: redirect || "/overlays",
               });
               toast.success("Sign in successful");
             },
@@ -100,6 +100,7 @@ function LoginComponent() {
               .min(8, "Password must be at least 8 characters"),
           })
         : z.object({
+            name: z.string(),
             email: z.email("Invalid email address"),
             password: z
               .string()
@@ -111,7 +112,7 @@ function LoginComponent() {
   return (
     <>
       <Authenticated>
-        <Navigate to={redirect || "/dashboard"} />
+        <Navigate to={redirect || "/overlays"} />
       </Authenticated>
       <Unauthenticated>
         <div className="flex min-h-screen items-center justify-center">

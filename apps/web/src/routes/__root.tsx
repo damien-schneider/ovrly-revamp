@@ -12,6 +12,7 @@ import {
   Outlet,
   Scripts,
   useRouteContext,
+  useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
@@ -20,6 +21,7 @@ import type { ConvexReactClient } from "convex/react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import appCss from "../index.css?url";
 
 const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
@@ -74,6 +76,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   const context = useRouteContext({ from: Route.id });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isOverlayRoute =
+    pathname.startsWith("/wall-emote/") || pathname.startsWith("/chat/");
+
   return (
     <ConvexBetterAuthProvider
       authClient={authClient}
@@ -91,7 +97,13 @@ function RootDocument() {
               />
             )}
           </head>
-          <body>
+          <body
+            className={cn(
+              isOverlayRoute
+                ? "bg-transparent"
+                : "bg-background text-foreground"
+            )}
+          >
             <Outlet />
             <Toaster richColors />
             <TanStackRouterDevtools position="bottom-right" />

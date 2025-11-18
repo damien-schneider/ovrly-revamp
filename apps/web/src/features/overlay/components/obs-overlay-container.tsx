@@ -11,4 +11,3 @@ export function ObsOverlayContainer({ children }: ObsOverlayContainerProps) {
     </div>
   );
 }
-

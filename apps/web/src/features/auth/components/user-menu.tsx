@@ -34,7 +34,7 @@ export default function UserMenu() {
                   onSuccess: () => {
                     navigate({
                       to: "/login",
-                      search: { redirect: "/dashboard" },
+                      search: { redirect: "/overlays" },
                     });
                   },
                 },
