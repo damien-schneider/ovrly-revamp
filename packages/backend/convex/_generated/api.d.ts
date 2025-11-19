@@ -14,6 +14,7 @@ import type * as http from "../http.js";
 import type * as overlays from "../overlays.js";
 import type * as privateData from "../privateData.js";
 import type * as profiles from "../profiles.js";
+import type * as seed from "../seed.js";
 
 import type {
   ApiFromModules,
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   overlays: typeof overlays;
   privateData: typeof privateData;
   profiles: typeof profiles;
+  seed: typeof seed;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

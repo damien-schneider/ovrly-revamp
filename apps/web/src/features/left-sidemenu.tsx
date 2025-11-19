@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "@/features/layout/components/theme-switcher";
 import OverlayForm from "@/features/overlay/components/overlay-form";
 import OverlayListCompact from "@/features/overlay/components/overlay-list-compact";
-import { OverlayBasicSettings } from "@/features/overlay-basic-settings";
 
 export default function LeftSidemenu() {
   const pathname = useRouterState().location.pathname;
@@ -61,7 +60,6 @@ export default function LeftSidemenu() {
           <div className="flex-1 overflow-y-auto">
             <OverlayListCompact typeFilter={overlayType} />
           </div>
-          <OverlayBasicSettings overlayId={overlayId} />
         </div>
       );
     }

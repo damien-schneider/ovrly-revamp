@@ -32,15 +32,11 @@ export default function RightSidemenu() {
         />
       );
     }
-    return (
-      <div className="flex h-full items-center justify-center p-4">
-        <p className="text-muted-foreground text-sm">Settings</p>
-      </div>
-    );
+    return null;
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex h-full flex-col gap-1">
       <div className="h-full w-72 min-w-72 rounded-xl bg-background-2">
         {renderSettings()}
       </div>

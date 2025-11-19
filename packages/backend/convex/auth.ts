@@ -12,7 +12,7 @@ import { type QueryCtx, query } from "./_generated/server";
 
 const siteUrl = process.env.SITE_URL || "";
 
-const authFunctions: AuthFunctions = (internal as { auth: AuthFunctions }).auth;
+const authFunctions: AuthFunctions = (internal as any).auth;
 
 export const authComponent = createClient<DataModel>(components.betterAuth, {
   authFunctions,
@@ -101,7 +101,7 @@ export const createAuth = (
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
-      enabled: false,
+      enabled: true,
     },
     socialProviders: {
       twitch: {
