@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import type { EmojiData } from "@/lib/emoji-extractor";
 import type { FireworkPosition } from "@/features/wall-emote/components/firework-position-selector";
+import type { EmojiData } from "@/lib/emoji-extractor";
 
 type EmojiFireworkDisplayProps = {
   emojis: EmojiData[];
@@ -220,4 +220,3 @@ export function EmojiFireworkDisplay({
     </div>
   );
 }
-

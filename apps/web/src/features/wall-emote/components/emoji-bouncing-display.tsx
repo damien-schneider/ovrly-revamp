@@ -242,6 +242,3 @@ export function EmojiBouncingDisplay({
     </div>
   );
 }
-
-
-

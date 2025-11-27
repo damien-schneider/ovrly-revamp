@@ -1,8 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/(with_navbar)/interactions")({
+export const Route = createFileRoute("/(with_navbar)/assets")({
   beforeLoad: ({ context, location }) => {
-    // Access userId from parent route context (set in __root.tsx beforeLoad)
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {

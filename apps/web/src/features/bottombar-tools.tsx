@@ -35,7 +35,7 @@ export function BottombarTools() {
   }, [overlay]);
 
   const handleUpdate = async () => {
-    if (!overlay || !overlayId) {
+    if (!(overlay && overlayId)) {
       return;
     }
 
@@ -61,21 +61,28 @@ export function BottombarTools() {
   }
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <div className="-translate-x-1/2 absolute bottom-6 left-1/2 z-50">
       <div className="flex h-12 items-center justify-center gap-4 rounded-full border bg-background/80 px-6 shadow-lg backdrop-blur-sm transition-all hover:bg-background">
         <div className="flex items-center gap-2">
-          <Label htmlFor="bottom-channel" className="whitespace-nowrap text-sm font-medium">
+          <Label
+            className="whitespace-nowrap font-medium text-sm"
+            htmlFor="bottom-channel"
+          >
             Twitch Channel:
           </Label>
           <div className="flex items-center gap-2">
             <Input
-              id="bottom-channel"
               className="h-7 w-40 rounded-full bg-transparent px-3 text-sm"
+              id="bottom-channel"
               onChange={(e) => setChannel(e.target.value)}
               placeholder="channelname"
               value={channel}
             />
-            <Button onClick={handleUpdate} size="sm" className="h-7 rounded-full px-4 text-xs">
+            <Button
+              className="h-7 rounded-full px-4 text-xs"
+              onClick={handleUpdate}
+              size="sm"
+            >
               Save
             </Button>
           </div>

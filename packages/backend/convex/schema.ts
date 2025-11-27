@@ -16,8 +16,19 @@ export default defineSchema({
     name: v.string(),
     settings: v.any(),
     channel: v.optional(v.string()),
-    type: v.union(v.literal("chat"), v.literal("emoji-wall")),
+    type: v.union(v.literal("chat"), v.literal("emoji-wall"), v.literal("ad")),
   })
     .index("by_userId", ["userId"])
     .index("by_channel", ["channel"]),
+  commands: defineTable({
+    userId: v.id("profiles"), // Owner of the command
+    trigger: v.string(), // Command trigger (e.g., "!projects")
+    response: v.string(), // Command response message
+    enabled: v.boolean(), // Whether command is active
+    cooldown: v.optional(v.number()), // Cooldown in seconds (future feature)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_trigger", ["userId", "trigger"]),
 });

@@ -1,6 +1,11 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { ArrowSquareOutIcon, CopyIcon, Pause, Play } from "@phosphor-icons/react";
+import {
+  ArrowSquareOutIcon,
+  CopyIcon,
+  Pause,
+  Play,
+} from "@phosphor-icons/react";
 import { useParams, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useAtom } from "jotai";
@@ -11,7 +16,6 @@ import {
   isOverlaySettingsInitialized,
   setOverlaySettingsInitialized,
 } from "@/atoms/overlay-settings-atoms";
-import { useDebouncedConvexUpdate } from "@/hooks/use-debounced-convex-update";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle } from "@/components/ui/toggle";
@@ -20,6 +24,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useDebouncedConvexUpdate } from "@/hooks/use-debounced-convex-update";
 
 export function TopbarTools() {
   const pathname = useRouterState().location.pathname;
@@ -27,9 +32,10 @@ export function TopbarTools() {
 
   const isChatRoute = pathname.startsWith("/overlays/chat/");
   const isWallEmoteRoute = pathname.startsWith("/overlays/wall-emote/");
+  const isAdRoute = pathname.startsWith("/overlays/ad/");
 
   const overlayId =
-    (isChatRoute || isWallEmoteRoute) && params.id
+    (isChatRoute || isWallEmoteRoute || isAdRoute) && params.id
       ? (params.id as Id<"overlays">)
       : undefined;
 
@@ -46,7 +52,12 @@ export function TopbarTools() {
 
   // Initialize atom from Convex data on first load
   useEffect(() => {
-    if (overlayId && overlay?.settings && settingsAtom && !isOverlaySettingsInitialized(overlayId)) {
+    if (
+      overlayId &&
+      overlay?.settings &&
+      settingsAtom &&
+      !isOverlaySettingsInitialized(overlayId)
+    ) {
       const overlaySettings = overlay.settings as {
         testMessagesEnabled?: boolean;
       };
@@ -79,6 +90,8 @@ export function TopbarTools() {
       obsUrl = `${siteUrl}/chat/${overlayId}`;
     } else if (isWallEmoteRoute) {
       obsUrl = `${siteUrl}/wall-emote/${overlayId}`;
+    } else if (isAdRoute) {
+      obsUrl = `${siteUrl}/ad/${overlayId}`;
     }
   }
 
@@ -98,7 +111,7 @@ export function TopbarTools() {
   };
 
   const handleTestMessagesToggle = (pressed: boolean) => {
-    if (!overlayId || !settingsAtom) {
+    if (!overlayId) {
       return;
     }
 
@@ -109,7 +122,7 @@ export function TopbarTools() {
     }));
   };
 
-  if (!(isChatRoute || isWallEmoteRoute)) {
+  if (!(isChatRoute || isWallEmoteRoute || isAdRoute)) {
     return null;
   }
 

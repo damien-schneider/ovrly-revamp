@@ -2,11 +2,11 @@
 
 import { Monitor, Moon, Sun } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
-  ThemeToggler,
   type ThemeSelection,
+  ThemeToggler,
 } from "@/components/animate-ui/primitives/effects/theme-toggler";
+import { Button } from "@/components/ui/button";
 
 const themes: Array<{
   value: ThemeSelection;

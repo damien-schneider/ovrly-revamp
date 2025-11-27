@@ -1,5 +1,8 @@
+import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { Moon, Smiley, Sun } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,10 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
-import { useEffect } from "react";
 
 type WallEmotePreviewSettingsButtonProps = {
   overlayId: Id<"overlays">;
@@ -80,7 +79,11 @@ export function WallEmotePreviewSettingsButton({
         <Tooltip>
           <TooltipTrigger asChild={true}>
             <PopoverTrigger asChild>
-              <Button aria-label="Preview settings" size="sm" variant="secondary">
+              <Button
+                aria-label="Preview settings"
+                size="sm"
+                variant="secondary"
+              >
                 <Smiley className="h-4 w-4" weight="regular" />
               </Button>
             </PopoverTrigger>
@@ -136,6 +139,3 @@ export function WallEmotePreviewSettingsButton({
     </Popover>
   );
 }
-
-
-

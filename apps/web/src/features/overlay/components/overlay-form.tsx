@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type OverlayType = "chat" | "emoji-wall";
+type OverlayType = "chat" | "emoji-wall" | "ad";
 
 interface OverlayFormProps {
   overlayId?: Id<"overlays">;
@@ -86,6 +86,8 @@ export default function OverlayForm({
     }
   };
 
+  const showChannelInput = type === "chat" || type === "emoji-wall";
+
   return (
     <Card>
       <CardHeader>
@@ -95,7 +97,7 @@ export default function OverlayForm({
         <CardDescription>
           {overlayId
             ? "Update your overlay settings"
-            : "Create a new chat or emoji wall overlay"}
+            : "Create a new chat, emoji wall, or ad overlay"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -121,18 +123,21 @@ export default function OverlayForm({
             >
               <option value="chat">Chat</option>
               <option value="emoji-wall">Emoji Wall</option>
+              <option value="ad">Ad / Sponsors</option>
             </select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="channel">Twitch Channel (optional)</Label>
-            <Input
-              id="channel"
-              onChange={(e) => setChannel(e.target.value)}
-              placeholder="channelname"
-              value={channel}
-            />
-          </div>
+          {showChannelInput && (
+            <div className="space-y-2">
+              <Label htmlFor="channel">Twitch Channel (optional)</Label>
+              <Input
+                id="channel"
+                onChange={(e) => setChannel(e.target.value)}
+                placeholder="channelname"
+                value={channel}
+              />
+            </div>
+          )}
 
           <Button className="w-full" type="submit">
             {overlayId ? "Update Overlay" : "Create Overlay"}

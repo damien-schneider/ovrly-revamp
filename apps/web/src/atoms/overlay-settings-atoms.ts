@@ -1,12 +1,15 @@
-import { atom } from "jotai";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
+import { atom } from "jotai";
 
 export type OverlaySettingsData = {
   testMessagesEnabled?: boolean;
 };
 
 // Map to store atoms per overlayId
-const overlaySettingsAtomMap = new Map<Id<"overlays">, ReturnType<typeof atom<OverlaySettingsData>>>();
+const overlaySettingsAtomMap = new Map<
+  Id<"overlays">,
+  ReturnType<typeof atom<OverlaySettingsData>>
+>();
 
 // Flag to track if atom has been initialized from Convex
 const initializationMap = new Map<Id<"overlays">, boolean>();
@@ -29,14 +32,19 @@ export function getOverlaySettingsAtom(overlayId: Id<"overlays">) {
 /**
  * Check if the atom for an overlay has been initialized
  */
-export function isOverlaySettingsInitialized(overlayId: Id<"overlays">): boolean {
+export function isOverlaySettingsInitialized(
+  overlayId: Id<"overlays">
+): boolean {
   return initializationMap.get(overlayId) ?? false;
 }
 
 /**
  * Mark the atom for an overlay as initialized
  */
-export function setOverlaySettingsInitialized(overlayId: Id<"overlays">, initialized: boolean): void {
+export function setOverlaySettingsInitialized(
+  overlayId: Id<"overlays">,
+  initialized: boolean
+): void {
   initializationMap.set(overlayId, initialized);
 }
 
@@ -47,4 +55,3 @@ export function clearOverlaySettingsAtom(overlayId: Id<"overlays">): void {
   overlaySettingsAtomMap.delete(overlayId);
   initializationMap.delete(overlayId);
 }
-

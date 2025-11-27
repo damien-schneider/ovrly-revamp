@@ -1,5 +1,6 @@
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useParams, useRouterState } from "@tanstack/react-router";
+import AdRightPanelSettings from "@/features/ad/components/ad-right-panel-settings";
 import ChatRightPanelSettings from "@/features/chat/components/chat-right-panel-settings";
 import WallEmoteRightPanelSettings from "@/features/wall-emote/components/wall-emote-right-panel-settings";
 
@@ -9,11 +10,14 @@ export default function RightSidemenu() {
 
   const isChatRoute = pathname.startsWith("/overlays/chat/");
   const isWallEmoteRoute = pathname.startsWith("/overlays/wall-emote/");
+  const isAdRoute = pathname.startsWith("/overlays/ad/");
 
   const chatOverlayId =
     isChatRoute && params.id ? (params.id as Id<"overlays">) : undefined;
   const wallEmoteOverlayId =
     isWallEmoteRoute && params.id ? (params.id as Id<"overlays">) : undefined;
+  const adOverlayId =
+    isAdRoute && params.id ? (params.id as Id<"overlays">) : undefined;
 
   const renderSettings = () => {
     if (isChatRoute) {
@@ -29,6 +33,14 @@ export default function RightSidemenu() {
         <WallEmoteRightPanelSettings
           key={wallEmoteOverlayId || "loading"}
           overlayId={wallEmoteOverlayId}
+        />
+      );
+    }
+    if (isAdRoute) {
+      return (
+        <AdRightPanelSettings
+          key={adOverlayId || "loading"}
+          overlayId={adOverlayId}
         />
       );
     }

@@ -1,6 +1,6 @@
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { ChatSettings } from "@/features/chat/components/chat-settings";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ChatSettings } from "@/features/chat/components/chat-settings";
 
 type ChatRightPanelSettingsProps = {
   overlayId: Id<"overlays"> | undefined;

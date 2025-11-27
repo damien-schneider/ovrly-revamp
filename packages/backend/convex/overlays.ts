@@ -23,7 +23,7 @@ export const create = mutation({
     name: v.string(),
     settings: v.any(),
     channel: v.optional(v.string()),
-    type: v.union(v.literal("chat"), v.literal("emoji-wall")),
+    type: v.union(v.literal("chat"), v.literal("emoji-wall"), v.literal("ad")),
   },
   handler: async (ctx, args) => {
     const profile = await getProfile(ctx);
@@ -44,7 +44,9 @@ export const update = mutation({
     name: v.optional(v.string()),
     settings: v.optional(v.any()),
     channel: v.optional(v.string()),
-    type: v.optional(v.union(v.literal("chat"), v.literal("emoji-wall"))),
+    type: v.optional(
+      v.union(v.literal("chat"), v.literal("emoji-wall"), v.literal("ad"))
+    ),
   },
   handler: async (ctx, { id, ...updates }) => {
     const profile = await getProfile(ctx);

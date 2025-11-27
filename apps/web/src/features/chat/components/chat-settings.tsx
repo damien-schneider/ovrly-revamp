@@ -19,7 +19,6 @@ import {
   isChatSettingsInitialized,
   setChatSettingsInitialized,
 } from "@/atoms/chat-settings-atoms";
-import { SpacingControl } from "@/features/overlay/components/spacing-control";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -32,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { SpacingControl } from "@/features/overlay/components/spacing-control";
 import { useDebouncedConvexUpdate } from "@/hooks/use-debounced-convex-update";
 
 type ChatSettingsProps = {

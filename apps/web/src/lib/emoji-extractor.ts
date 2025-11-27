@@ -28,7 +28,18 @@ const RANDOM_ID_START = 2;
 const RANDOM_ID_LENGTH = 9;
 
 // Sample emojis for preview mode
-const PREVIEW_EMOJIS = ["🎉", "🔥", "💯", "⭐", "❤️", "👍", "🎮", "🚀", "💪", "🎊"];
+const PREVIEW_EMOJIS = [
+  "🎉",
+  "🔥",
+  "💯",
+  "⭐",
+  "❤️",
+  "👍",
+  "🎮",
+  "🚀",
+  "💪",
+  "🎊",
+];
 
 // Emoji-rich test messages for wall-emote overlay
 const TEST_MESSAGES_WITH_EMOJIS = [
@@ -47,7 +58,16 @@ const TEST_MESSAGES_WITH_EMOJIS = [
 ];
 
 // Twitch emote names (common ones)
-const TWITCH_EMOTES = ["PogChamp", "Kappa", "LUL", "OMEGALUL", "PepeHands", "monkaS", "FeelsGoodMan", "FeelsBadMan"];
+const TWITCH_EMOTES = [
+  "PogChamp",
+  "Kappa",
+  "LUL",
+  "OMEGALUL",
+  "PepeHands",
+  "monkaS",
+  "FeelsGoodMan",
+  "FeelsBadMan",
+];
 
 function generateId(): string {
   return `emoji-${Date.now()}-${Math.random().toString(BASE_36).substring(RANDOM_ID_START, RANDOM_ID_LENGTH)}`;
@@ -75,8 +95,12 @@ export function extractEmojisFromMessage(
         emoji: match[0],
         type: "unicode",
         timestamp: now,
-        lifetime: lifetimeRange.min * 1000 + randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
-        bounceLimit: Math.floor(randomInRange(bounceCountRange.min, bounceCountRange.max)),
+        lifetime:
+          lifetimeRange.min * 1000 +
+          randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
+        bounceLimit: Math.floor(
+          randomInRange(bounceCountRange.min, bounceCountRange.max)
+        ),
       });
     }
   }
@@ -87,15 +111,19 @@ export function extractEmojisFromMessage(
       if (positions && positions.length > 0) {
         // Get emote URL - Twitch emote URL format
         const emoteUrl = `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/1.0`;
-        
+
         emojis.push({
           id: generateId(),
           emoji: emoteId,
           type: "emote",
           url: emoteUrl,
           timestamp: now,
-          lifetime: lifetimeRange.min * 1000 + randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
-          bounceLimit: Math.floor(randomInRange(bounceCountRange.min, bounceCountRange.max)),
+          lifetime:
+            lifetimeRange.min * 1000 +
+            randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
+          bounceLimit: Math.floor(
+            randomInRange(bounceCountRange.min, bounceCountRange.max)
+          ),
         });
       }
     }
@@ -109,16 +137,19 @@ export function generatePreviewEmoji(
   bounceCountRange: BounceCountRange
 ): EmojiData {
   const randomEmoji =
-    PREVIEW_EMOJIS[Math.floor(Math.random() * PREVIEW_EMOJIS.length)] ||
-    "🎉";
+    PREVIEW_EMOJIS[Math.floor(Math.random() * PREVIEW_EMOJIS.length)] || "🎉";
 
   return {
     id: generateId(),
     emoji: randomEmoji,
     type: "unicode",
     timestamp: Date.now(),
-    lifetime: lifetimeRange.min * 1000 + randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
-    bounceLimit: Math.floor(randomInRange(bounceCountRange.min, bounceCountRange.max)),
+    lifetime:
+      lifetimeRange.min * 1000 +
+      randomInRange(0, (lifetimeRange.max - lifetimeRange.min) * 1000),
+    bounceLimit: Math.floor(
+      randomInRange(bounceCountRange.min, bounceCountRange.max)
+    ),
   };
 }
 
@@ -143,7 +174,7 @@ export function generateTestMessageWithEmojis(): {
     const numEmotes = Math.floor(Math.random() * 3) + 1; // 1-3 emotes
     const emoteNames: string[] = [];
     let currentMessageLength = message.length;
-    
+
     for (let i = 0; i < numEmotes; i++) {
       const emoteName =
         TWITCH_EMOTES[Math.floor(Math.random() * TWITCH_EMOTES.length)];
@@ -156,7 +187,7 @@ export function generateTestMessageWithEmojis(): {
         const start = currentMessageLength + 1;
         const end = start + emoteName.length - 1;
         // Use a fake but valid-looking emote ID format
-        const emoteId = `305954156`; // Using a common emote ID format
+        const emoteId = "305954156"; // Using a common emote ID format
         if (!emotes[emoteId]) {
           emotes[emoteId] = [];
         }
@@ -166,8 +197,8 @@ export function generateTestMessageWithEmojis(): {
     }
   }
 
-  return { message, emotes: Object.keys(emotes).length > 0 ? emotes : undefined };
+  return {
+    message,
+    emotes: Object.keys(emotes).length > 0 ? emotes : undefined,
+  };
 }
-
-
-

@@ -186,3 +186,12 @@ body {
     @apply ring ring-black/10 border border-white dark:ring-black dark:border-white/10;
   }
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

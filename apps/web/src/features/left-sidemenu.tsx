@@ -14,19 +14,22 @@ export default function LeftSidemenu() {
 
   const isChatRoute = pathname.startsWith("/overlays/chat");
   const isWallEmoteRoute = pathname.startsWith("/overlays/wall-emote");
+  const isAdRoute = pathname.startsWith("/overlays/ad");
 
   let overlayId: Id<"overlays"> | undefined;
-  if ((isChatRoute || isWallEmoteRoute) && params.id) {
+  if ((isChatRoute || isWallEmoteRoute || isAdRoute) && params.id) {
     overlayId = params.id as Id<"overlays">;
   }
 
-  const shouldShowOverlayList = isChatRoute || isWallEmoteRoute;
+  const shouldShowOverlayList = isChatRoute || isWallEmoteRoute || isAdRoute;
 
-  let overlayType: "chat" | "emoji-wall" | null = null;
+  let overlayType: "chat" | "emoji-wall" | "ad" | null = null;
   if (isChatRoute) {
     overlayType = "chat";
   } else if (isWallEmoteRoute) {
     overlayType = "emoji-wall";
+  } else if (isAdRoute) {
+    overlayType = "ad";
   }
 
   const handleFormSuccess = () => {
@@ -82,6 +85,9 @@ export default function LeftSidemenu() {
     if (overlayType === "emoji-wall") {
       return "Wall Emote Overlays";
     }
+    if (overlayType === "ad") {
+      return "Ad Overlays";
+    }
     return "";
   };
 
@@ -91,6 +97,9 @@ export default function LeftSidemenu() {
     }
     if (overlayType === "emoji-wall") {
       return "Create Wall Emote Overlay";
+    }
+    if (overlayType === "ad") {
+      return "Create Ad Overlay";
     }
     return "";
   };

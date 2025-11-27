@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as commands from "../commands.js";
 import type * as healthCheck from "../healthCheck.js";
 import type * as http from "../http.js";
 import type * as overlays from "../overlays.js";
@@ -32,6 +33,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  commands: typeof commands;
   healthCheck: typeof healthCheck;
   http: typeof http;
   overlays: typeof overlays;

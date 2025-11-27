@@ -1,0 +1,58 @@
+# Docker Compose for Ovrly
+# Self-hosted deployment with Coolify or any Docker environment
+#
+# Services:
+# - web: TanStack Start frontend (port 3001)
+# - bot: Twitch bot server (port 3002)
+#
+# Note: Convex is a cloud service and cannot be self-hosted.
+# You need a Convex deployment URL from https://convex.dev
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        - VITE_CONVEX_URL=${VITE_CONVEX_URL}
+        - VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
+        - VITE_TWITCH_CLIENT_ID=${VITE_TWITCH_CLIENT_ID}
+        - VITE_BOT_SERVER_URL=${VITE_BOT_SERVER_URL:-http://bot:3002}
+        - VITE_BOT_API_SECRET=${BOT_API_SECRET}
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - bot
+    restart: unless-stopped
+    networks:
+      - ovrly-network
+    labels:
+      # Coolify labels for automatic configuration
+      - "coolify.managed=true"
+      - "coolify.applicationId=${COOLIFY_APP_ID:-ovrly-web}"
+
+  bot:
+    build:
+      context: .
+      dockerfile: packages/twitch-bot/Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - CONVEX_URL=${CONVEX_URL}
+      - BOT_API_SECRET=${BOT_API_SECRET}
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
+      - PORT=3002
+    restart: unless-stopped
+    networks:
+      - ovrly-network
+    labels:
+      - "coolify.managed=true"
+      - "coolify.applicationId=${COOLIFY_APP_ID:-ovrly-bot}"
+
+networks:
+  ovrly-network:
+    driver: bridge

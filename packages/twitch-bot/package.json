@@ -1,0 +1,19 @@
+{
+  "name": "@ovrly-revamp/twitch-bot",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "convex": "catalog:",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.1",
+    "typescript": "catalog:"
+  }
+}

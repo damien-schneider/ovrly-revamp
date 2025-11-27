@@ -13,20 +13,28 @@ import { Route as with_navbarRouteRouteImport } from './routes/(with_navbar)/rou
 import { Route as with_navbarIndexRouteImport } from './routes/(with_navbar)/index'
 import { Route as WallEmoteIdRouteImport } from './routes/wall-emote.$id'
 import { Route as ChatIdRouteImport } from './routes/chat.$id'
+import { Route as AdIdRouteImport } from './routes/ad.$id'
 import { Route as with_navbarOverlaysRouteImport } from './routes/(with_navbar)/overlays'
 import { Route as with_navbarModerationRouteImport } from './routes/(with_navbar)/moderation'
 import { Route as with_navbarLoginRouteImport } from './routes/(with_navbar)/login'
-import { Route as with_navbarInteractionsRouteImport } from './routes/(with_navbar)/interactions'
+import { Route as with_navbarHomeRouteImport } from './routes/(with_navbar)/home'
 import { Route as with_navbarDashboardRouteImport } from './routes/(with_navbar)/dashboard'
+import { Route as with_navbarChatInteractionsRouteImport } from './routes/(with_navbar)/chat-interactions'
+import { Route as with_navbarAssetsRouteImport } from './routes/(with_navbar)/assets'
 import { Route as with_navbarAccountRouteImport } from './routes/(with_navbar)/account'
 import { Route as with_navbarOverlaysIndexRouteImport } from './routes/(with_navbar)/overlays/index'
+import { Route as with_navbarChatInteractionsIndexRouteImport } from './routes/(with_navbar)/chat-interactions/index'
+import { Route as with_navbarAssetsIndexRouteImport } from './routes/(with_navbar)/assets/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as with_navbarInteractionsRecursiveMessageRouteImport } from './routes/(with_navbar)/interactions/recursive-message'
-import { Route as with_navbarInteractionsCommandsRouteImport } from './routes/(with_navbar)/interactions/commands'
+import { Route as with_navbarChatInteractionsCommandsRouteImport } from './routes/(with_navbar)/chat-interactions/commands'
+import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
+import { Route as with_navbarAssetsEmotesRouteImport } from './routes/(with_navbar)/assets/emotes'
 import { Route as with_navbarOverlaysWallEmoteIndexRouteImport } from './routes/(with_navbar)/overlays/wall-emote/index'
 import { Route as with_navbarOverlaysChatIndexRouteImport } from './routes/(with_navbar)/overlays/chat/index'
+import { Route as with_navbarOverlaysAdIndexRouteImport } from './routes/(with_navbar)/overlays/ad/index'
 import { Route as with_navbarOverlaysWallEmoteIdRouteImport } from './routes/(with_navbar)/overlays/wall-emote/$id'
 import { Route as with_navbarOverlaysChatIdRouteImport } from './routes/(with_navbar)/overlays/chat/$id'
+import { Route as with_navbarOverlaysAdIdRouteImport } from './routes/(with_navbar)/overlays/ad/$id'
 
 const with_navbarRouteRoute = with_navbarRouteRouteImport.update({
   id: '/(with_navbar)',
@@ -47,6 +55,11 @@ const ChatIdRoute = ChatIdRouteImport.update({
   path: '/chat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdIdRoute = AdIdRouteImport.update({
+  id: '/ad/$id',
+  path: '/ad/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const with_navbarOverlaysRoute = with_navbarOverlaysRouteImport.update({
   id: '/overlays',
   path: '/overlays',
@@ -62,14 +75,25 @@ const with_navbarLoginRoute = with_navbarLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => with_navbarRouteRoute,
 } as any)
-const with_navbarInteractionsRoute = with_navbarInteractionsRouteImport.update({
-  id: '/interactions',
-  path: '/interactions',
+const with_navbarHomeRoute = with_navbarHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => with_navbarRouteRoute,
 } as any)
 const with_navbarDashboardRoute = with_navbarDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const with_navbarChatInteractionsRoute =
+  with_navbarChatInteractionsRouteImport.update({
+    id: '/chat-interactions',
+    path: '/chat-interactions',
+    getParentRoute: () => with_navbarRouteRoute,
+  } as any)
+const with_navbarAssetsRoute = with_navbarAssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
   getParentRoute: () => with_navbarRouteRoute,
 } as any)
 const with_navbarAccountRoute = with_navbarAccountRouteImport.update({
@@ -83,23 +107,39 @@ const with_navbarOverlaysIndexRoute =
     path: '/',
     getParentRoute: () => with_navbarOverlaysRoute,
   } as any)
+const with_navbarChatInteractionsIndexRoute =
+  with_navbarChatInteractionsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => with_navbarChatInteractionsRoute,
+  } as any)
+const with_navbarAssetsIndexRoute = with_navbarAssetsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => with_navbarAssetsRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const with_navbarInteractionsRecursiveMessageRoute =
-  with_navbarInteractionsRecursiveMessageRouteImport.update({
-    id: '/recursive-message',
-    path: '/recursive-message',
-    getParentRoute: () => with_navbarInteractionsRoute,
-  } as any)
-const with_navbarInteractionsCommandsRoute =
-  with_navbarInteractionsCommandsRouteImport.update({
+const with_navbarChatInteractionsCommandsRoute =
+  with_navbarChatInteractionsCommandsRouteImport.update({
     id: '/commands',
     path: '/commands',
-    getParentRoute: () => with_navbarInteractionsRoute,
+    getParentRoute: () => with_navbarChatInteractionsRoute,
   } as any)
+const with_navbarAssetsSubBadgesRoute =
+  with_navbarAssetsSubBadgesRouteImport.update({
+    id: '/sub-badges',
+    path: '/sub-badges',
+    getParentRoute: () => with_navbarAssetsRoute,
+  } as any)
+const with_navbarAssetsEmotesRoute = with_navbarAssetsEmotesRouteImport.update({
+  id: '/emotes',
+  path: '/emotes',
+  getParentRoute: () => with_navbarAssetsRoute,
+} as any)
 const with_navbarOverlaysWallEmoteIndexRoute =
   with_navbarOverlaysWallEmoteIndexRouteImport.update({
     id: '/wall-emote/',
@@ -110,6 +150,12 @@ const with_navbarOverlaysChatIndexRoute =
   with_navbarOverlaysChatIndexRouteImport.update({
     id: '/chat/',
     path: '/chat/',
+    getParentRoute: () => with_navbarOverlaysRoute,
+  } as any)
+const with_navbarOverlaysAdIndexRoute =
+  with_navbarOverlaysAdIndexRouteImport.update({
+    id: '/ad/',
+    path: '/ad/',
     getParentRoute: () => with_navbarOverlaysRoute,
   } as any)
 const with_navbarOverlaysWallEmoteIdRoute =
@@ -124,41 +170,60 @@ const with_navbarOverlaysChatIdRoute =
     path: '/chat/$id',
     getParentRoute: () => with_navbarOverlaysRoute,
   } as any)
+const with_navbarOverlaysAdIdRoute = with_navbarOverlaysAdIdRouteImport.update({
+  id: '/ad/$id',
+  path: '/ad/$id',
+  getParentRoute: () => with_navbarOverlaysRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/account': typeof with_navbarAccountRoute
+  '/assets': typeof with_navbarAssetsRouteWithChildren
+  '/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/dashboard': typeof with_navbarDashboardRoute
-  '/interactions': typeof with_navbarInteractionsRouteWithChildren
+  '/home': typeof with_navbarHomeRoute
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
   '/overlays': typeof with_navbarOverlaysRouteWithChildren
+  '/ad/$id': typeof AdIdRoute
   '/chat/$id': typeof ChatIdRoute
   '/wall-emote/$id': typeof WallEmoteIdRoute
   '/': typeof with_navbarIndexRoute
-  '/interactions/commands': typeof with_navbarInteractionsCommandsRoute
-  '/interactions/recursive-message': typeof with_navbarInteractionsRecursiveMessageRoute
+  '/assets/emotes': typeof with_navbarAssetsEmotesRoute
+  '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/assets/': typeof with_navbarAssetsIndexRoute
+  '/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
   '/overlays/': typeof with_navbarOverlaysIndexRoute
+  '/overlays/ad/$id': typeof with_navbarOverlaysAdIdRoute
   '/overlays/chat/$id': typeof with_navbarOverlaysChatIdRoute
   '/overlays/wall-emote/$id': typeof with_navbarOverlaysWallEmoteIdRoute
+  '/overlays/ad': typeof with_navbarOverlaysAdIndexRoute
   '/overlays/chat': typeof with_navbarOverlaysChatIndexRoute
   '/overlays/wall-emote': typeof with_navbarOverlaysWallEmoteIndexRoute
 }
 export interface FileRoutesByTo {
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
-  '/interactions': typeof with_navbarInteractionsRouteWithChildren
+  '/home': typeof with_navbarHomeRoute
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
+  '/ad/$id': typeof AdIdRoute
   '/chat/$id': typeof ChatIdRoute
   '/wall-emote/$id': typeof WallEmoteIdRoute
   '/': typeof with_navbarIndexRoute
-  '/interactions/commands': typeof with_navbarInteractionsCommandsRoute
-  '/interactions/recursive-message': typeof with_navbarInteractionsRecursiveMessageRoute
+  '/assets/emotes': typeof with_navbarAssetsEmotesRoute
+  '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/assets': typeof with_navbarAssetsIndexRoute
+  '/chat-interactions': typeof with_navbarChatInteractionsIndexRoute
   '/overlays': typeof with_navbarOverlaysIndexRoute
+  '/overlays/ad/$id': typeof with_navbarOverlaysAdIdRoute
   '/overlays/chat/$id': typeof with_navbarOverlaysChatIdRoute
   '/overlays/wall-emote/$id': typeof with_navbarOverlaysWallEmoteIdRoute
+  '/overlays/ad': typeof with_navbarOverlaysAdIndexRoute
   '/overlays/chat': typeof with_navbarOverlaysChatIndexRoute
   '/overlays/wall-emote': typeof with_navbarOverlaysWallEmoteIndexRoute
 }
@@ -166,20 +231,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(with_navbar)': typeof with_navbarRouteRouteWithChildren
   '/(with_navbar)/account': typeof with_navbarAccountRoute
+  '/(with_navbar)/assets': typeof with_navbarAssetsRouteWithChildren
+  '/(with_navbar)/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/(with_navbar)/dashboard': typeof with_navbarDashboardRoute
-  '/(with_navbar)/interactions': typeof with_navbarInteractionsRouteWithChildren
+  '/(with_navbar)/home': typeof with_navbarHomeRoute
   '/(with_navbar)/login': typeof with_navbarLoginRoute
   '/(with_navbar)/moderation': typeof with_navbarModerationRoute
   '/(with_navbar)/overlays': typeof with_navbarOverlaysRouteWithChildren
+  '/ad/$id': typeof AdIdRoute
   '/chat/$id': typeof ChatIdRoute
   '/wall-emote/$id': typeof WallEmoteIdRoute
   '/(with_navbar)/': typeof with_navbarIndexRoute
-  '/(with_navbar)/interactions/commands': typeof with_navbarInteractionsCommandsRoute
-  '/(with_navbar)/interactions/recursive-message': typeof with_navbarInteractionsRecursiveMessageRoute
+  '/(with_navbar)/assets/emotes': typeof with_navbarAssetsEmotesRoute
+  '/(with_navbar)/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/(with_navbar)/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(with_navbar)/assets/': typeof with_navbarAssetsIndexRoute
+  '/(with_navbar)/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
   '/(with_navbar)/overlays/': typeof with_navbarOverlaysIndexRoute
+  '/(with_navbar)/overlays/ad/$id': typeof with_navbarOverlaysAdIdRoute
   '/(with_navbar)/overlays/chat/$id': typeof with_navbarOverlaysChatIdRoute
   '/(with_navbar)/overlays/wall-emote/$id': typeof with_navbarOverlaysWallEmoteIdRoute
+  '/(with_navbar)/overlays/ad/': typeof with_navbarOverlaysAdIndexRoute
   '/(with_navbar)/overlays/chat/': typeof with_navbarOverlaysChatIndexRoute
   '/(with_navbar)/overlays/wall-emote/': typeof with_navbarOverlaysWallEmoteIndexRoute
 }
@@ -187,64 +260,87 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/account'
+    | '/assets'
+    | '/chat-interactions'
     | '/dashboard'
-    | '/interactions'
+    | '/home'
     | '/login'
     | '/moderation'
     | '/overlays'
+    | '/ad/$id'
     | '/chat/$id'
     | '/wall-emote/$id'
     | '/'
-    | '/interactions/commands'
-    | '/interactions/recursive-message'
+    | '/assets/emotes'
+    | '/assets/sub-badges'
+    | '/chat-interactions/commands'
     | '/api/auth/$'
+    | '/assets/'
+    | '/chat-interactions/'
     | '/overlays/'
+    | '/overlays/ad/$id'
     | '/overlays/chat/$id'
     | '/overlays/wall-emote/$id'
+    | '/overlays/ad'
     | '/overlays/chat'
     | '/overlays/wall-emote'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/account'
     | '/dashboard'
-    | '/interactions'
+    | '/home'
     | '/login'
     | '/moderation'
+    | '/ad/$id'
     | '/chat/$id'
     | '/wall-emote/$id'
     | '/'
-    | '/interactions/commands'
-    | '/interactions/recursive-message'
+    | '/assets/emotes'
+    | '/assets/sub-badges'
+    | '/chat-interactions/commands'
     | '/api/auth/$'
+    | '/assets'
+    | '/chat-interactions'
     | '/overlays'
+    | '/overlays/ad/$id'
     | '/overlays/chat/$id'
     | '/overlays/wall-emote/$id'
+    | '/overlays/ad'
     | '/overlays/chat'
     | '/overlays/wall-emote'
   id:
     | '__root__'
     | '/(with_navbar)'
     | '/(with_navbar)/account'
+    | '/(with_navbar)/assets'
+    | '/(with_navbar)/chat-interactions'
     | '/(with_navbar)/dashboard'
-    | '/(with_navbar)/interactions'
+    | '/(with_navbar)/home'
     | '/(with_navbar)/login'
     | '/(with_navbar)/moderation'
     | '/(with_navbar)/overlays'
+    | '/ad/$id'
     | '/chat/$id'
     | '/wall-emote/$id'
     | '/(with_navbar)/'
-    | '/(with_navbar)/interactions/commands'
-    | '/(with_navbar)/interactions/recursive-message'
+    | '/(with_navbar)/assets/emotes'
+    | '/(with_navbar)/assets/sub-badges'
+    | '/(with_navbar)/chat-interactions/commands'
     | '/api/auth/$'
+    | '/(with_navbar)/assets/'
+    | '/(with_navbar)/chat-interactions/'
     | '/(with_navbar)/overlays/'
+    | '/(with_navbar)/overlays/ad/$id'
     | '/(with_navbar)/overlays/chat/$id'
     | '/(with_navbar)/overlays/wall-emote/$id'
+    | '/(with_navbar)/overlays/ad/'
     | '/(with_navbar)/overlays/chat/'
     | '/(with_navbar)/overlays/wall-emote/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   with_navbarRouteRoute: typeof with_navbarRouteRouteWithChildren
+  AdIdRoute: typeof AdIdRoute
   ChatIdRoute: typeof ChatIdRoute
   WallEmoteIdRoute: typeof WallEmoteIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -280,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ad/$id': {
+      id: '/ad/$id'
+      path: '/ad/$id'
+      fullPath: '/ad/$id'
+      preLoaderRoute: typeof AdIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(with_navbar)/overlays': {
       id: '/(with_navbar)/overlays'
       path: '/overlays'
@@ -301,11 +404,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarLoginRouteImport
       parentRoute: typeof with_navbarRouteRoute
     }
-    '/(with_navbar)/interactions': {
-      id: '/(with_navbar)/interactions'
-      path: '/interactions'
-      fullPath: '/interactions'
-      preLoaderRoute: typeof with_navbarInteractionsRouteImport
+    '/(with_navbar)/home': {
+      id: '/(with_navbar)/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof with_navbarHomeRouteImport
       parentRoute: typeof with_navbarRouteRoute
     }
     '/(with_navbar)/dashboard': {
@@ -313,6 +416,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof with_navbarDashboardRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/(with_navbar)/chat-interactions': {
+      id: '/(with_navbar)/chat-interactions'
+      path: '/chat-interactions'
+      fullPath: '/chat-interactions'
+      preLoaderRoute: typeof with_navbarChatInteractionsRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/(with_navbar)/assets': {
+      id: '/(with_navbar)/assets'
+      path: '/assets'
+      fullPath: '/assets'
+      preLoaderRoute: typeof with_navbarAssetsRouteImport
       parentRoute: typeof with_navbarRouteRoute
     }
     '/(with_navbar)/account': {
@@ -329,6 +446,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarOverlaysIndexRouteImport
       parentRoute: typeof with_navbarOverlaysRoute
     }
+    '/(with_navbar)/chat-interactions/': {
+      id: '/(with_navbar)/chat-interactions/'
+      path: '/'
+      fullPath: '/chat-interactions/'
+      preLoaderRoute: typeof with_navbarChatInteractionsIndexRouteImport
+      parentRoute: typeof with_navbarChatInteractionsRoute
+    }
+    '/(with_navbar)/assets/': {
+      id: '/(with_navbar)/assets/'
+      path: '/'
+      fullPath: '/assets/'
+      preLoaderRoute: typeof with_navbarAssetsIndexRouteImport
+      parentRoute: typeof with_navbarAssetsRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -336,19 +467,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(with_navbar)/interactions/recursive-message': {
-      id: '/(with_navbar)/interactions/recursive-message'
-      path: '/recursive-message'
-      fullPath: '/interactions/recursive-message'
-      preLoaderRoute: typeof with_navbarInteractionsRecursiveMessageRouteImport
-      parentRoute: typeof with_navbarInteractionsRoute
-    }
-    '/(with_navbar)/interactions/commands': {
-      id: '/(with_navbar)/interactions/commands'
+    '/(with_navbar)/chat-interactions/commands': {
+      id: '/(with_navbar)/chat-interactions/commands'
       path: '/commands'
-      fullPath: '/interactions/commands'
-      preLoaderRoute: typeof with_navbarInteractionsCommandsRouteImport
-      parentRoute: typeof with_navbarInteractionsRoute
+      fullPath: '/chat-interactions/commands'
+      preLoaderRoute: typeof with_navbarChatInteractionsCommandsRouteImport
+      parentRoute: typeof with_navbarChatInteractionsRoute
+    }
+    '/(with_navbar)/assets/sub-badges': {
+      id: '/(with_navbar)/assets/sub-badges'
+      path: '/sub-badges'
+      fullPath: '/assets/sub-badges'
+      preLoaderRoute: typeof with_navbarAssetsSubBadgesRouteImport
+      parentRoute: typeof with_navbarAssetsRoute
+    }
+    '/(with_navbar)/assets/emotes': {
+      id: '/(with_navbar)/assets/emotes'
+      path: '/emotes'
+      fullPath: '/assets/emotes'
+      preLoaderRoute: typeof with_navbarAssetsEmotesRouteImport
+      parentRoute: typeof with_navbarAssetsRoute
     }
     '/(with_navbar)/overlays/wall-emote/': {
       id: '/(with_navbar)/overlays/wall-emote/'
@@ -362,6 +500,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/overlays/chat'
       preLoaderRoute: typeof with_navbarOverlaysChatIndexRouteImport
+      parentRoute: typeof with_navbarOverlaysRoute
+    }
+    '/(with_navbar)/overlays/ad/': {
+      id: '/(with_navbar)/overlays/ad/'
+      path: '/ad'
+      fullPath: '/overlays/ad'
+      preLoaderRoute: typeof with_navbarOverlaysAdIndexRouteImport
       parentRoute: typeof with_navbarOverlaysRoute
     }
     '/(with_navbar)/overlays/wall-emote/$id': {
@@ -378,38 +523,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarOverlaysChatIdRouteImport
       parentRoute: typeof with_navbarOverlaysRoute
     }
+    '/(with_navbar)/overlays/ad/$id': {
+      id: '/(with_navbar)/overlays/ad/$id'
+      path: '/ad/$id'
+      fullPath: '/overlays/ad/$id'
+      preLoaderRoute: typeof with_navbarOverlaysAdIdRouteImport
+      parentRoute: typeof with_navbarOverlaysRoute
+    }
   }
 }
 
-interface with_navbarInteractionsRouteChildren {
-  with_navbarInteractionsCommandsRoute: typeof with_navbarInteractionsCommandsRoute
-  with_navbarInteractionsRecursiveMessageRoute: typeof with_navbarInteractionsRecursiveMessageRoute
+interface with_navbarAssetsRouteChildren {
+  with_navbarAssetsEmotesRoute: typeof with_navbarAssetsEmotesRoute
+  with_navbarAssetsSubBadgesRoute: typeof with_navbarAssetsSubBadgesRoute
+  with_navbarAssetsIndexRoute: typeof with_navbarAssetsIndexRoute
 }
 
-const with_navbarInteractionsRouteChildren: with_navbarInteractionsRouteChildren =
+const with_navbarAssetsRouteChildren: with_navbarAssetsRouteChildren = {
+  with_navbarAssetsEmotesRoute: with_navbarAssetsEmotesRoute,
+  with_navbarAssetsSubBadgesRoute: with_navbarAssetsSubBadgesRoute,
+  with_navbarAssetsIndexRoute: with_navbarAssetsIndexRoute,
+}
+
+const with_navbarAssetsRouteWithChildren =
+  with_navbarAssetsRoute._addFileChildren(with_navbarAssetsRouteChildren)
+
+interface with_navbarChatInteractionsRouteChildren {
+  with_navbarChatInteractionsCommandsRoute: typeof with_navbarChatInteractionsCommandsRoute
+  with_navbarChatInteractionsIndexRoute: typeof with_navbarChatInteractionsIndexRoute
+}
+
+const with_navbarChatInteractionsRouteChildren: with_navbarChatInteractionsRouteChildren =
   {
-    with_navbarInteractionsCommandsRoute: with_navbarInteractionsCommandsRoute,
-    with_navbarInteractionsRecursiveMessageRoute:
-      with_navbarInteractionsRecursiveMessageRoute,
+    with_navbarChatInteractionsCommandsRoute:
+      with_navbarChatInteractionsCommandsRoute,
+    with_navbarChatInteractionsIndexRoute:
+      with_navbarChatInteractionsIndexRoute,
   }
 
-const with_navbarInteractionsRouteWithChildren =
-  with_navbarInteractionsRoute._addFileChildren(
-    with_navbarInteractionsRouteChildren,
+const with_navbarChatInteractionsRouteWithChildren =
+  with_navbarChatInteractionsRoute._addFileChildren(
+    with_navbarChatInteractionsRouteChildren,
   )
 
 interface with_navbarOverlaysRouteChildren {
   with_navbarOverlaysIndexRoute: typeof with_navbarOverlaysIndexRoute
+  with_navbarOverlaysAdIdRoute: typeof with_navbarOverlaysAdIdRoute
   with_navbarOverlaysChatIdRoute: typeof with_navbarOverlaysChatIdRoute
   with_navbarOverlaysWallEmoteIdRoute: typeof with_navbarOverlaysWallEmoteIdRoute
+  with_navbarOverlaysAdIndexRoute: typeof with_navbarOverlaysAdIndexRoute
   with_navbarOverlaysChatIndexRoute: typeof with_navbarOverlaysChatIndexRoute
   with_navbarOverlaysWallEmoteIndexRoute: typeof with_navbarOverlaysWallEmoteIndexRoute
 }
 
 const with_navbarOverlaysRouteChildren: with_navbarOverlaysRouteChildren = {
   with_navbarOverlaysIndexRoute: with_navbarOverlaysIndexRoute,
+  with_navbarOverlaysAdIdRoute: with_navbarOverlaysAdIdRoute,
   with_navbarOverlaysChatIdRoute: with_navbarOverlaysChatIdRoute,
   with_navbarOverlaysWallEmoteIdRoute: with_navbarOverlaysWallEmoteIdRoute,
+  with_navbarOverlaysAdIndexRoute: with_navbarOverlaysAdIndexRoute,
   with_navbarOverlaysChatIndexRoute: with_navbarOverlaysChatIndexRoute,
   with_navbarOverlaysWallEmoteIndexRoute:
     with_navbarOverlaysWallEmoteIndexRoute,
@@ -420,8 +592,10 @@ const with_navbarOverlaysRouteWithChildren =
 
 interface with_navbarRouteRouteChildren {
   with_navbarAccountRoute: typeof with_navbarAccountRoute
+  with_navbarAssetsRoute: typeof with_navbarAssetsRouteWithChildren
+  with_navbarChatInteractionsRoute: typeof with_navbarChatInteractionsRouteWithChildren
   with_navbarDashboardRoute: typeof with_navbarDashboardRoute
-  with_navbarInteractionsRoute: typeof with_navbarInteractionsRouteWithChildren
+  with_navbarHomeRoute: typeof with_navbarHomeRoute
   with_navbarLoginRoute: typeof with_navbarLoginRoute
   with_navbarModerationRoute: typeof with_navbarModerationRoute
   with_navbarOverlaysRoute: typeof with_navbarOverlaysRouteWithChildren
@@ -430,8 +604,11 @@ interface with_navbarRouteRouteChildren {
 
 const with_navbarRouteRouteChildren: with_navbarRouteRouteChildren = {
   with_navbarAccountRoute: with_navbarAccountRoute,
+  with_navbarAssetsRoute: with_navbarAssetsRouteWithChildren,
+  with_navbarChatInteractionsRoute:
+    with_navbarChatInteractionsRouteWithChildren,
   with_navbarDashboardRoute: with_navbarDashboardRoute,
-  with_navbarInteractionsRoute: with_navbarInteractionsRouteWithChildren,
+  with_navbarHomeRoute: with_navbarHomeRoute,
   with_navbarLoginRoute: with_navbarLoginRoute,
   with_navbarModerationRoute: with_navbarModerationRoute,
   with_navbarOverlaysRoute: with_navbarOverlaysRouteWithChildren,
@@ -443,6 +620,7 @@ const with_navbarRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   with_navbarRouteRoute: with_navbarRouteRouteWithChildren,
+  AdIdRoute: AdIdRoute,
   ChatIdRoute: ChatIdRoute,
   WallEmoteIdRoute: WallEmoteIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

@@ -1,10 +1,10 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { Atom } from "jotai";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import type { Atom } from "jotai";
 
 type UseDebouncedConvexUpdateOptions<T extends Record<string, unknown>> = {
   overlayId: Id<"overlays">;
@@ -58,12 +58,13 @@ export function useDebouncedConvexUpdate<T extends Record<string, unknown>>({
       try {
         // Only save if settings have actually changed
         if (JSON.stringify(lastSavedRef.current) !== JSON.stringify(settings)) {
-          const settingsToSave = mergeWithExisting && overlay?.settings
-            ? {
-                ...(overlay.settings as Record<string, unknown>),
-                ...settings,
-              }
-            : settings;
+          const settingsToSave =
+            mergeWithExisting && overlay?.settings
+              ? {
+                  ...(overlay.settings as Record<string, unknown>),
+                  ...settings,
+                }
+              : settings;
 
           await updateOverlay({
             id: overlayId,
@@ -86,6 +87,13 @@ export function useDebouncedConvexUpdate<T extends Record<string, unknown>>({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [settings, overlayId, updateOverlay, delay, enabled, mergeWithExisting, overlay]);
+  }, [
+    settings,
+    overlayId,
+    updateOverlay,
+    delay,
+    enabled,
+    mergeWithExisting,
+    overlay,
+  ]);
 }
-

@@ -1,6 +1,7 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { useQuery as useConvexQuery } from "convex/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,9 +30,24 @@ export const Route = createFileRoute("/(with_navbar)/account")({
   component: RouteComponent,
 });
 
+type LinkedAccount = {
+  id: string;
+  providerId: string;
+  accountId: string;
+};
+
 function RouteComponent() {
   const { twitchUsername, isLoading: isLoadingProvider } = useProviderData();
-  const provider = useQuery(api.auth.getCurrentProvider);
+  const provider = useConvexQuery(api.auth.getCurrentProvider);
+
+  // Fetch all linked accounts
+  const { data: linkedAccounts, refetch: refetchAccounts } = useQuery({
+    queryKey: ["linked-accounts"],
+    queryFn: async () => {
+      const response = await authClient.listAccounts();
+      return (response.data ?? []) as LinkedAccount[];
+    },
+  });
 
   const handleConnectTwitch = async () => {
     try {
@@ -44,6 +60,34 @@ function RouteComponent() {
     }
   };
 
+  const handleLinkTwitch = async () => {
+    try {
+      await authClient.linkSocial({
+        provider: "twitch",
+        callbackURL: "/account",
+      });
+    } catch {
+      toast.error("Failed to link Twitch account");
+    }
+  };
+
+  const handleUnlinkAccount = async (providerId: string, accountId: string) => {
+    try {
+      const response = await authClient.unlinkAccount({
+        providerId,
+        accountId,
+      });
+      if (response.error) {
+        toast.error(`Failed to unlink: ${response.error.message}`);
+        return;
+      }
+      toast.success("Account unlinked successfully");
+      await refetchAccounts();
+    } catch {
+      toast.error("Failed to unlink account");
+    }
+  };
+
   const renderTwitchConnection = () => {
     if (isLoadingProvider || provider === undefined) {
       return <p>Loading...</p>;
@@ -51,26 +95,54 @@ function RouteComponent() {
 
     // Show connected if Better Auth has Twitch account (token is automatically available via getAccessToken)
     const isConnected = provider === "twitch";
+    const twitchAccounts =
+      linkedAccounts?.filter((acc) => acc.providerId === "twitch") ?? [];
 
-    if (isConnected) {
-      return (
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium">Connected to Twitch</p>
-            {twitchUsername && (
-              <p className="text-muted-foreground text-sm">
-                Username: {twitchUsername}
-              </p>
-            )}
+    return (
+      <div className="space-y-4">
+        {twitchAccounts.length > 0 ? (
+          <div className="space-y-3">
+            <p className="font-medium text-sm">Linked Twitch Accounts:</p>
+            {twitchAccounts.map((account) => (
+              <div
+                className="flex items-center justify-between rounded-lg border p-3"
+                key={account.id}
+              >
+                <div>
+                  <p className="font-medium">Twitch ID: {account.accountId}</p>
+                  {twitchUsername && account === twitchAccounts[0] && (
+                    <p className="text-muted-foreground text-sm">
+                      @{twitchUsername}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  onClick={() =>
+                    handleUnlinkAccount(account.providerId, account.accountId)
+                  }
+                  size="sm"
+                  variant="destructive"
+                >
+                  Unlink
+                </Button>
+              </div>
+            ))}
           </div>
-          <Button onClick={handleConnectTwitch} variant="outline">
-            Reconnect
-          </Button>
-        </div>
-      );
-    }
+        ) : (
+          <p className="text-muted-foreground">No Twitch account linked</p>
+        )}
 
-    return <Button onClick={handleConnectTwitch}>Connect Twitch</Button>;
+        <div className="flex gap-2">
+          {isConnected ? (
+            <Button onClick={handleLinkTwitch} variant="outline">
+              Link Another Twitch Account
+            </Button>
+          ) : (
+            <Button onClick={handleConnectTwitch}>Connect Twitch</Button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
