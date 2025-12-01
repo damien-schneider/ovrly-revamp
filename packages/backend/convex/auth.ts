@@ -3,7 +3,7 @@ import {
   createClient,
   type GenericCtx,
 } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
+import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
@@ -106,8 +106,10 @@ export const createAuth = (
     trustedOrigins: [
       siteUrl,
       webAppOrigin,
-      "http://localhost:3001",
-      "http://127.0.0.1:3001",
+      // Include development origins for local testing (only when not in production)
+      ...(isProduction
+        ? []
+        : ["http://localhost:3001", "http://127.0.0.1:3001"]),
     ],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
@@ -131,7 +133,8 @@ export const createAuth = (
         path: "/",
       },
     },
-    plugins: [convex()],
+    // crossDomain plugin is REQUIRED for SPAs where frontend and backend are on different origins
+    plugins: [crossDomain({ siteUrl }), convex()],
   });
 
 // Helper to get current auth user - reusable across queries

@@ -41,9 +41,11 @@ services:
     volumes:
       - convex-data:/convex/data
     healthcheck:
-      test: curl -f http://localhost:3210/version
-      interval: 5s
-      start_period: 10s
+      test: ["CMD-SHELL", "curl -sf http://localhost:3210/version || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     restart: unless-stopped
 
   # ===========================================
@@ -79,6 +81,7 @@ services:
         - VITE_CONVEX_SITE_URL=$SERVICE_URL_CONVEX-BACKEND_3211
         - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
         - VITE_BOT_SERVER_URL=$SERVICE_URL_BOT
+        - VITE_BOT_API_SECRET=$SERVICE_PASSWORD_BOT
     expose:
       - "3001"
     environment:
