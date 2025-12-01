@@ -1,12 +1,14 @@
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ConvexReactClient } from "convex/react";
+import { AuthErrorBoundary } from "@/components/auth-error-boundary";
 import { env } from "@/env";
 import Loader from "@/features/layout/components/loader";
+import { authClient } from "@/lib/auth-client";
 import { routeTree } from "./routeTree.gen";
-import "./index.css";
 
 export function getRouter() {
   const convex = new ConvexReactClient(env.VITE_CONVEX_URL, {
@@ -33,9 +35,14 @@ export function getRouter() {
       defaultNotFoundComponent: () => <div>Not Found</div>,
       context: { queryClient, convexClient: convex, convexQueryClient },
       Wrap: ({ children }) => (
-        <ConvexProvider client={convexQueryClient.convexClient}>
-          {children}
-        </ConvexProvider>
+        <AuthErrorBoundary>
+          <ConvexBetterAuthProvider
+            authClient={authClient}
+            client={convexQueryClient.convexClient}
+          >
+            {children}
+          </ConvexBetterAuthProvider>
+        </AuthErrorBoundary>
       ),
     }),
     queryClient

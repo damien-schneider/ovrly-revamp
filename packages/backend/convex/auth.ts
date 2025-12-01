@@ -11,6 +11,11 @@ import type { DataModel } from "./_generated/dataModel";
 import { type QueryCtx, query } from "./_generated/server";
 
 const siteUrl = process.env.SITE_URL || "";
+// For local dev: SITE_URL is the Convex HTTP endpoint (e.g., http://127.0.0.1:3211)
+// WEB_APP_ORIGIN is where the frontend runs (e.g., http://localhost:3001)
+const webAppOrigin = process.env.WEB_APP_ORIGIN || "http://localhost:3001";
+// Detect if we're running over HTTPS (production) or HTTP (local dev)
+const isProduction = siteUrl.startsWith("https://");
 
 const authFunctions: AuthFunctions = (internal as any).auth;
 
@@ -98,7 +103,12 @@ export const createAuth = (
     logger: {
       disabled: optionsOnly,
     },
-    trustedOrigins: [siteUrl],
+    trustedOrigins: [
+      siteUrl,
+      webAppOrigin,
+      "http://localhost:3001",
+      "http://127.0.0.1:3001",
+    ],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
@@ -109,6 +119,16 @@ export const createAuth = (
         clientSecret: process.env.TWITCH_CLIENT_SECRET as string,
         redirectURI: `${siteUrl}/api/auth/callback/twitch`,
         scope: ["chat:read", "chat:edit", "user:read:email", "user:read:chat"],
+      },
+    },
+    advanced: {
+      // Production (HTTPS): use secure cookies with sameSite: "none" for cross-origin
+      // Local dev (HTTP): use lax cookies since secure: true requires HTTPS
+      defaultCookieAttributes: {
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+        httpOnly: true,
+        path: "/",
       },
     },
     plugins: [convex()],

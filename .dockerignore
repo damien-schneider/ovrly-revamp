@@ -44,9 +44,6 @@ coverage
 *.md
 !README.md
 
-# Convex generated (will be regenerated)
-packages/backend/convex/_generated
-
 # Misc
 *.tgz
 .npmrc

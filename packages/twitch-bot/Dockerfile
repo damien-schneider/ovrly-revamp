@@ -9,7 +9,7 @@ FROM base AS deps
 COPY package.json bun.lock ./
 COPY packages/twitch-bot/package.json ./packages/twitch-bot/
 COPY packages/backend/package.json ./packages/backend/
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Production image
 FROM oven/bun:1.3-slim AS runner

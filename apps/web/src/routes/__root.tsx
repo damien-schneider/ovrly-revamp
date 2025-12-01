@@ -1,116 +1,105 @@
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import {
-  fetchSession,
-  getCookieName,
-} from "@convex-dev/better-auth/react-start";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
-import { createAuth } from "@ovrly-revamp/backend/convex/auth";
 import type { QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
-  HeadContent,
   Outlet,
-  Scripts,
-  useRouteContext,
   useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { createServerFn } from "@tanstack/react-start";
-import { getCookie, getRequest } from "@tanstack/react-start/server";
 import type { ConvexReactClient } from "convex/react";
 import { ThemeProvider } from "next-themes";
+import { useEffect } from "react";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
+import { forceLogout } from "@/lib/clear-auth-state";
 import { cn } from "@/lib/utils";
-import appCss from "../index.css?url";
 
-const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
-  const { session } = await fetchSession(getRequest());
-  const sessionCookieName = getCookieName(createAuth);
-  const token = getCookie(sessionCookieName);
-  return {
-    userId: session?.user.id,
-    token,
-  };
-});
+const SESSION_TIMEOUT_MS = 5000;
 
 export type RouterAppContext = {
   queryClient: QueryClient;
   convexClient: ConvexReactClient;
   convexQueryClient: ConvexQueryClient;
   userId?: string;
-  token?: string;
 };
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "My App",
-      },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+  beforeLoad: async () => {
+    try {
+      // Try to get the current session with a timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        SESSION_TIMEOUT_MS
+      );
 
-  component: RootDocument,
-  beforeLoad: async (ctx) => {
-    const { userId, token } = await fetchAuth();
-    if (token) {
-      ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
+      const session = await authClient.getSession({
+        fetchOptions: { signal: controller.signal },
+      });
+
+      clearTimeout(timeoutId);
+
+      return {
+        userId: session.data?.user?.id,
+      };
+    } catch {
+      // If session fetch fails or times out, return no userId
+      return { userId: undefined };
     }
-    return { userId, token };
   },
+  component: RootDocument,
 });
 
 function RootDocument() {
-  const context = useRouteContext({ from: Route.id });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isOverlayRoute =
-    pathname.startsWith("/wall-emote/") || pathname.startsWith("/chat/");
+    pathname.startsWith("/wall-emote/") ||
+    pathname.startsWith("/chat/") ||
+    pathname.startsWith("/ad/");
+
+  // Dev-only: Ctrl+Shift+K to clear auth state and reload
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "K") {
+        e.preventDefault();
+        toast.info("Clearing auth state...");
+        forceLogout();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
-    <ConvexBetterAuthProvider
-      authClient={authClient}
-      client={context.convexClient}
-    >
+    <HelmetProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <html lang="en" suppressHydrationWarning>
-          <head>
-            <HeadContent />
-            {import.meta.env.DEV && (
-              <script
-                crossOrigin="anonymous"
-                data-enabled="true"
-                src="//unpkg.com/react-grab/dist/index.global.js"
-              />
-            )}
-          </head>
-          <body
-            className={cn(
-              isOverlayRoute
-                ? "bg-transparent"
-                : "bg-background text-foreground"
-            )}
-          >
-            <Outlet />
-            <Toaster richColors />
+        <Helmet>
+          <title>Ovrly - Stream Overlays Made Simple</title>
+          <meta
+            content="Create beautiful, customizable stream overlays for Twitch. Chat widgets, emote walls, alerts and more."
+            name="description"
+          />
+        </Helmet>
+        <div
+          className={cn(
+            "min-h-screen",
+            isOverlayRoute ? "bg-transparent" : "bg-background text-foreground"
+          )}
+        >
+          <Outlet />
+          <Toaster richColors />
+          {import.meta.env.DEV && (
             <TanStackRouterDevtools position="bottom-right" />
-            <Scripts />
-          </body>
-        </html>
+          )}
+        </div>
       </ThemeProvider>
-    </ConvexBetterAuthProvider>
+    </HelmetProvider>
   );
 }

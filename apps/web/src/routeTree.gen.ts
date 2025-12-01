@@ -25,7 +25,6 @@ import { Route as with_navbarAccountRouteImport } from './routes/(with_navbar)/a
 import { Route as with_navbarOverlaysIndexRouteImport } from './routes/(with_navbar)/overlays/index'
 import { Route as with_navbarChatInteractionsIndexRouteImport } from './routes/(with_navbar)/chat-interactions/index'
 import { Route as with_navbarAssetsIndexRouteImport } from './routes/(with_navbar)/assets/index'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as with_navbarChatInteractionsCommandsRouteImport } from './routes/(with_navbar)/chat-interactions/commands'
 import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
 import { Route as with_navbarAssetsEmotesRouteImport } from './routes/(with_navbar)/assets/emotes'
@@ -118,11 +117,6 @@ const with_navbarAssetsIndexRoute = with_navbarAssetsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => with_navbarAssetsRoute,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const with_navbarChatInteractionsCommandsRoute =
   with_navbarChatInteractionsCommandsRouteImport.update({
     id: '/commands',
@@ -192,7 +186,6 @@ export interface FileRoutesByFullPath {
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/assets/': typeof with_navbarAssetsIndexRoute
   '/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
   '/overlays/': typeof with_navbarOverlaysIndexRoute
@@ -216,7 +209,6 @@ export interface FileRoutesByTo {
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/assets': typeof with_navbarAssetsIndexRoute
   '/chat-interactions': typeof with_navbarChatInteractionsIndexRoute
   '/overlays': typeof with_navbarOverlaysIndexRoute
@@ -245,7 +237,6 @@ export interface FileRoutesById {
   '/(with_navbar)/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/(with_navbar)/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/(with_navbar)/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/(with_navbar)/assets/': typeof with_navbarAssetsIndexRoute
   '/(with_navbar)/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
   '/(with_navbar)/overlays/': typeof with_navbarOverlaysIndexRoute
@@ -274,7 +265,6 @@ export interface FileRouteTypes {
     | '/assets/emotes'
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
-    | '/api/auth/$'
     | '/assets/'
     | '/chat-interactions/'
     | '/overlays/'
@@ -298,7 +288,6 @@ export interface FileRouteTypes {
     | '/assets/emotes'
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
-    | '/api/auth/$'
     | '/assets'
     | '/chat-interactions'
     | '/overlays'
@@ -326,7 +315,6 @@ export interface FileRouteTypes {
     | '/(with_navbar)/assets/emotes'
     | '/(with_navbar)/assets/sub-badges'
     | '/(with_navbar)/chat-interactions/commands'
-    | '/api/auth/$'
     | '/(with_navbar)/assets/'
     | '/(with_navbar)/chat-interactions/'
     | '/(with_navbar)/overlays/'
@@ -343,7 +331,6 @@ export interface RootRouteChildren {
   AdIdRoute: typeof AdIdRoute
   ChatIdRoute: typeof ChatIdRoute
   WallEmoteIdRoute: typeof WallEmoteIdRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -459,13 +446,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/assets/'
       preLoaderRoute: typeof with_navbarAssetsIndexRouteImport
       parentRoute: typeof with_navbarAssetsRoute
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/(with_navbar)/chat-interactions/commands': {
       id: '/(with_navbar)/chat-interactions/commands'
@@ -623,17 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdIdRoute: AdIdRoute,
   ChatIdRoute: ChatIdRoute,
   WallEmoteIdRoute: WallEmoteIdRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

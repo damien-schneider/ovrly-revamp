@@ -37,7 +37,7 @@ function LoginComponent() {
     try {
       await authClient.signIn.social({
         provider: "twitch",
-        callbackURL: redirect || "/overlays",
+        callbackURL: `${window.location.origin}${redirect || "/overlays"}`,
       });
     } catch {
       // Error handling is done by authClient

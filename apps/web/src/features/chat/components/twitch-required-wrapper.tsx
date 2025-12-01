@@ -31,7 +31,7 @@ export function TwitchRequiredWrapper({
     try {
       await authClient.signIn.social({
         provider: "twitch",
-        callbackURL: window.location.pathname,
+        callbackURL: window.location.href,
       });
     } catch {
       toast.error("Failed to connect Twitch account");
@@ -44,7 +44,7 @@ export function TwitchRequiredWrapper({
       // Use linkSocial to refresh the OAuth tokens for an already-linked account
       await authClient.linkSocial({
         provider: "twitch",
-        callbackURL: window.location.pathname,
+        callbackURL: window.location.href,
       });
     } catch {
       toast.error("Failed to reconnect Twitch account");

@@ -24,6 +24,7 @@ function LayoutComponent() {
   const pathname = useRouterState().location.pathname;
   const navigate = useNavigate();
   const isLoginRoute = pathname === "/login";
+  const isIndexRoute = pathname === "/" || pathname === "";
   const isAccountRoute = pathname === "/account";
 
   const isChatRoute = pathname.startsWith("/overlays/chat/");
@@ -38,8 +39,8 @@ function LayoutComponent() {
   const shouldShowCollapsedSidebars = isAccountRoute || isHubRoute;
   const shouldBeInteractive = shouldShowCollapsedSidebars && !isHomeRoute;
 
-  // Login route handles its own authentication state
-  if (isLoginRoute) {
+  // Login route and index (landing) route handle their own authentication state
+  if (isLoginRoute || isIndexRoute) {
     return <Outlet />;
   }
 

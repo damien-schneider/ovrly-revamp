@@ -1,0 +1,118 @@
+# Docker Compose for Coolify deployment
+# See: https://coolify.io/docs/knowledge-base/docker/compose
+#
+# Coolify Magic Variables (auto-generated):
+#   SERVICE_FQDN_<NAME> - Domain only (e.g., "ovrly.example.com")
+#   SERVICE_URL_<NAME> - Full URL with protocol (e.g., "https://ovrly.example.com")
+#   SERVICE_URL_<NAME>_<PORT> - URL proxied to specific container port
+#   SERVICE_PASSWORD_<NAME> - Auto-generated password for service
+#
+# Required environment variables (add in Coolify UI):
+#   INSTANCE_SECRET - Convex instance secret (32+ chars) - generate with: openssl rand -hex 32
+#   TWITCH_CLIENT_ID - Twitch app client ID (from dev.twitch.tv)
+#   TWITCH_CLIENT_SECRET - Twitch app client secret
+#   BOT_API_SECRET - Bot API authentication secret - generate with: openssl rand -hex 32
+#
+# Auto-generated service URLs by Coolify:
+#   $SERVICE_URL_WEB - Web app URL
+#   $SERVICE_URL_CONVEX-BACKEND_3210 - Convex API URL
+#   $SERVICE_URL_CONVEX-BACKEND_3211 - Convex HTTP actions URL (auth endpoints)
+#   $SERVICE_URL_BOT - Bot server URL
+
+services:
+  # ===========================================
+  # Convex Backend (Self-Hosted)
+  # ===========================================
+  convex-backend:
+    image: ghcr.io/get-convex/convex-backend:latest
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    environment:
+      # Coolify magic variables for external URLs
+      # Port 3210 = Convex API, Port 3211 = HTTP actions (auth endpoints)
+      - SERVICE_URL_CONVEX-BACKEND_3210
+      - SERVICE_URL_CONVEX-BACKEND_3211
+      # Convex configuration - use magic URLs for external access
+      - CONVEX_CLOUD_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3210
+      - CONVEX_SITE_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3211
+      # Instance configuration
+      - INSTANCE_NAME=${INSTANCE_NAME:-ovrly}
+      - INSTANCE_SECRET=${INSTANCE_SECRET:?INSTANCE_SECRET is required}
+      # Logging
+      - RUST_LOG=${RUST_LOG:-info}
+      - REDACT_LOGS_TO_CLIENT=${REDACT_LOGS_TO_CLIENT:-false}
+      # Retention (2 days default)
+      - DOCUMENT_RETENTION_DELAY=${DOCUMENT_RETENTION_DELAY:-172800}
+    volumes:
+      - convex-data:/convex/data
+    healthcheck:
+      test: curl -f http://localhost:3210/version
+      interval: 5s
+      start_period: 10s
+    restart: unless-stopped
+
+  # ===========================================
+  # Convex Dashboard (Optional - for admin access)
+  # ===========================================
+  convex-dashboard:
+    image: ghcr.io/get-convex/convex-dashboard:latest
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    environment:
+      # Coolify magic variable for dashboard URL
+      - SERVICE_FQDN_CONVEX-DASHBOARD
+      # Point to internal Convex backend
+      - NEXT_PUBLIC_DEPLOYMENT_URL=http://convex-backend:3210
+    depends_on:
+      convex-backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===========================================
+  # Web App (Vite SPA)
+  # ===========================================
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # IMPORTANT: These are external URLs that the browser will use
+        # Coolify magic variables resolve to the public URLs
+        - VITE_CONVEX_URL=$SERVICE_URL_CONVEX-BACKEND_3210
+        - VITE_CONVEX_SITE_URL=$SERVICE_URL_CONVEX-BACKEND_3211
+        - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
+        - VITE_BOT_SERVER_URL=$SERVICE_URL_BOT
+    environment:
+      # Coolify magic variable for web app URL
+      - SERVICE_FQDN_WEB
+    depends_on:
+      convex-backend:
+        condition: service_healthy
+      bot:
+        condition: service_started
+    restart: unless-stopped
+
+  # ===========================================
+  # Twitch Bot Server
+  # ===========================================
+  bot:
+    build:
+      context: .
+      dockerfile: packages/twitch-bot/Dockerfile
+    environment:
+      # Coolify magic variable for bot URL
+      - SERVICE_URL_BOT
+      # Runtime environment
+      - NODE_ENV=production
+      - CONVEX_URL=http://convex-backend:3210
+      - BOT_API_SECRET=${BOT_API_SECRET:?BOT_API_SECRET is required}
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET:?TWITCH_CLIENT_SECRET is required}
+      - PORT=3002
+    depends_on:
+      convex-backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  convex-data:

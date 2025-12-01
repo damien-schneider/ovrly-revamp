@@ -1,5 +1,5 @@
 # Web App Dockerfile
-# Multi-stage build for TanStack Start / Vite app
+# Multi-stage build for Vite SPA with nginx
 
 FROM oven/bun:1.3 AS base
 WORKDIR /app
@@ -10,7 +10,7 @@ COPY package.json bun.lock ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/twitch-bot/package.json ./packages/twitch-bot/
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Build the application
 FROM base AS builder
@@ -34,20 +34,26 @@ ENV VITE_BOT_API_SECRET=$VITE_BOT_API_SECRET
 # Build the web app
 RUN bun run --filter web build
 
-# Production image
-FROM oven/bun:1.3-slim AS runner
-WORKDIR /app
+# Production - use nginx for static file serving
+FROM nginx:alpine AS runner
 
-ENV NODE_ENV=production
+# Copy built assets to nginx html directory
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
-# Copy built assets
-COPY --from=builder /app/apps/web/dist ./dist
-COPY --from=builder /app/apps/web/package.json ./
-
-# Install only production dependencies for serve
-RUN bun install --production --frozen-lockfile || true
+# SPA fallback configuration - redirect all routes to index.html
+RUN echo 'server { \
+    listen 3001; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ { \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 3001
 
-# Use vite preview to serve the built app
-CMD ["bun", "run", "serve", "--", "--host", "0.0.0.0", "--port", "3001"]
+CMD ["nginx", "-g", "daemon off;"]

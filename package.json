@@ -22,8 +22,10 @@
     "check-types": "turbo check-types",
     "dev:web": "turbo -F web dev",
     "dev:server": "turbo -F @ovrly-revamp/backend dev",
+    "dev:local": "docker compose up -d && turbo -F web dev",
     "dev:setup": "turbo -F @ovrly-revamp/backend dev:setup",
-    "dev:bot": "turbo -F @ovrly-revamp/twitch-bot dev"
+    "dev:bot": "turbo -F @ovrly-revamp/twitch-bot dev",
+    "deploy:local": "turbo -F @ovrly-revamp/backend deploy:local"
   },
   "dependencies": {
     "nitro": "^3.0.1-alpha.0",

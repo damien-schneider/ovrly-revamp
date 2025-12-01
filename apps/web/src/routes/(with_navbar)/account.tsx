@@ -53,7 +53,7 @@ function RouteComponent() {
     try {
       await authClient.signIn.social({
         provider: "twitch",
-        callbackURL: "/account",
+        callbackURL: `${window.location.origin}/account`,
       });
     } catch {
       toast.error("Failed to connect Twitch account");
@@ -64,7 +64,7 @@ function RouteComponent() {
     try {
       await authClient.linkSocial({
         provider: "twitch",
-        callbackURL: "/account",
+        callbackURL: `${window.location.origin}/account`,
       });
     } catch {
       toast.error("Failed to link Twitch account");
