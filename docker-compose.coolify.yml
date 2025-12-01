@@ -2,22 +2,15 @@
 # See: https://coolify.io/docs/knowledge-base/docker/compose
 #
 # Coolify Magic Variables (auto-generated):
-#   SERVICE_FQDN_<NAME> - Domain only (e.g., "ovrly.example.com")
 #   SERVICE_URL_<NAME> - Full URL with protocol (e.g., "https://ovrly.example.com")
-#   SERVICE_URL_<NAME>_<PORT> - URL proxied to specific container port
-#   SERVICE_PASSWORD_<NAME> - Auto-generated password for service
+#   SERVICE_PASSWORD_<NAME> - Auto-generated password/secret for service
 #
 # Required environment variables (add in Coolify UI):
-#   INSTANCE_SECRET - Convex instance secret (32+ chars) - generate with: openssl rand -hex 32
 #   TWITCH_CLIENT_ID - Twitch app client ID (from dev.twitch.tv)
 #   TWITCH_CLIENT_SECRET - Twitch app client secret
-#   BOT_API_SECRET - Bot API authentication secret - generate with: openssl rand -hex 32
 #
-# Auto-generated service URLs by Coolify:
-#   $SERVICE_URL_WEB - Web app URL
-#   $SERVICE_URL_CONVEX-BACKEND_3210 - Convex API URL
-#   $SERVICE_URL_CONVEX-BACKEND_3211 - Convex HTTP actions URL (auth endpoints)
-#   $SERVICE_URL_BOT - Bot server URL
+# All secrets are auto-generated via SERVICE_PASSWORD - no manual generation needed!
+# Just configure domains in Coolify UI and add Twitch credentials.
 
 services:
   # ===========================================
@@ -27,17 +20,19 @@ services:
     image: ghcr.io/get-convex/convex-backend:latest
     stop_grace_period: 10s
     stop_signal: SIGINT
+    expose:
+      - "3210"
+      - "3211"
     environment:
       # Coolify magic variables for external URLs
-      # Port 3210 = Convex API, Port 3211 = HTTP actions (auth endpoints)
       - SERVICE_URL_CONVEX-BACKEND_3210
       - SERVICE_URL_CONVEX-BACKEND_3211
       # Convex configuration - use magic URLs for external access
       - CONVEX_CLOUD_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3210
       - CONVEX_SITE_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3211
-      # Instance configuration
+      # Instance configuration - auto-generated secret!
       - INSTANCE_NAME=${INSTANCE_NAME:-ovrly}
-      - INSTANCE_SECRET=${INSTANCE_SECRET:?INSTANCE_SECRET is required}
+      - INSTANCE_SECRET=$SERVICE_PASSWORD_CONVEX
       # Logging
       - RUST_LOG=${RUST_LOG:-info}
       - REDACT_LOGS_TO_CLIENT=${REDACT_LOGS_TO_CLIENT:-false}
@@ -58,6 +53,8 @@ services:
     image: ghcr.io/get-convex/convex-dashboard:latest
     stop_grace_period: 10s
     stop_signal: SIGINT
+    expose:
+      - "6791"
     environment:
       # Coolify magic variable for dashboard URL
       - SERVICE_FQDN_CONVEX-DASHBOARD
@@ -82,9 +79,11 @@ services:
         - VITE_CONVEX_SITE_URL=$SERVICE_URL_CONVEX-BACKEND_3211
         - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
         - VITE_BOT_SERVER_URL=$SERVICE_URL_BOT
+    expose:
+      - "3001"
     environment:
       # Coolify magic variable for web app URL
-      - SERVICE_FQDN_WEB
+      - SERVICE_URL_WEB
     depends_on:
       convex-backend:
         condition: service_healthy
@@ -99,13 +98,16 @@ services:
     build:
       context: .
       dockerfile: packages/twitch-bot/Dockerfile
+    expose:
+      - "3002"
     environment:
       # Coolify magic variable for bot URL
       - SERVICE_URL_BOT
       # Runtime environment
       - NODE_ENV=production
       - CONVEX_URL=http://convex-backend:3210
-      - BOT_API_SECRET=${BOT_API_SECRET:?BOT_API_SECRET is required}
+      # Auto-generated secret!
+      - BOT_API_SECRET=$SERVICE_PASSWORD_BOT
       - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
       - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET:?TWITCH_CLIENT_SECRET is required}
       - PORT=3002
