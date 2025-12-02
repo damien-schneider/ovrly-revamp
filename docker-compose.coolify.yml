@@ -1,72 +1,20 @@
 # Docker Compose for Coolify deployment
 # See: https://coolify.io/docs/knowledge-base/docker/compose
 #
-# Coolify Magic Variables (auto-generated):
-#   SERVICE_URL_<NAME> - Full URL with protocol (e.g., "https://ovrly.example.com")
-#   SERVICE_PASSWORD_<NAME> - Auto-generated password/secret for service
+# ═══════════════════════════════════════════════════════════════════
+# REQUIRED: Set these in Coolify UI → Environment Variables
+# ═══════════════════════════════════════════════════════════════════
+#   CONVEX_URL            - Convex deployment URL (from Convex Cloud dashboard)
+#   TWITCH_CLIENT_ID      - Twitch app client ID (from dev.twitch.tv)
+#   TWITCH_CLIENT_SECRET  - Twitch app client secret
 #
-# Required environment variables (add in Coolify UI):
-#   TWITCH_CLIENT_ID - Twitch app client ID (from dev.twitch.tv)
-#   TWITCH_CLIENT_SECRET - Twitch app client secret
-#
-# All secrets are auto-generated via SERVICE_PASSWORD - no manual generation needed!
-# Just configure domains in Coolify UI and add Twitch credentials.
+# ═══════════════════════════════════════════════════════════════════
+# DOMAINS: Configure in Coolify UI for each service
+# ═══════════════════════════════════════════════════════════════════
+#   Web: app.yourdomain.com
+#   Bot: bot.yourdomain.com
 
 services:
-  # ===========================================
-  # Convex Backend (Self-Hosted)
-  # ===========================================
-  convex-backend:
-    image: ghcr.io/get-convex/convex-backend:latest
-    stop_grace_period: 10s
-    stop_signal: SIGINT
-    expose:
-      - "3210"
-      - "3211"
-    environment:
-      # Coolify magic variables for external URLs
-      - SERVICE_URL_CONVEX-BACKEND_3210
-      - SERVICE_URL_CONVEX-BACKEND_3211
-      # Convex configuration - use magic URLs for external access
-      - CONVEX_CLOUD_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3210
-      - CONVEX_SITE_ORIGIN=$SERVICE_URL_CONVEX-BACKEND_3211
-      # Instance configuration - auto-generated secret!
-      - INSTANCE_NAME=${INSTANCE_NAME:-ovrly}
-      - INSTANCE_SECRET=$SERVICE_PASSWORD_CONVEX
-      # Logging
-      - RUST_LOG=${RUST_LOG:-info}
-      - REDACT_LOGS_TO_CLIENT=${REDACT_LOGS_TO_CLIENT:-false}
-      # Retention (2 days default)
-      - DOCUMENT_RETENTION_DELAY=${DOCUMENT_RETENTION_DELAY:-172800}
-    volumes:
-      - convex-data:/convex/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3210/version || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    restart: unless-stopped
-
-  # ===========================================
-  # Convex Dashboard (Optional - for admin access)
-  # ===========================================
-  convex-dashboard:
-    image: ghcr.io/get-convex/convex-dashboard:latest
-    stop_grace_period: 10s
-    stop_signal: SIGINT
-    expose:
-      - "6791"
-    environment:
-      # Coolify magic variable for dashboard URL
-      - SERVICE_FQDN_CONVEX-DASHBOARD
-      # Point to internal Convex backend
-      - NEXT_PUBLIC_DEPLOYMENT_URL=http://convex-backend:3210
-    depends_on:
-      convex-backend:
-        condition: service_healthy
-    restart: unless-stopped
-
   # ===========================================
   # Web App (Vite SPA)
   # ===========================================
@@ -75,21 +23,19 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        # IMPORTANT: These are external URLs that the browser will use
-        # Coolify magic variables resolve to the public URLs
-        - VITE_CONVEX_URL=$SERVICE_URL_CONVEX-BACKEND_3210
-        - VITE_CONVEX_SITE_URL=$SERVICE_URL_CONVEX-BACKEND_3211
-        - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
-        - VITE_BOT_SERVER_URL=$SERVICE_URL_BOT
-        - VITE_BOT_API_SECRET=$SERVICE_PASSWORD_BOT
+        - VITE_CONVEX_URL=${CONVEX_URL}
+        - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+        - VITE_BOT_SERVER_URL=${BOT_URL}
+        - VITE_BOT_API_SECRET=${BOT_API_SECRET:-$SERVICE_PASSWORD_BOT}
     expose:
       - "3001"
-    environment:
-      # Coolify magic variable for web app URL
-      - SERVICE_URL_WEB
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
-      convex-backend:
-        condition: service_healthy
       bot:
         condition: service_started
     restart: unless-stopped
@@ -104,20 +50,10 @@ services:
     expose:
       - "3002"
     environment:
-      # Coolify magic variable for bot URL
-      - SERVICE_URL_BOT
-      # Runtime environment
       - NODE_ENV=production
-      - CONVEX_URL=http://convex-backend:3210
-      # Auto-generated secret!
-      - BOT_API_SECRET=$SERVICE_PASSWORD_BOT
-      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID:?TWITCH_CLIENT_ID is required}
-      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET:?TWITCH_CLIENT_SECRET is required}
+      - CONVEX_URL=${CONVEX_URL}
+      - BOT_API_SECRET=${BOT_API_SECRET:-$SERVICE_PASSWORD_BOT}
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
       - PORT=3002
-    depends_on:
-      convex-backend:
-        condition: service_healthy
     restart: unless-stopped
-
-volumes:
-  convex-data:
