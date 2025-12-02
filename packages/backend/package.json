@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "convex dev",
-    "dev:local": "CONVEX_SELF_HOSTED_URL=http://127.0.0.1:3210 CONVEX_SELF_HOSTED_ADMIN_KEY=$CONVEX_ADMIN_KEY convex dev",
     "dev:setup": "convex dev --configure --until-success",
-    "deploy:local": "CONVEX_SELF_HOSTED_URL=http://127.0.0.1:3210 CONVEX_SELF_HOSTED_ADMIN_KEY=$CONVEX_ADMIN_KEY convex deploy"
+    "deploy": "convex deploy"
   },
   "author": "",
   "license": "ISC",

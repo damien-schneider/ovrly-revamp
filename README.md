@@ -1,65 +1,108 @@
-# ovrly-revamp
+# Ovrly
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Start, Convex, and more.
+Stream overlay management platform for Twitch streamers.
 
-## Features
+## Tech Stack
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Start** - SSR framework with TanStack Router
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Convex** - Reactive backend-as-a-service platform
-- **Authentication** - Better-Auth
-- **Husky** - Git hooks for code quality
-- **Turborepo** - Optimized monorepo build system
+- **Frontend**: React + Vite + TanStack Router
+- **Backend**: Convex (Cloud)
+- **Bot**: Hono server for Twitch chat integration
+- **Auth**: Better-Auth with Twitch OAuth
+- **Styling**: TailwindCSS + shadcn/ui
 
 ## Getting Started
 
-First, install the dependencies:
+### Prerequisites
+
+- [Bun](https://bun.sh) (v1.3+)
+- [Convex](https://convex.dev) account
+- [Twitch Developer](https://dev.twitch.tv) application
+
+### 1. Install Dependencies
 
 ```bash
 bun install
 ```
 
-## Convex Setup
-
-This project uses Convex as a backend. You'll need to set up Convex before running the app:
+### 2. Setup Convex
 
 ```bash
-bun run dev:setup
+bun run dev:backend
 ```
 
-Follow the prompts to create a new Convex project and connect it to your application.
+This will:
+- Create a new Convex project (first time)
+- Start watching for schema/function changes
+- Output your deployment URL
 
-Then, run the development server:
+### 3. Configure Environment
+
+Copy `.env` and fill in your values:
+
+```bash
+# .env
+VITE_TWITCH_CLIENT_ID=your_twitch_client_id
+TWITCH_CLIENT_ID=your_twitch_client_id
+TWITCH_CLIENT_SECRET=your_twitch_client_secret
+VITE_BOT_SERVER_URL=http://localhost:3002
+BOT_API_SECRET=dev_secret_for_testing_only
+```
+
+### 4. Set Convex Environment Variables
+
+```bash
+cd packages/backend
+bunx convex env set TWITCH_CLIENT_ID "your_twitch_client_id"
+bunx convex env set TWITCH_CLIENT_SECRET "your_twitch_client_secret"
+bunx convex env set BETTER_AUTH_SECRET "$(openssl rand -base64 32)"
+bunx convex env set WEB_APP_ORIGIN "http://localhost:3001"
+```
+
+### 5. Run Development
+
+In separate terminals:
+
+```bash
+# Terminal 1: Convex backend
+bun run dev:backend
+
+# Terminal 2: Web app
+bun run dev:web
+
+# Terminal 3: Bot server (optional, for chat features)
+bun run dev:bot
+```
+
+Or run all at once:
 
 ```bash
 bun run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-Your app will connect to the Convex cloud backend automatically.
-
-
-
-
-
-
+Open [http://localhost:3001](http://localhost:3001)
 
 ## Project Structure
 
 ```
-ovrly-revamp/
+ovrly/
 ├── apps/
-│   ├── web/         # Frontend application (React + TanStack Start)
+│   └── web/              # React frontend (Vite)
 ├── packages/
-│   ├── backend/     # Convex backend functions and schema
+│   ├── backend/          # Convex functions & schema
+│   └── twitch-bot/       # Twitch chat bot server
 ```
 
-## Available Scripts
+## Scripts
 
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:setup`: Setup and configure your Convex project
-- `bun run check-types`: Check TypeScript types across all apps
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start all services |
+| `bun run dev:web` | Start web app only |
+| `bun run dev:backend` | Start Convex dev server |
+| `bun run dev:bot` | Start bot server |
+| `bun run build` | Build all packages |
+| `bun run deploy` | Deploy Convex to production |
+
+## Deployment
+
+See [COOLIFY.md](./COOLIFY.md) for Coolify deployment guide.
