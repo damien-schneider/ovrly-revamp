@@ -31,6 +31,7 @@ bun run dev:backend
 ```
 
 This will:
+
 - Create a new Convex project (first time)
 - Start watching for schema/function changes
 - Output your deployment URL
@@ -52,6 +53,9 @@ BOT_API_SECRET=dev_secret_for_testing_only
 
 ```bash
 cd packages/backend
+# SITE_URL is your Convex HTTP site URL (ends in .site)
+# Get it from your Convex dashboard or from `bunx convex dev` output
+bunx convex env set SITE_URL "https://your-deployment.convex.site"
 bunx convex env set TWITCH_CLIENT_ID "your_twitch_client_id"
 bunx convex env set TWITCH_CLIENT_SECRET "your_twitch_client_secret"
 bunx convex env set BETTER_AUTH_SECRET "$(openssl rand -base64 32)"
@@ -94,14 +98,14 @@ ovrly/
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `bun run dev` | Start all services |
-| `bun run dev:web` | Start web app only |
-| `bun run dev:backend` | Start Convex dev server |
-| `bun run dev:bot` | Start bot server |
-| `bun run build` | Build all packages |
-| `bun run deploy` | Deploy Convex to production |
+| Command               | Description                 |
+| --------------------- | --------------------------- |
+| `bun run dev`         | Start all services          |
+| `bun run dev:web`     | Start web app only          |
+| `bun run dev:backend` | Start Convex dev server     |
+| `bun run dev:bot`     | Start bot server            |
+| `bun run build`       | Build all packages          |
+| `bun run deploy`      | Deploy Convex to production |
 
 ## Deployment
 

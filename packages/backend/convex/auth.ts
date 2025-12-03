@@ -11,8 +11,12 @@ import type { DataModel } from "./_generated/dataModel";
 import { type QueryCtx, query } from "./_generated/server";
 
 const siteUrl = process.env.SITE_URL || "";
-// For local dev: SITE_URL is the Convex HTTP endpoint (e.g., http://127.0.0.1:3211)
-// WEB_APP_ORIGIN is where the frontend runs (e.g., http://localhost:3001)
+// SITE_URL is the Convex HTTP site URL:
+// - Cloud: https://xxx.convex.site (from Convex dashboard)
+// - Local dev: http://127.0.0.1:3211 (Convex dev server)
+// WEB_APP_ORIGIN is where the frontend runs (for CORS/trusted origins):
+// - Cloud: https://your-app.com
+// - Local dev: http://localhost:3001
 const webAppOrigin = process.env.WEB_APP_ORIGIN || "http://localhost:3001";
 // Detect if we're running over HTTPS (production) or HTTP (local dev)
 const isProduction = siteUrl.startsWith("https://");
