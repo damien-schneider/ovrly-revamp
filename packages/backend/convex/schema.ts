@@ -10,7 +10,9 @@ export default defineSchema({
     emailVerified: v.optional(v.boolean()),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
-  }).index("by_authId", ["authId"]),
+  })
+    .index("by_authId", ["authId"])
+    .index("by_email", ["email"]),
   overlays: defineTable({
     userId: v.id("profiles"), // Foreign key to profiles table
     name: v.string(),

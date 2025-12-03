@@ -7,6 +7,7 @@ import { Resizable } from "re-resizable";
 import { useEffect, useRef, useState } from "react";
 import { getChatSettingsAtom } from "@/atoms/chat-settings-atoms";
 import ChatOverlay from "@/features/chat/components/chat-overlay";
+import { OverlayNotFound } from "@/features/overlay/components/overlay-not-found";
 import { ResizeHandle } from "@/features/overlay/components/resize-handle";
 import { cn } from "@/lib/utils";
 
@@ -68,12 +69,17 @@ function RouteComponent() {
     };
   }, []);
 
-  if (!overlay) {
+  // undefined = loading, null = not found
+  if (overlay === undefined) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
       </div>
     );
+  }
+
+  if (overlay === null) {
+    return <OverlayNotFound />;
   }
 
   return (

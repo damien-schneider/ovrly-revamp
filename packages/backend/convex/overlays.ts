@@ -11,10 +11,7 @@ export const getById = query({
   args: { id: v.id("overlays") },
   handler: async (ctx, { id }) => {
     const overlay = await ctx.db.get(id);
-    if (!overlay) {
-      throw new Error("Overlay not found");
-    }
-    return overlay;
+    return overlay ?? null;
   },
 });
 

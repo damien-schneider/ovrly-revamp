@@ -29,7 +29,33 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
   triggers: {
     user: {
       onCreate: async (ctx, authUser) => {
-        // Sync new user to profiles table
+        // Check if a profile with this email already exists
+        // This handles edge cases where account linking might not have caught the duplicate
+        if (authUser.email) {
+          const existingProfileByEmail = await ctx.db
+            .query("profiles")
+            .withIndex("by_email", (q) => q.eq("email", authUser.email))
+            .first();
+
+          if (existingProfileByEmail) {
+            // Profile with this email already exists
+            // Update it to use the new authId (the accounts should be linked in Better Auth)
+            // This ensures we don't create duplicate profiles
+            await ctx.db.patch(existingProfileByEmail._id, {
+              authId: authUser._id,
+              name: authUser.name ?? existingProfileByEmail.name,
+              image: authUser.image ?? existingProfileByEmail.image,
+              emailVerified:
+                authUser.emailVerified ??
+                existingProfileByEmail.emailVerified ??
+                false,
+              updatedAt: authUser.updatedAt,
+            });
+            return;
+          }
+        }
+
+        // No existing profile with this email, create a new one
         await ctx.db.insert("profiles", {
           authId: authUser._id,
           email: authUser.email ?? null,
@@ -89,6 +115,16 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
           await ctx.db.delete(overlay._id);
         }
 
+        // Delete related commands
+        const commands = await ctx.db
+          .query("commands")
+          .withIndex("by_userId", (q) => q.eq("userId", existingProfile._id))
+          .collect();
+
+        for (const command of commands) {
+          await ctx.db.delete(command._id);
+        }
+
         // Delete profile
         await ctx.db.delete(existingProfile._id);
       },
@@ -125,6 +161,16 @@ export const createAuth = (
         clientSecret: process.env.TWITCH_CLIENT_SECRET as string,
         redirectURI: `${siteUrl}/api/auth/callback/twitch`,
         scope: ["chat:read", "chat:edit", "user:read:email", "user:read:chat"],
+      },
+    },
+    // Account linking prevents duplicate profiles for the same email
+    // When a user signs in with Twitch using an email that already exists,
+    // the accounts are automatically linked instead of creating a new user
+    account: {
+      accountLinking: {
+        enabled: true,
+        // Trust Twitch as a provider - accounts with matching emails will be automatically linked
+        trustedProviders: ["twitch"],
       },
     },
     advanced: {
