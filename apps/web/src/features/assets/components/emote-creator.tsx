@@ -69,7 +69,7 @@ export function EmoteCreator() {
 
       setAssets((prev) => [newAsset, ...prev]);
       toast.success("Emote generated!");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to generate emote");
     } finally {
       setIsGenerating(false);

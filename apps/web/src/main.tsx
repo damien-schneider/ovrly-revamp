@@ -4,6 +4,10 @@ import ReactDOM from "react-dom/client";
 import { getRouter } from "./router";
 import "./index.css";
 
+if (import.meta.env.DEV) {
+  import("react-grab");
+}
+
 const router = getRouter();
 
 const rootElement = document.getElementById("root");

@@ -52,7 +52,7 @@ export function MagicEditor() {
         setAssets((prev) => [newAsset, ...prev]);
         toast.success("Image edited successfully!");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to edit image");
     } finally {
       setIsEditing(false);

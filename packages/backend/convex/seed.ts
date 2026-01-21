@@ -1,4 +1,4 @@
-import { type GenericCtx } from "@convex-dev/better-auth";
+import type { GenericCtx } from "@convex-dev/better-auth";
 import type { DataModel } from "./_generated/dataModel";
 import { internalMutation } from "./_generated/server";
 import { createAuth } from "./auth";
@@ -26,9 +26,13 @@ export const seedTestUser = internalMutation({
       });
       console.log("Test user created:", user);
       return "Test user created";
-    } catch (error: any) {
+    } catch (error) {
       // Better Auth throws if user exists usually, or we can check the error message
-      if (error.message?.includes("already exists") || error.code === "USER_ALREADY_EXISTS") {
+      const err = error as { message?: string; code?: string };
+      if (
+        err.message?.includes("already exists") ||
+        err.code === "USER_ALREADY_EXISTS"
+      ) {
         console.log("Test user already exists");
         return "Test user already exists";
       }

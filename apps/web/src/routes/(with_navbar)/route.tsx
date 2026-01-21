@@ -64,7 +64,7 @@ function LayoutComponent() {
               className={cn(
                 "flex h-full w-72 flex-col gap-1 transition-transform duration-500 ease-in-out",
                 shouldShowCollapsedSidebars &&
-                  "-translate-x-[calc(100%-3rem)] pointer-events-none"
+                  "pointer-events-none -translate-x-[calc(100%-3rem)]"
               )}
             >
               <Header />

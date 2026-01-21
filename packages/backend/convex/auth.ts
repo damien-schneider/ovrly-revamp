@@ -9,6 +9,7 @@ import { v } from "convex/values";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { type QueryCtx, query } from "./_generated/server";
+import authConfig from "./auth.config";
 
 const siteUrl = process.env.SITE_URL || "";
 // SITE_URL is the Convex HTTP site URL:
@@ -21,7 +22,7 @@ const webAppOrigin = process.env.WEB_APP_ORIGIN || "http://localhost:3001";
 // Detect if we're running over HTTPS (production) or HTTP (local dev)
 const isProduction = siteUrl.startsWith("https://");
 
-const authFunctions: AuthFunctions = (internal as any).auth;
+const authFunctions: AuthFunctions = (internal as { auth: AuthFunctions }).auth;
 
 export const authComponent = createClient<DataModel>(components.betterAuth, {
   authFunctions,
@@ -184,7 +185,7 @@ export const createAuth = (
       },
     },
     // crossDomain plugin is REQUIRED for SPAs where frontend and backend are on different origins
-    plugins: [crossDomain({ siteUrl }), convex()],
+    plugins: [crossDomain({ siteUrl }), convex({ authConfig })],
   });
 
 // Helper to get current auth user - reusable across queries

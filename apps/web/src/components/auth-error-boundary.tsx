@@ -3,14 +3,14 @@ import { Component } from "react";
 import { Button } from "@/components/ui/button";
 import { forceLogout } from "@/lib/clear-auth-state";
 
-type Props = {
+interface Props {
   children: ReactNode;
-};
+}
 
-type State = {
+interface State {
   hasError: boolean;
   error: Error | null;
-};
+}
 
 // biome-ignore lint: Error boundaries require class components in React - no function component alternative
 export class AuthErrorBoundary extends Component<Props, State> {

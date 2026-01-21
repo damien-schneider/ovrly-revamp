@@ -10,13 +10,13 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "^24.3.0",
+    "@types/node": "^25.0.8",
     "typescript": "catalog:"
   },
   "dependencies": {
     "@convex-dev/better-auth": "catalog:",
     "better-auth": "catalog:",
     "convex": "catalog:",
-    "convex-helpers": "^0.1.104"
+    "convex-helpers": "^0.1.109"
   }
 }

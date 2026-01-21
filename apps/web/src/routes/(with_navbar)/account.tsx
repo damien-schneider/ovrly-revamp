@@ -30,11 +30,11 @@ export const Route = createFileRoute("/(with_navbar)/account")({
   component: RouteComponent,
 });
 
-type LinkedAccount = {
+interface LinkedAccount {
   id: string;
   providerId: string;
   accountId: string;
-};
+}
 
 function RouteComponent() {
   const { twitchUsername, isLoading: isLoadingProvider } = useProviderData();

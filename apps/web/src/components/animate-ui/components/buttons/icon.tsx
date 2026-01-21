@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import { useState } from "react";
 
 import {
   Button as ButtonPrimitive,
@@ -58,8 +58,8 @@ function IconButton({
   children,
   ...props
 }: IconButtonProps) {
-  const [isActive, setIsActive] = React.useState(false);
-  const [key, setKey] = React.useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [key, setKey] = useState(0);
 
   return (
     <Particles animate={isActive} asChild key={key}>

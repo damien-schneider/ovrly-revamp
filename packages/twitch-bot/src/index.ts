@@ -94,13 +94,11 @@ app.post("/bots/:profileId/start", async (c) => {
       profileId,
       getCommands: async () => cachedCommands,
       onMessage: (message) => {
-        // biome-ignore lint/suspicious/noConsole: logging
         console.log(
           `[${profileId}] Message from ${message.displayName}: ${message.message}`
         );
       },
       onCommand: (message, command) => {
-        // biome-ignore lint/suspicious/noConsole: logging
         console.log(
           `[${profileId}] Command ${command.trigger} triggered by ${message.displayName}`
         );
@@ -112,7 +110,6 @@ app.post("/bots/:profileId/start", async (c) => {
     }
     return c.json({ error: "Failed to start bot" }, HTTP_SERVER_ERROR);
   } catch (error) {
-    // biome-ignore lint/suspicious/noConsole: error logging
     console.error("Failed to start bot:", error);
     return c.json({ error: "Invalid request body" }, HTTP_BAD_REQUEST);
   }
@@ -189,7 +186,6 @@ app.post("/bots/:profileId/message", async (c) => {
 });
 
 // Start server
-// biome-ignore lint/suspicious/noConsole: startup logging
 console.log(`🤖 Twitch Bot Server starting on port ${env.PORT}...`);
 
 export default {

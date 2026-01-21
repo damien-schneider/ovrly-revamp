@@ -40,11 +40,11 @@ function getClipKeyframes(direction: Direction): [string, string] {
   }
 }
 
-type ThemeTogglerProps = {
+interface ThemeTogglerProps {
   direction?: Direction;
   onImmediateChange?: (theme: ThemeSelection) => void;
   children?: ChildrenRender;
-};
+}
 
 function ThemeToggler({
   onImmediateChange,

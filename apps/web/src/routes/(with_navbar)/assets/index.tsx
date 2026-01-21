@@ -56,7 +56,7 @@ function RouteComponent() {
             layoutId,
           }) => (
             <Link className="group block" key={to} to={to}>
-              <Card className="group-hover:-translate-y-1 overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300">
+              <Card className="overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300 group-hover:-translate-y-1">
                 {/* Preview Area */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border bg-muted/50 shadow-sm transition-all duration-300 group-hover:shadow-md">
                   <div

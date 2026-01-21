@@ -2,26 +2,26 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { env } from "@/env";
 
 // Bot server API types
-type BotStatus = {
+interface BotStatus {
   isRunning: boolean;
   isConnected: boolean;
   channel: string | null;
-};
+}
 
-type Command = {
+interface Command {
   trigger: string;
   response: string;
   enabled: boolean;
   cooldown?: number;
-};
+}
 
-type StartBotParams = {
+interface StartBotParams {
   profileId: string;
   channel: string;
   accessToken: string;
   username: string;
   commands: Command[];
-};
+}
 
 const BOT_SERVER_URL = env.VITE_BOT_SERVER_URL ?? "http://localhost:3002";
 const BOT_API_SECRET = env.VITE_BOT_API_SECRET ?? "";

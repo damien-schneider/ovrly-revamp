@@ -4,7 +4,7 @@ import { atom } from "jotai";
 export type AdLayoutMode = "static" | "slider";
 export type AdItemType = "image" | "logo" | "link";
 
-export type AdItem = {
+export interface AdItem {
   id: string;
   type: AdItemType;
   url: string; // Image/logo URL or link destination
@@ -12,9 +12,9 @@ export type AdItem = {
   label?: string; // Optional label/text
   width?: number; // Optional custom width
   height?: number; // Optional custom height
-};
+}
 
-export type AdSettingsData = {
+export interface AdSettingsData {
   // Layout settings
   layoutMode?: AdLayoutMode;
 
@@ -42,7 +42,7 @@ export type AdSettingsData = {
 
   // Ad items (images, logos, links)
   items?: AdItem[];
-};
+}
 
 // Map to store atoms per overlayId
 const adSettingsAtomMap = new Map<

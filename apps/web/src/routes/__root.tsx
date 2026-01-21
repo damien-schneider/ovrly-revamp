@@ -18,12 +18,12 @@ import { cn } from "@/lib/utils";
 
 const SESSION_TIMEOUT_MS = 5000;
 
-export type RouterAppContext = {
+export interface RouterAppContext {
   queryClient: QueryClient;
   convexClient: ConvexReactClient;
   convexQueryClient: ConvexQueryClient;
   userId?: string;
-};
+}
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   beforeLoad: async () => {
@@ -54,10 +54,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isOverlayRoute =
-    pathname.startsWith("/wall-emote/") ||
-    pathname.startsWith("/chat/") ||
-    pathname.startsWith("/ad/");
+  const isCanvasRoute = pathname.startsWith("/overlays");
 
   // Dev-only: Ctrl+Shift+K to clear auth state and reload
   useEffect(() => {
@@ -90,7 +87,7 @@ function RootDocument() {
         <div
           className={cn(
             "min-h-screen",
-            isOverlayRoute ? "bg-transparent" : "bg-background text-foreground"
+            isCanvasRoute ? "bg-transparent" : "bg-background text-foreground"
           )}
         >
           <Outlet />

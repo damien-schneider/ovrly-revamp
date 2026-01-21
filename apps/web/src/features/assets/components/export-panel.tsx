@@ -28,8 +28,11 @@ const resizeImage = (url: string, size: number): Promise<Blob> =>
       }
       ctx.drawImage(img, 0, 0, size, size);
       canvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error("Canvas to Blob failed"));
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Canvas to Blob failed"));
+        }
       }, "image/png");
     };
     img.onerror = reject;
@@ -125,7 +128,9 @@ export function ExportPanel() {
     }
   };
 
-  if (assets.length === 0) return null;
+  if (assets.length === 0) {
+    return null;
+  }
 
   return (
     <Card>

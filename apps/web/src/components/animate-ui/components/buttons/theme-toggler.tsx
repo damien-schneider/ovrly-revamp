@@ -2,7 +2,6 @@
 
 import { Monitor, Moon, Sun } from "@phosphor-icons/react";
 import type { VariantProps } from "class-variance-authority";
-import type * as React from "react";
 import { buttonVariants } from "@/components/animate-ui/components/buttons/icon";
 import {
   type Resolved,
@@ -18,13 +17,13 @@ const getIcon = (
   modes: ThemeSelection[]
 ) => {
   const theme = modes.includes("system") ? effective : resolved;
-  return theme === "system" ? (
-    <Monitor size={16} />
-  ) : theme === "dark" ? (
-    <Moon size={16} />
-  ) : (
-    <Sun size={16} />
-  );
+  if (theme === "system") {
+    return <Monitor size={16} />;
+  }
+  if (theme === "dark") {
+    return <Moon size={16} />;
+  }
+  return <Sun size={16} />;
 };
 
 const getNextTheme = (
@@ -32,11 +31,13 @@ const getNextTheme = (
   modes: ThemeSelection[]
 ): ThemeSelection => {
   const i = modes.indexOf(effective);
-  if (i === -1) return modes[0];
+  if (i === -1) {
+    return modes[0];
+  }
   return modes[(i + 1) % modes.length];
 };
 
-type ThemeTogglerButtonProps = React.ComponentProps<"button"> &
+type ThemeTogglerButtonProps = ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     modes?: ThemeSelection[];
     onImmediateChange?: ThemeTogglerPrimitiveProps["onImmediateChange"];

@@ -13,10 +13,10 @@ import { getStrictContext } from "@/lib/get-strict-context";
 type Side = "top" | "bottom" | "left" | "right";
 type Align = "start" | "center" | "end";
 
-type ParticlesContextType = {
+interface ParticlesContextType {
   animate: boolean;
   isInView: boolean;
-};
+}
 
 const [ParticlesProvider, useParticles] =
   getStrictContext<ParticlesContextType>("ParticlesContext");
@@ -90,19 +90,30 @@ function ParticlesEffect({
   const { animate, isInView } = useParticles();
 
   const isVertical = side === "top" || side === "bottom";
-  const alignPct = align === "start" ? "0%" : align === "end" ? "100%" : "50%";
+  let alignPct = "50%";
+  if (align === "start") {
+    alignPct = "0%";
+  } else if (align === "end") {
+    alignPct = "100%";
+  }
 
-  const top = isVertical
-    ? side === "top"
-      ? `calc(0% - ${sideOffset}px)`
-      : `calc(100% + ${sideOffset}px)`
-    : `calc(${alignPct} + ${alignOffset}px)`;
-
-  const left = isVertical
-    ? `calc(${alignPct} + ${alignOffset}px)`
-    : side === "left"
-      ? `calc(0% - ${sideOffset}px)`
-      : `calc(100% + ${sideOffset}px)`;
+  let top = "";
+  let left = "";
+  if (isVertical) {
+    if (side === "top") {
+      top = `calc(0% - ${sideOffset}px)`;
+    } else {
+      top = `calc(100% + ${sideOffset}px)`;
+    }
+    left = `calc(${alignPct} + ${alignOffset}px)`;
+  } else {
+    top = `calc(${alignPct} + ${alignOffset}px)`;
+    if (side === "left") {
+      left = `calc(0% - ${sideOffset}px)`;
+    } else {
+      left = `calc(100% + ${sideOffset}px)`;
+    }
+  }
 
   const containerStyle: React.CSSProperties = {
     position: "absolute",
@@ -117,7 +128,7 @@ function ParticlesEffect({
     <AnimatePresence>
       {animate &&
         isInView &&
-        [...Array(count)].map((_, i) => {
+        [...new Array(count)].map((_, i) => {
           const angle = i * angleStep;
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
@@ -131,7 +142,7 @@ function ParticlesEffect({
                 opacity: [0, 1, 0],
               }}
               initial={{ scale: 0, opacity: 0 }}
-              key={i}
+              key={`particle-${i}-${side}-${align}-${count}`}
               style={{ ...containerStyle, ...style }}
               transition={{
                 duration,

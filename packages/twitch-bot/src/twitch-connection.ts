@@ -9,7 +9,7 @@ const AUTH_DELAY_MS = 100;
 const PING_INTERVAL_MS = 60_000;
 const MS_PER_SECOND = 1000;
 
-type ChatMessage = {
+interface ChatMessage {
   id: string;
   username: string;
   displayName: string;
@@ -17,16 +17,16 @@ type ChatMessage = {
   timestamp: number;
   color?: string;
   channel: string;
-};
+}
 
-type Command = {
+interface Command {
   trigger: string;
   response: string;
   enabled: boolean;
   cooldown?: number;
-};
+}
 
-type BotConnectionConfig = {
+interface BotConnectionConfig {
   channel: string;
   accessToken: string;
   username: string;
@@ -34,9 +34,9 @@ type BotConnectionConfig = {
   onMessage?: (message: ChatMessage) => void;
   onCommand?: (message: ChatMessage, command: Command) => void;
   getCommands: () => Promise<Command[]>;
-};
+}
 
-type BotConnection = {
+interface BotConnection {
   ws: WebSocket | null;
   config: BotConnectionConfig;
   reconnectAttempts: number;
@@ -44,7 +44,7 @@ type BotConnection = {
   pingInterval: ReturnType<typeof setInterval> | null;
   isConnected: boolean;
   lastCommandUse: Map<string, number>;
-};
+}
 
 // Store active connections by profileId
 const connections = new Map<string, BotConnection>();
@@ -55,7 +55,6 @@ const JOIN_REGEX = /:([^!]+)![^@]+@[^ ]+ JOIN #(\S+)/;
 const WELCOME_REGEX = /:tmi\.twitch\.tv 001 (\S+) :Welcome/;
 
 function log(profileId: string, ...args: unknown[]): void {
-  // biome-ignore lint/suspicious/noConsole: logging for bot server
   console.log(`[TwitchBot:${profileId}]`, ...args);
 }
 

@@ -6,13 +6,13 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-type UseDebouncedConvexUpdateOptions<T extends Record<string, unknown>> = {
+interface UseDebouncedConvexUpdateOptions<T extends Record<string, unknown>> {
   overlayId: Id<"overlays">;
   settingsAtom: Atom<T>;
   delay?: number;
   enabled?: boolean;
   mergeWithExisting?: boolean;
-};
+}
 
 /**
  * Hook that debounces updates to Convex when settings change.

@@ -9,17 +9,9 @@
   "orm": "none",
   "backend": "convex",
   "runtime": "none",
-  "frontend": [
-    "tanstack-start"
-  ],
-  "addons": [
-    "husky",
-    "turborepo",
-    "ultracite"
-  ],
-  "examples": [
-    "todo"
-  ],
+  "frontend": ["tanstack-start"],
+  "addons": ["husky", "turborepo", "ultracite"],
+  "examples": ["todo"],
   "auth": "better-auth",
   "packageManager": "bun",
   "dbSetup": "none",

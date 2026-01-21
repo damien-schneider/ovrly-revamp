@@ -1,13 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { CommandList } from "@/features/chat/command-list";
-import { ChatBotStatus } from "@/features/chat/components/chat-bot-status";
-import { TwitchRequiredWrapper } from "@/features/chat/components/twitch-required-wrapper";
 
 export const Route = createFileRoute(
   "/(with_navbar)/chat-interactions/commands"
 )({
   beforeLoad: ({ context, location }) => {
-    // Access userId from parent route context (set in __root.tsx beforeLoad)
     const userId = (context as { userId?: string }).userId;
 
     if (!userId) {
@@ -28,15 +24,9 @@ function RouteComponent() {
       <div>
         <h1 className="font-bold text-3xl">Commands</h1>
         <p className="mt-2 text-muted-foreground">
-          Manage your custom chat commands and responses
+          Coming soon - chat commands will be rebuilt
         </p>
       </div>
-      <TwitchRequiredWrapper featureName="chat commands">
-        <div className="space-y-6">
-          <ChatBotStatus />
-          <CommandList />
-        </div>
-      </TwitchRequiredWrapper>
     </div>
   );
 }

@@ -24,7 +24,6 @@ const WELCOME_REGEX = /:tmi\.twitch\.tv 001 (\S+) :Welcome/;
 
 function debugLog(...args: unknown[]): void {
   if (DEBUG_MODE) {
-    // biome-ignore lint/suspicious/noConsole: debug logging for development
     console.log("[TwitchChat]", ...args);
   }
 }
@@ -53,24 +52,24 @@ function isJoinConfirmation(
   );
 }
 
-type ChatMessage = {
+interface ChatMessage {
   id: string;
   username: string;
   message: string;
   timestamp: number;
   displayName?: string;
   color?: string;
-};
+}
 
-type UseTwitchChatOptions = {
+interface UseTwitchChatOptions {
   channel: string | null | undefined;
   accessToken: string | null | undefined;
   username: string | null | undefined;
   enabled?: boolean;
   onMessage?: (message: ChatMessage) => void;
-};
+}
 
-type UseTwitchChatReturn = {
+interface UseTwitchChatReturn {
   messages: ChatMessage[];
   isConnected: boolean;
   error: string | null;
@@ -78,7 +77,7 @@ type UseTwitchChatReturn = {
   disconnect: () => void;
   clearMessages: () => void;
   sendMessage: (message: string) => void;
-};
+}
 
 function parseTags(tagsStr: string | undefined): Record<string, string> {
   const tags: Record<string, string> = {};
@@ -129,7 +128,7 @@ function parsePrivateMessage(
   };
 }
 
-type MessageProcessorContext = {
+interface MessageProcessorContext {
   ws: WebSocket;
   normalizedChannel: string;
   username: string;
@@ -138,7 +137,7 @@ type MessageProcessorContext = {
   setIsConnected: (connected: boolean) => void;
   isConnectingRef: React.RefObject<boolean>;
   addMessage: (message: ChatMessage) => void;
-};
+}
 
 function processIrcLine(line: string, ctx: MessageProcessorContext): void {
   debugLog("Received:", line);
@@ -270,15 +269,18 @@ export function useTwitchChat({
       return;
     }
 
-    if (!(channel && accessToken && username && enabled)) {
-      debugLog("Cannot connect - missing:", {
-        hasChannel: Boolean(channel),
-        hasToken: Boolean(accessToken),
-        hasUsername: Boolean(username),
-        enabled,
-      });
+    if (!(channel && enabled)) {
+      debugLog("Cannot connect - missing channel or disabled");
       return;
     }
+
+    const isAnonymous = !(accessToken && username);
+    const effectiveUsername = isAnonymous
+      ? `justinfan${Math.floor(Math.random() * 1_000_000)}`
+      : username;
+    const effectiveToken = isAnonymous
+      ? "oauth:anonymous"
+      : `oauth:${accessToken}`;
 
     isConnectingRef.current = true;
 
@@ -288,7 +290,13 @@ export function useTwitchChat({
       .toLowerCase();
     normalizedChannelRef.current = normalizedChannel;
 
-    debugLog("Connecting to channel:", normalizedChannel, "as user:", username);
+    debugLog(
+      isAnonymous ? "Connecting anonymously" : "Connecting with auth",
+      "to channel:",
+      normalizedChannel,
+      "as user:",
+      effectiveUsername
+    );
 
     // Close existing connection if any (without triggering reconnect)
     if (wsRef.current) {
@@ -304,7 +312,7 @@ export function useTwitchChat({
     const processorContext: MessageProcessorContext = {
       ws,
       normalizedChannel,
-      username,
+      username: effectiveUsername,
       clearConnectionTimeout,
       setError,
       setIsConnected,
@@ -329,8 +337,8 @@ export function useTwitchChat({
 
       // Send authentication
       debugLog("Sending PASS and NICK...");
-      ws.send(`PASS oauth:${accessToken}`);
-      ws.send(`NICK ${username.toLowerCase()}`);
+      ws.send(`PASS ${effectiveToken}`);
+      ws.send(`NICK ${effectiveUsername.toLowerCase()}`);
 
       // Request capabilities
       debugLog("Requesting capabilities...");
@@ -415,7 +423,7 @@ export function useTwitchChat({
   // Main effect - only depends on the key connection parameters
   // biome-ignore lint/correctness/useExhaustiveDependencies: connect/disconnect use refs and are stable, adding them would cause infinite reconnect loops
   useEffect(() => {
-    if (enabled && channel && accessToken && username) {
+    if (enabled && channel) {
       // Small delay to ensure React state is stable before connecting
       initialConnectionTimeoutRef.current = setTimeout(() => {
         connect();

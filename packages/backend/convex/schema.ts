@@ -22,6 +22,15 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_channel", ["channel"]),
+  // Canvas editor projects - stores Figma-like canvas elements
+  projects: defineTable({
+    userId: v.id("profiles"),
+    name: v.string(),
+    elements: v.any(), // Array of OverlayElement objects
+    channel: v.optional(v.string()), // Twitch channel associated with this project
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_userId", ["userId"]),
   commands: defineTable({
     userId: v.id("profiles"), // Owner of the command
     trigger: v.string(), // Command trigger (e.g., "!projects")

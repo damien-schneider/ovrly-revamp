@@ -41,7 +41,9 @@ export function PackGenerator() {
     const val = newEmoteInputRef.current?.value;
     if (val && !emoteList.includes(val)) {
       setEmoteList([...emoteList, val]);
-      if (newEmoteInputRef.current) newEmoteInputRef.current.value = "";
+      if (newEmoteInputRef.current) {
+        newEmoteInputRef.current.value = "";
+      }
     }
   };
 
@@ -76,7 +78,7 @@ export function PackGenerator() {
       // @ts-expect-error - style type mismatch fix later if needed, for now 'custom' is not in EmoteStyle but let's assume we extend it or just cast
       setAssets((prev) => [...newAssets, ...prev]);
       toast.success(`Generated ${newAssets.length} emotes!`);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to generate pack");
     } finally {
       setIsGenerating(false);

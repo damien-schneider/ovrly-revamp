@@ -5,32 +5,32 @@ import { useEffect, useRef } from "react";
 import { useProviderData } from "@/hooks/use-provider-token";
 import { type ChatMessage, useTwitchChat } from "@/hooks/use-twitch-chat";
 
-type CommandTriggerLog = {
+interface CommandTriggerLog {
   commandId: string;
   trigger: string;
   timestamp: number;
   username: string;
-};
+}
 
-type UseChatCommandsOptions = {
+interface UseChatCommandsOptions {
   channel: string | null | undefined;
   enabled?: boolean;
   onCommandTriggered?: (log: CommandTriggerLog) => void;
-};
+}
 
-type UseChatCommandsReturn = {
+interface UseChatCommandsReturn {
   isConnected: boolean;
   isListening: boolean;
   error: string | null;
   triggerLogs: CommandTriggerLog[];
-};
+}
 
-type Command = {
+interface Command {
   _id: Id<"commands">;
   trigger: string;
   response: string;
   enabled: boolean;
-};
+}
 
 const MAX_TRIGGER_LOGS = 50;
 const COMMAND_COOLDOWN_MS = 3000;

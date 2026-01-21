@@ -1,4 +1,4 @@
-export type EmojiData = {
+export interface EmojiData {
   id: string;
   emoji: string;
   type: "unicode" | "emote";
@@ -6,19 +6,19 @@ export type EmojiData = {
   timestamp: number;
   lifetime?: number;
   bounceLimit?: number;
-};
+}
 
 type EmoteMap = Record<string, string[]>;
 
-type LifetimeRange = {
+interface LifetimeRange {
   min: number;
   max: number;
-};
+}
 
-type BounceCountRange = {
+interface BounceCountRange {
   min: number;
   max: number;
-};
+}
 
 const EMOJI_REGEX =
   /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base})/gu;

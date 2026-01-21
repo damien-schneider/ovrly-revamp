@@ -1,7 +1,7 @@
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { atom } from "jotai";
 
-export type ChatSettingsData = {
+export interface ChatSettingsData {
   // Container settings
   containerBackgroundColor?: string;
   containerBackgroundTransparent?: boolean;
@@ -26,7 +26,7 @@ export type ChatSettingsData = {
   messagePaddingY?: number;
   messageFontSize?: number;
   messageColor?: string;
-};
+}
 
 // Map to store atoms per overlayId
 const chatSettingsAtomMap = new Map<

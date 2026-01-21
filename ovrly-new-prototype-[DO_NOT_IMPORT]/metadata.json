@@ -1,0 +1,5 @@
+{
+  "name": "StreamForge - Overlay Builder",
+  "description": "A Figma-like editor for creating professional stream overlays, chat boxes, and emote walls. Export directly to OBS as a local browser source.",
+  "requestFramePermissions": ["camera"]
+}

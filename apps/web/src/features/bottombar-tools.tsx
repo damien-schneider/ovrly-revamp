@@ -61,7 +61,7 @@ export function BottombarTools() {
   }
 
   return (
-    <div className="-translate-x-1/2 absolute bottom-6 left-1/2 z-50">
+    <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2">
       <div className="flex h-12 items-center justify-center gap-4 rounded-full border bg-background/80 px-6 shadow-lg backdrop-blur-sm transition-all hover:bg-background">
         <div className="flex items-center gap-2">
           <Label

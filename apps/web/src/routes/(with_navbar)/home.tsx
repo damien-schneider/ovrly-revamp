@@ -21,7 +21,7 @@ function RouteComponent() {
     <div className="container mx-auto max-w-7xl space-y-8 py-12">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <Link className="group block" to="/overlays">
-          <Card className="group-hover:-translate-y-1 overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300">
+          <Card className="overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300 group-hover:-translate-y-1">
             {/* Preview Area */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border bg-muted/50 shadow-sm transition-all duration-300 group-hover:shadow-md">
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-violet-500/10 to-purple-500/10 transition-colors group-hover:from-violet-500/20 group-hover:to-purple-500/20">
@@ -47,7 +47,7 @@ function RouteComponent() {
         </Link>
 
         <Link className="group block" to="/assets">
-          <Card className="group-hover:-translate-y-1 overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300">
+          <Card className="overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300 group-hover:-translate-y-1">
             {/* Preview Area */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border bg-muted/50 shadow-sm transition-all duration-300 group-hover:shadow-md">
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-500/10 to-teal-500/10 transition-colors group-hover:from-emerald-500/20 group-hover:to-teal-500/20">
@@ -73,7 +73,7 @@ function RouteComponent() {
         </Link>
 
         <Link className="group block" to="/chat-interactions">
-          <Card className="group-hover:-translate-y-1 overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300">
+          <Card className="overflow-hidden border-0 bg-transparent shadow-none transition-all duration-300 group-hover:-translate-y-1">
             {/* Preview Area */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border bg-muted/50 shadow-sm transition-all duration-300 group-hover:shadow-md">
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-purple-500/10 transition-colors group-hover:from-indigo-500/20 group-hover:to-purple-500/20">

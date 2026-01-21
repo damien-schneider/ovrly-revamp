@@ -13,7 +13,6 @@ const HTTP_STATUS_UNAUTHORIZED = 401;
 
 function debugLog(...args: unknown[]): void {
   if (DEBUG_MODE) {
-    // biome-ignore lint/suspicious/noConsole: debug logging
     console.log("[ProviderToken]", ...args);
   }
 }
@@ -29,19 +28,19 @@ export type TokenError = {
   status?: number;
 } | null;
 
-type TokenQueryResult = {
+interface TokenQueryResult {
   data: ProviderTokenData;
   tokenError: TokenError;
-};
+}
 
-type Account = {
+interface Account {
   id: string;
   providerId: string; // "twitch", "google", etc.
   accountId: string; // The provider's user ID (e.g., Twitch user ID)
   scopes?: string[];
   createdAt?: number;
   updatedAt?: number;
-};
+}
 
 async function fetchTwitchToken(): Promise<TokenQueryResult> {
   // First, get the current session to understand the user context
