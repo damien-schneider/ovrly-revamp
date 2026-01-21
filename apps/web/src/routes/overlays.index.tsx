@@ -94,9 +94,11 @@ function ProjectListPage() {
       <div className="mx-auto max-w-5xl px-6 py-12">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-3xl text-gray-900">Overlays</h1>
+            <h1 className="font-bold text-3xl text-gray-900">
+              Overlay Projects
+            </h1>
             <p className="mt-1 text-gray-500">
-              Create and manage your stream overlays
+              Create and manage your overlay projects
             </p>
           </div>
           <Button
@@ -105,7 +107,7 @@ function ProjectListPage() {
             size="lg"
           >
             <Plus className="h-5 w-5" />
-            New Overlay
+            New Project
           </Button>
         </div>
 
@@ -115,18 +117,18 @@ function ProjectListPage() {
               <Layers className="h-8 w-8 text-gray-400" />
             </div>
             <h3 className="mb-2 font-semibold text-gray-900 text-lg">
-              No overlays yet
+              No projects yet
             </h3>
             <p className="mb-6 max-w-sm text-center text-gray-500 text-sm">
-              Create your first overlay to start designing stream graphics with
-              our Figma-like canvas editor.
+              Create your first overlay project to start designing stream
+              graphics with our Figma-like canvas editor.
             </p>
             <Button
               className="gap-2"
               onClick={() => setIsCreateDialogOpen(true)}
             >
               <Plus className="h-4 w-4" />
-              Create your first overlay
+              Create your first project
             </Button>
           </div>
         ) : (
@@ -203,7 +205,7 @@ function ProjectListPage() {
       <Dialog onOpenChange={setIsCreateDialogOpen} open={isCreateDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create new overlay</DialogTitle>
+            <DialogTitle>Create new overlay project</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input

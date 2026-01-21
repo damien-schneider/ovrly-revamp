@@ -134,3 +134,22 @@ export const getFileUrl = query({
     return await ctx.storage.getUrl(storageId);
   },
 });
+
+/**
+ * Get project that contains a specific element by element ID
+ * Used for preview routes to render individual elements/sources
+ */
+export const getByElementId = query({
+  args: { elementId: v.string() },
+  handler: async (ctx, { elementId }) => {
+    // Get all projects and find the one containing this element
+    const projects = await ctx.db.query("projects").collect();
+    for (const project of projects) {
+      const elements = (project.elements as { id: string }[]) || [];
+      if (elements.some((el) => el.id === elementId)) {
+        return project;
+      }
+    }
+    return null;
+  },
+});

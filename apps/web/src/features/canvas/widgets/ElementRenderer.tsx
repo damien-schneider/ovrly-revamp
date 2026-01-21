@@ -1,7 +1,7 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type BoxElement,
   type ChatElement,
@@ -428,7 +428,7 @@ function EmoteWallWidget({
     projectId ? { id: projectId as Id<"projects"> } : "skip"
   );
 
-  const getSpawnX = () => {
+  const getSpawnX = useCallback(() => {
     if (style.spawnMode === "center") {
       return 50;
     }
@@ -436,9 +436,9 @@ function EmoteWallWidget({
       return Math.random() > 0.5 ? Math.random() * 20 : 80 + Math.random() * 20;
     }
     return Math.random() * 100;
-  };
+  }, [style.spawnMode]);
 
-  const getSpawnY = () => {
+  const getSpawnY = useCallback(() => {
     if (style.gravity === "up" || style.spawnMode === "bottom") {
       return 100;
     }
@@ -446,9 +446,9 @@ function EmoteWallWidget({
       return 0;
     }
     return 50;
-  };
+  }, [style.gravity, style.spawnMode]);
 
-  const getVelocityY = () => {
+  const getVelocityY = useCallback(() => {
     if (style.gravity === "up") {
       return -element.speed * 2;
     }
@@ -456,9 +456,9 @@ function EmoteWallWidget({
       return element.speed * 2;
     }
     return (Math.random() - 0.5) * element.speed;
-  };
+  }, [style.gravity, element.speed]);
 
-  const getVelocityX = () => {
+  const getVelocityX = useCallback(() => {
     if (style.gravity === "left") {
       return -element.speed;
     }
@@ -466,37 +466,52 @@ function EmoteWallWidget({
       return element.speed;
     }
     return (Math.random() - 0.5) * element.speed;
-  };
+  }, [style.gravity, element.speed]);
 
-  const spawnEmote = (specificEmote?: string) => {
-    const emote =
-      specificEmote ||
-      defaultEmotes[Math.floor(Math.random() * defaultEmotes.length)];
+  const spawnEmote = useCallback(
+    (specificEmote?: string) => {
+      const emote =
+        specificEmote ||
+        defaultEmotes[Math.floor(Math.random() * defaultEmotes.length)];
 
-    const newEmote: FloatingEmote = {
-      id: `${Date.now()}-${Math.random()}`,
-      emote,
-      x: getSpawnX(),
-      y: getSpawnY(),
-      size: style.emoteSize + (Math.random() - 0.5) * style.emoteSizeVariation,
-      rotation: style.rotationEnabled
-        ? (Math.random() - 0.5) * style.maxRotation * 2
-        : 0,
-      opacity: 1,
-      velocityY: getVelocityY(),
-      velocityX: getVelocityX(),
-      createdAt: Date.now(),
-    };
+      const newEmote: FloatingEmote = {
+        id: `${Date.now()}-${Math.random()}`,
+        emote,
+        x: getSpawnX(),
+        y: getSpawnY(),
+        size:
+          style.emoteSize + (Math.random() - 0.5) * style.emoteSizeVariation,
+        rotation: style.rotationEnabled
+          ? (Math.random() - 0.5) * style.maxRotation * 2
+          : 0,
+        opacity: 1,
+        velocityY: getVelocityY(),
+        velocityX: getVelocityX(),
+        createdAt: Date.now(),
+      };
 
-    setFloatingEmotes((prev) => {
-      const maxEmotes = element.density * 10;
-      const newEmotes = [...prev, newEmote];
-      if (newEmotes.length > maxEmotes) {
-        return newEmotes.slice(-maxEmotes);
-      }
-      return newEmotes;
-    });
-  };
+      setFloatingEmotes((prev) => {
+        const maxEmotes = element.density * 10;
+        const newEmotes = [...prev, newEmote];
+        if (newEmotes.length > maxEmotes) {
+          return newEmotes.slice(-maxEmotes);
+        }
+        return newEmotes;
+      });
+    },
+    [
+      defaultEmotes,
+      getSpawnX,
+      getSpawnY,
+      style.emoteSize,
+      style.emoteSizeVariation,
+      style.rotationEnabled,
+      style.maxRotation,
+      getVelocityY,
+      getVelocityX,
+      element.density,
+    ]
+  );
 
   useTwitchChat({
     channel: project?.channel,

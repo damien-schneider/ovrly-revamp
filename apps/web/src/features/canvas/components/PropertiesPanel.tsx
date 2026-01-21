@@ -143,12 +143,6 @@ export function PropertiesPanel({
     }
   };
 
-  const handleOpenLiveUrl = () => {
-    if (liveViewUrl) {
-      window.open(liveViewUrl, "_blank");
-    }
-  };
-
   const handleChannelUpdate = async (channel: string) => {
     if (!projectId) {
       return;
@@ -281,31 +275,36 @@ export function PropertiesPanel({
 
           <ScrollArea className="flex-1">
             <div className="space-y-6 p-4">
-              {/* OBS Integration */}
-              {liveViewUrl && (
-                <PropertySection title="OBS Browser Source">
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      className="w-full gap-2"
-                      onClick={handleCopyLiveUrl}
-                      size="sm"
-                    >
-                      <Link2 size={14} /> Copy Live URL
-                    </Button>
-                    <Button
-                      className="w-full gap-2"
-                      onClick={handleOpenLiveUrl}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <ExternalLink size={14} /> Open in Browser
-                    </Button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Use this URL in OBS for real-time synced overlays.
-                  </p>
-                </PropertySection>
-              )}
+              {/* Element Preview - shows selected element's preview URL */}
+              <PropertySection title="Element Preview">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const elementUrl = `${window.location.origin}/preview/element/${element.id}`;
+                      navigator.clipboard.writeText(elementUrl);
+                      toast.success("Element preview URL copied!");
+                    }}
+                    size="sm"
+                  >
+                    <Link2 size={14} /> Copy Element URL
+                  </Button>
+                  <Button
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const elementUrl = `${window.location.origin}/preview/element/${element.id}`;
+                      window.open(elementUrl, "_blank");
+                    }}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <ExternalLink size={14} /> Open in Browser
+                  </Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Use this URL in OBS to show this element as a browser source.
+                </p>
+              </PropertySection>
 
               {/* Export Options */}
               <PropertySection title="Export">
@@ -327,6 +326,16 @@ export function PropertiesPanel({
                     <Copy size={14} /> Data URI
                   </Button>
                 </div>
+                {liveViewUrl && (
+                  <Button
+                    className="w-full gap-2"
+                    onClick={handleCopyLiveUrl}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Download size={14} /> Copy Full Project URL
+                  </Button>
+                )}
               </PropertySection>
 
               {/* Position & Size */}
