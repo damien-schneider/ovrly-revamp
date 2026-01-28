@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { cn } from "@/lib/utils";
@@ -13,45 +12,24 @@ import { cn } from "@/lib/utils";
 export function PanelSection({
   title,
   children,
-  defaultOpen = true,
   onAdd,
   actions,
 }: {
   title: string;
   children: React.ReactNode;
-  defaultOpen?: boolean;
   onAdd?: () => void;
   actions?: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
   return (
     <div className="border-border/50 border-b">
-      <div className="flex h-8 w-full items-center justify-between px-3 transition-colors hover:bg-accent/50">
-        <button
-          className="flex flex-1 items-center gap-1.5 border-none bg-transparent p-0 text-left outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-          type="button"
-        >
-          <ChevronDown
-            className={cn(
-              "h-3 w-3 text-muted-foreground transition-transform",
-              !isOpen && "-rotate-90"
-            )}
-          />
-          <span className="font-medium text-[11px] text-foreground">
-            {title}
-          </span>
-        </button>
+      <div className="flex h-8 w-full items-center justify-between px-3">
+        <span className="font-medium text-[11px] text-foreground">{title}</span>
         <div className="flex items-center gap-0.5">
           {actions}
           {onAdd && (
             <Button
               className="flex h-5 w-5 items-center justify-center rounded border-none hover:bg-accent"
-              onClick={(e) => {
-                e.stopPropagation();
-                onAdd();
-              }}
+              onClick={onAdd}
               size="icon-xs"
               variant="ghost"
             >
@@ -60,7 +38,7 @@ export function PanelSection({
           )}
         </div>
       </div>
-      {isOpen && <div className="px-3 pb-3">{children}</div>}
+      <div className="px-3 pb-3">{children}</div>
     </div>
   );
 }

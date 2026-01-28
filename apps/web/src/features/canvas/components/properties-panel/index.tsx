@@ -194,13 +194,18 @@ export function PropertiesPanel({
                 <Link2 className="h-3.5 w-3.5" /> Link
               </Button>
               <Button
-                asChild
                 className="h-8 gap-1.5 text-[11px]"
+                render={(props, ref) => (
+                  <Link
+                    {...props}
+                    ref={ref}
+                    target="_blank"
+                    to={`/view/overlay/${element.id}`}
+                  />
+                )}
                 variant="outline"
               >
-                <Link target="_blank" to={`/view/overlay/${element.id}`}>
-                  <Eye className="h-3.5 w-3.5" /> Preview
-                </Link>
+                <Eye className="h-3.5 w-3.5" /> Preview
               </Button>
               <Button
                 className="h-8 gap-1.5 text-[11px]"

@@ -68,7 +68,7 @@ export function EmoteWallSection({ element, onUpdate }: EmoteWallSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Physics">
+      <PanelSection title="Physics">
         <div className="space-y-2">
           <PropertyRow label="Gravity">
             <Select
@@ -120,7 +120,7 @@ export function EmoteWallSection({ element, onUpdate }: EmoteWallSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Appearance">
+      <PanelSection title="Appearance">
         <div className="space-y-2">
           <PropertyRow label="Size">
             <div className="flex-1">

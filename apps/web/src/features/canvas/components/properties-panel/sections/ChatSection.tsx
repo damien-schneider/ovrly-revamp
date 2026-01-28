@@ -49,7 +49,7 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Colors">
+      <PanelSection title="Colors">
         <div className="space-y-2">
           <PropertyRow label="Background">
             <ColorSwatch
@@ -85,7 +85,7 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Styling">
+      <PanelSection title="Styling">
         <div className="space-y-2">
           <PropertyRow label="Font Size">
             <div className="flex-1">
@@ -163,7 +163,7 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Border">
+      <PanelSection title="Border">
         <div className="space-y-2">
           <PropertyRow label="Color">
             <ColorSwatch
