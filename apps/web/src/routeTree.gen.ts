@@ -16,6 +16,7 @@ import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as with_navbarRouteRouteImport } from './routes/(with_navbar)/route'
 import { Route as OverlaysIndexRouteImport } from './routes/overlays.index'
 import { Route as with_navbarIndexRouteImport } from './routes/(with_navbar)/index'
+import { Route as OverlaysViewRouteImport } from './routes/overlays.view'
 import { Route as OverlaysProjectIdRouteImport } from './routes/overlays.$projectId'
 import { Route as with_navbarOverlaysRouteImport } from './routes/(with_navbar)/overlays'
 import { Route as with_navbarModerationRouteImport } from './routes/(with_navbar)/moderation'
@@ -67,6 +68,11 @@ const with_navbarIndexRoute = with_navbarIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const OverlaysViewRoute = OverlaysViewRouteImport.update({
+  id: '/view',
+  path: '/view',
+  getParentRoute: () => OverlaysRoute,
 } as any)
 const OverlaysProjectIdRoute = OverlaysProjectIdRouteImport.update({
   id: '/$projectId',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
+  '/overlays/view': typeof OverlaysViewRoute
   '/': typeof with_navbarIndexRoute
   '/overlays/': typeof OverlaysIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/moderation': typeof with_navbarModerationRoute
   '/overlays': typeof OverlaysIndexRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
+  '/overlays/view': typeof OverlaysViewRoute
   '/': typeof with_navbarIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/(with_navbar)/moderation': typeof with_navbarModerationRoute
   '/(with_navbar)/overlays': typeof with_navbarOverlaysRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
+  '/overlays/view': typeof OverlaysViewRoute
   '/(with_navbar)/': typeof with_navbarIndexRoute
   '/overlays/': typeof OverlaysIndexRoute
   '/(with_navbar)/assets/emotes': typeof with_navbarAssetsEmotesRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/moderation'
     | '/overlays/$projectId'
+    | '/overlays/view'
     | '/'
     | '/overlays/'
     | '/assets/emotes'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/moderation'
     | '/overlays'
     | '/overlays/$projectId'
+    | '/overlays/view'
     | '/'
     | '/assets/emotes'
     | '/assets/sub-badges'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/(with_navbar)/moderation'
     | '/(with_navbar)/overlays'
     | '/overlays/$projectId'
+    | '/overlays/view'
     | '/(with_navbar)/'
     | '/overlays/'
     | '/(with_navbar)/assets/emotes'
@@ -354,6 +366,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof with_navbarIndexRouteImport
       parentRoute: typeof with_navbarRouteRoute
+    }
+    '/overlays/view': {
+      id: '/overlays/view'
+      path: '/view'
+      fullPath: '/overlays/view'
+      preLoaderRoute: typeof OverlaysViewRouteImport
+      parentRoute: typeof OverlaysRoute
     }
     '/overlays/$projectId': {
       id: '/overlays/$projectId'
@@ -551,11 +570,13 @@ const OverlaysProjectIdRouteWithChildren =
 
 interface OverlaysRouteChildren {
   OverlaysProjectIdRoute: typeof OverlaysProjectIdRouteWithChildren
+  OverlaysViewRoute: typeof OverlaysViewRoute
   OverlaysIndexRoute: typeof OverlaysIndexRoute
 }
 
 const OverlaysRouteChildren: OverlaysRouteChildren = {
   OverlaysProjectIdRoute: OverlaysProjectIdRouteWithChildren,
+  OverlaysViewRoute: OverlaysViewRoute,
   OverlaysIndexRoute: OverlaysIndexRoute,
 }
 
