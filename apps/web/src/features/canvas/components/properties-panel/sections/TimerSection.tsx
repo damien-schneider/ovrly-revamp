@@ -141,7 +141,7 @@ export function TimerSection({ element, onUpdate }: TimerSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection defaultOpen={false} title="Format">
+      <PanelSection title="Format">
         <div className="space-y-2">
           <PropertyRow label="Show Days">
             <Switch
