@@ -67,7 +67,7 @@ function CanvasEditorPage() {
 
   // Auto-save with debounce
   useEffect(() => {
-    if (!isInitialized.current || !overlayRows) {
+    if (!(isInitialized.current && overlayRows)) {
       return;
     }
 
@@ -180,10 +180,7 @@ function CanvasEditorPage() {
 
   return (
     <div className="relative h-svh w-full">
-      <CanvasEditor
-        projectName="My Canvas"
-        saveStatus={renderSaveStatus()}
-      />
+      <CanvasEditor projectName="My Canvas" saveStatus={renderSaveStatus()} />
     </div>
   );
 }
