@@ -27,14 +27,10 @@ const navItems: NavItem[] = [
 ];
 
 interface NavigationSidebarProps {
-  projectName?: string;
   saveStatus?: React.ReactNode;
 }
 
-export function NavigationSidebar({
-  projectName,
-  saveStatus,
-}: NavigationSidebarProps) {
+export function NavigationSidebar({ saveStatus }: NavigationSidebarProps) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -59,17 +55,10 @@ export function NavigationSidebar({
 
         <div className="mx-0.5 h-4 w-px bg-border/50" />
 
-        {projectName && (
-          <>
-            <div className="flex items-center gap-2 px-2.5">
-              <span className="max-w-[120px] truncate font-bold text-[11px] text-foreground">
-                {projectName}
-              </span>
-              <div className="flex items-center">{saveStatus}</div>
-            </div>
-            <div className="mx-1 h-4 w-px bg-border/50" />
-          </>
-        )}
+        <div className="flex items-center gap-2 px-2.5">
+          <div className="flex items-center">{saveStatus}</div>
+        </div>
+        <div className="mx-1 h-4 w-px bg-border/50" />
 
         <Tooltip>
           <TooltipTrigger>

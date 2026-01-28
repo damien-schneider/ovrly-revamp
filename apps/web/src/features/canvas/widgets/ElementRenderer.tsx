@@ -24,13 +24,11 @@ import { WebcamWidget } from "./WebcamWidget";
 interface ElementRendererProps {
   element: OverlayElement;
   isLiveView?: boolean;
-  projectId?: string;
 }
 
 export function ElementRenderer({
   element,
   isLiveView = false,
-  projectId,
 }: ElementRendererProps) {
   if (!element.visible) {
     return null;
@@ -52,18 +50,13 @@ export function ElementRenderer({
       return <ImageWidget element={element as ImageElement} />;
     case ElementType.CHAT:
       return (
-        <ChatWidget
-          element={element as ChatElement}
-          isLiveView={isLiveView}
-          projectId={projectId}
-        />
+        <ChatWidget element={element as ChatElement} isLiveView={isLiveView} />
       );
     case ElementType.EMOTE_WALL:
       return (
         <EmoteWallWidget
           element={element as EmoteWallElement}
           isLiveView={isLiveView}
-          projectId={projectId}
         />
       );
     case ElementType.WEBCAM:

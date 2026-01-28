@@ -1,6 +1,3 @@
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { EmoteWallElement } from "@/features/canvas/types";
 import { useTwitchChat } from "@/features/twitch/hooks/use-twitch-chat";
@@ -22,7 +19,6 @@ interface FloatingEmote {
 interface EmoteWallWidgetProps {
   element: EmoteWallElement;
   isLiveView: boolean;
-  projectId?: string;
 }
 
 const DEFAULT_EMOTES = ["🔥", "❤️", "😂", "👍", "🎉", "💯", "⭐", "🚀"];
@@ -30,7 +26,6 @@ const DEFAULT_EMOTES = ["🔥", "❤️", "😂", "👍", "🎉", "💯", "⭐",
 export function EmoteWallWidget({
   element,
   isLiveView,
-  projectId,
 }: EmoteWallWidgetProps) {
   const [floatingEmotes, setFloatingEmotes] = useState<FloatingEmote[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
@@ -51,11 +46,6 @@ export function EmoteWallWidget({
     },
     previewEnabled = false,
   } = element;
-
-  const project = useQuery(
-    api.projects.getById,
-    projectId ? { id: projectId as Id<"projects"> } : "skip"
-  );
 
   const getSpawnX = useCallback(() => {
     if (style.spawnMode === "center") {
@@ -142,10 +132,10 @@ export function EmoteWallWidget({
   );
 
   useTwitchChat({
-    channel: project?.channel,
+    channel: undefined,
     accessToken: null,
     username: null,
-    enabled: isLiveView && !!project?.channel,
+    enabled: false,
     onMessage: (msg) => {
       const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu;
       const matches = msg.message.match(emojiRegex);

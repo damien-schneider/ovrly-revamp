@@ -17,10 +17,9 @@ import { TransformBox } from "./TransformBox";
 
 interface CanvasProps {
   onUpdateElement: (id: string, updates: Partial<OverlayElement>) => void;
-  projectId?: string;
 }
 
-export function Canvas({ onUpdateElement, projectId }: CanvasProps) {
+export function Canvas({ onUpdateElement }: CanvasProps) {
   const elements = useAtomValue(elementsAtom);
   const [selectedIds, setSelectedIds] = useAtom(selectedIdsAtom);
   const [viewport, setViewport] = useAtom(viewportAtom);
@@ -280,7 +279,7 @@ export function Canvas({ onUpdateElement, projectId }: CanvasProps) {
             y={el.y}
             zoom={scale}
           >
-            <ElementRenderer element={el} projectId={projectId} />
+            <ElementRenderer element={el} />
           </TransformBox>
         ))}
       </div>

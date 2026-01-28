@@ -1,6 +1,3 @@
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import type { ChatElement } from "@/features/canvas/types";
 import { useTwitchChat } from "@/features/twitch/hooks/use-twitch-chat";
@@ -44,29 +41,20 @@ function getBadgeIcon(badge: string): string {
 interface ChatWidgetProps {
   element: ChatElement;
   isLiveView: boolean;
-  projectId?: string;
 }
 
-export function ChatWidget({
-  element,
-  isLiveView,
-  projectId,
-}: ChatWidgetProps) {
+export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
   const { style, mockMessages, previewEnabled } = element;
-  const project = useQuery(
-    api.projects.getById,
-    projectId ? { id: projectId as Id<"projects"> } : "skip"
-  );
 
   const { messages: liveMessages } = useTwitchChat({
-    channel: project?.channel,
+    channel: undefined,
     accessToken: null,
     username: null,
-    enabled: isLiveView && !!project?.channel,
+    enabled: false,
   });
 
   let displayMessages = previewEnabled ? mockPreviewMessages : mockMessages;
-  if (isLiveView && project?.channel) {
+  if (isLiveView) {
     displayMessages = liveMessages.map((m) => ({
       user: m.displayName || m.username,
       text: m.message,
@@ -81,7 +69,7 @@ export function ChatWidget({
   const [visibleMessages, setVisibleMessages] = useState(displayMessages);
 
   useEffect(() => {
-    if (isLiveView && project?.channel) {
+    if (isLiveView) {
       setVisibleMessages(displayMessages);
       return;
     }
@@ -105,14 +93,7 @@ export function ChatWidget({
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [
-    previewEnabled,
-    mockMessages,
-    style.maxMessages,
-    isLiveView,
-    project?.channel,
-    displayMessages,
-  ]);
+  }, [previewEnabled, mockMessages, style.maxMessages, isLiveView, displayMessages]);
 
   const getAnimationClass = () => {
     switch (style.animation) {

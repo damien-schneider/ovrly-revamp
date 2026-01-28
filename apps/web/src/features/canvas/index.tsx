@@ -31,16 +31,10 @@ import {
 } from "./utils/export-generator";
 
 interface CanvasEditorProps {
-  projectId?: string;
-  projectName?: string;
   saveStatus?: React.ReactNode;
 }
 
-export function CanvasEditor({
-  projectId,
-  projectName,
-  saveStatus,
-}: CanvasEditorProps) {
+export function CanvasEditor({ saveStatus }: CanvasEditorProps) {
   const elements = useAtomValue(elementsAtom);
   const updateElements = useSetAtom(updateElementsAtom);
   const [selectedIds, setSelectedIds] = useAtom(selectedIdsAtom);
@@ -212,13 +206,13 @@ export function CanvasEditor({
 
   return (
     <div className="flex h-screen w-full select-none overflow-hidden bg-background font-sans text-foreground">
-      <NavigationSidebar projectName={projectName} saveStatus={saveStatus} />
+      <NavigationSidebar saveStatus={saveStatus} />
 
       <Toolbar onAddElement={addElement} />
 
       <LayersPanel onUpdate={handleUpdate} />
 
-      <Canvas onUpdateElement={handleUpdate} projectId={projectId} />
+      <Canvas onUpdateElement={handleUpdate} />
 
       <PropertiesPanel
         onCopyLink={handleCopyLink}
@@ -226,7 +220,6 @@ export function CanvasEditor({
         onExport={handleExport}
         onPreview={handlePreview}
         onUpdate={handleUpdate}
-        projectId={projectId}
       />
     </div>
   );

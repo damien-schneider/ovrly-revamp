@@ -1,6 +1,3 @@
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   Copy,
@@ -20,8 +17,6 @@ import {
   selectedIdsAtom,
 } from "@/atoms/canvas-atoms";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   type BoxElement,
@@ -56,7 +51,6 @@ interface PropertiesPanelProps {
   onExport: (id?: string) => void;
   onPreview: (id: string) => void;
   onCopyLink: (id: string) => void;
-  projectId?: string;
 }
 
 export function PropertiesPanel({
@@ -65,45 +59,13 @@ export function PropertiesPanel({
   onExport,
   onPreview,
   onCopyLink,
-  projectId,
 }: PropertiesPanelProps) {
   const elements = useAtomValue(elementsAtom);
   const selectedIds = useAtomValue(selectedIdsAtom);
   const [isCollapsed, setIsCollapsed] = useAtom(isPropertiesPanelCollapsedAtom);
 
-  const project = useQuery(
-    api.projects.getById,
-    projectId ? { id: projectId as Id<"projects"> } : "skip"
-  );
-  const updateProject = useMutation(api.projects.update);
-
   const selectedElements = elements.filter((el) => selectedIds.includes(el.id));
   const element = selectedElements[0];
-
-  const liveViewUrl = projectId
-    ? `${window.location.origin}/preview/overlay/${projectId}`
-    : null;
-
-  const handleCopyLiveUrl = () => {
-    if (liveViewUrl) {
-      navigator.clipboard.writeText(liveViewUrl);
-      toast.success("Live URL copied to clipboard");
-    }
-  };
-
-  const handleChannelUpdate = async (channel: string) => {
-    if (!projectId) {
-      return;
-    }
-    try {
-      await updateProject({
-        id: projectId as Id<"projects">,
-        channel: channel.trim().toLowerCase(),
-      });
-    } catch {
-      toast.error("Failed to update channel");
-    }
-  };
 
   // Collapsed state - just show toggle button
   if (isCollapsed) {
@@ -274,16 +236,6 @@ export function PropertiesPanel({
                   <Copy className="h-3 w-3" /> Data URI
                 </Button>
               </div>
-              {liveViewUrl && (
-                <Button
-                  className="h-7 w-full gap-1 text-[11px]"
-                  onClick={handleCopyLiveUrl}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Download className="h-3 w-3" /> Copy Project URL
-                </Button>
-              )}
             </div>
           </PanelSection>
 
@@ -340,26 +292,6 @@ export function PropertiesPanel({
       </div>
 
       <ScrollArea className="flex-1">
-        {/* Project Settings Section */}
-        <PanelSection title="Project Settings">
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <Label className="text-[10px] text-muted-foreground">
-                Twitch Channel
-              </Label>
-              <Input
-                className="h-7 text-[11px]"
-                defaultValue={project?.channel ?? ""}
-                onBlur={(e) => handleChannelUpdate(e.target.value)}
-                placeholder="e.g. xqc"
-              />
-              <p className="text-[10px] text-muted-foreground">
-                Connect widgets to this channel's chat.
-              </p>
-            </div>
-          </div>
-        </PanelSection>
-
         {/* Info Section */}
         <div className="border-border/50 border-b px-3 py-4">
           <p className="text-[11px] text-muted-foreground leading-relaxed">
