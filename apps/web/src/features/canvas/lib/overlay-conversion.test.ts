@@ -4,8 +4,8 @@ import { ElementType } from "../types";
 import {
   elementToOverlayCreate,
   elementToOverlayUpdate,
-  overlayRowToElement,
   type OverlayRow,
+  overlayRowToElement,
 } from "./overlay-conversion";
 
 describe("overlay-conversion", () => {
