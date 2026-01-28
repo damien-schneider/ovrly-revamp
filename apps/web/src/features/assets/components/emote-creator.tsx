@@ -148,7 +148,9 @@ export function EmoteCreator() {
               <img
                 alt={asset.prompt}
                 className="absolute inset-0 h-full w-full object-cover"
+                height={512}
                 src={asset.url}
+                width={512}
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                 <Button

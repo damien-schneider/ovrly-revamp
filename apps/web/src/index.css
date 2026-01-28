@@ -195,3 +195,66 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Figma-style Properties Panel Styling */
+@layer components {
+  /* Compact input styling */
+  .figma-input {
+    @apply h-6 px-2 text-[11px] border border-border/60 rounded bg-background;
+    @apply hover:border-border focus:border-primary/50 focus:ring-1 focus:ring-primary/20;
+    @apply transition-colors duration-100;
+  }
+
+  /* Panel section styling */
+  .figma-section {
+    @apply border-b border-border/50;
+  }
+
+  .figma-section-header {
+    @apply flex h-8 items-center justify-between px-3;
+    @apply hover:bg-accent/50 transition-colors cursor-pointer;
+  }
+
+  .figma-section-title {
+    @apply text-[11px] font-medium text-foreground;
+  }
+
+  /* Icon button styling */
+  .figma-icon-btn {
+    @apply flex h-6 w-6 items-center justify-center rounded;
+    @apply hover:bg-accent transition-colors;
+  }
+
+  .figma-icon-btn-active {
+    @apply bg-accent text-foreground;
+  }
+
+  /* Property row styling */
+  .figma-property-row {
+    @apply flex items-center gap-2 min-h-[24px];
+  }
+
+  .figma-property-label {
+    @apply w-16 shrink-0 text-[11px] text-muted-foreground truncate;
+  }
+
+  /* Color swatch styling */
+  .figma-color-swatch {
+    @apply w-5 h-5 rounded border border-border/60 cursor-pointer;
+    @apply hover:ring-2 hover:ring-primary/20 transition-all;
+  }
+
+  /* Panel scrollbar styling */
+  .figma-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .figma-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .figma-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border/50 rounded-full;
+    @apply hover:bg-border;
+  }
+}

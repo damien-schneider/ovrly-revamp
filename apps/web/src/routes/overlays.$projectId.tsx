@@ -3,7 +3,7 @@ import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -132,38 +132,31 @@ function ProjectEditorPage() {
   const renderSaveStatus = () => {
     if (isSaving) {
       return (
-        <span className="flex items-center gap-1 text-gray-400 text-xs">
-          <Save className="h-3 w-3 animate-pulse" />
+        <span className="flex items-center gap-1 font-medium text-[10px] text-muted-foreground">
+          <Save className="h-2.5 w-2.5 animate-pulse" />
           Saving...
         </span>
       );
     }
     if (hasUnsavedChanges) {
-      return <span className="text-amber-500 text-xs">Unsaved</span>;
+      return (
+        <span className="font-medium text-[10px] text-amber-500">Unsaved</span>
+      );
     }
-    return <span className="text-green-500 text-xs">Saved</span>;
+    return (
+      <span className="font-medium text-[10px] text-emerald-500 uppercase tracking-wider opacity-80">
+        Saved
+      </span>
+    );
   };
 
   return (
     <div className="relative h-svh w-full">
-      <CanvasEditor projectId={projectId} />
-
-      {/* Project header overlay */}
-      <div className="pointer-events-none fixed top-4 left-16 z-100 flex items-center gap-3">
-        <Link
-          className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 shadow-lg transition-colors hover:bg-gray-50 hover:text-gray-900"
-          title="Back to overlays"
-          to="/overlays"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 shadow-lg">
-          <span className="max-w-48 truncate font-medium text-gray-900 text-sm">
-            {project.name}
-          </span>
-          {renderSaveStatus()}
-        </div>
-      </div>
+      <CanvasEditor
+        projectId={projectId}
+        projectName={project.name}
+        saveStatus={renderSaveStatus()}
+      />
     </div>
   );
 }

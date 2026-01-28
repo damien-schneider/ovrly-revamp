@@ -30,7 +30,7 @@ const subFeatures = [
     isComingSoon: false,
   },
   {
-    to: "/chat-interactions/ai-reply",
+    to: "/chat-interactions",
     title: "AI Reply",
     description: "Coming soon - AI-powered chat responses",
     icon: Robot,

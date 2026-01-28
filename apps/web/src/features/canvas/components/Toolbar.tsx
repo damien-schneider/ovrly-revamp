@@ -5,7 +5,7 @@ import {
   Clock,
   GripHorizontal,
   Hand,
-  Image,
+  Image as ImageIcon,
   Layout,
   MessageSquare,
   MousePointer2,
@@ -13,7 +13,15 @@ import {
   Type,
 } from "lucide-react";
 import { toolModeAtom } from "@/atoms/canvas-atoms";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ElementType } from "@/features/canvas/types";
+import { cn } from "@/lib/utils";
 
 interface ToolbarProps {
   onAddElement: (type: ElementType) => void;
@@ -21,61 +29,85 @@ interface ToolbarProps {
 
 export function Toolbar({ onAddElement }: ToolbarProps) {
   const [toolMode, setToolMode] = useAtom(toolModeAtom);
-
   const isHandTool = toolMode === "hand";
 
   const tools = [
-    { type: ElementType.OVERLAY, icon: Layout, label: "Overlay Container" },
+    { type: ElementType.OVERLAY, icon: Layout, label: "Overlay" },
     { type: ElementType.TEXT, icon: Type, label: "Text" },
     { type: ElementType.BOX, icon: Square, label: "Box" },
-    { type: ElementType.IMAGE, icon: Image, label: "Image" },
+    { type: ElementType.IMAGE, icon: ImageIcon, label: "Image" },
     { type: ElementType.CHAT, icon: MessageSquare, label: "Chat" },
     { type: ElementType.EMOTE_WALL, icon: GripHorizontal, label: "Emote Wall" },
-    { type: ElementType.WEBCAM, icon: Camera, label: "Webcam Frame" },
+    { type: ElementType.WEBCAM, icon: Camera, label: "Webcam" },
     { type: ElementType.TIMER, icon: Clock, label: "Timer" },
-    {
-      type: ElementType.PROGRESS,
-      icon: BarChartHorizontal,
-      label: "Progress Bar",
-    },
+    { type: ElementType.PROGRESS, icon: BarChartHorizontal, label: "Progress" },
   ];
 
   return (
-    <div className="fixed top-4 left-1/2 z-100 flex -translate-x-1/2 flex-row items-center gap-1 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-xl">
-      <button
-        className={`group relative rounded-xl p-2.5 transition-all ${isHandTool ? "bg-blue-50 text-blue-600 shadow-sm" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"}`}
-        onClick={() => setToolMode("hand")}
-        title="Hand Tool (H)"
-        type="button"
-      >
-        <Hand size={18} />
-      </button>
+    <TooltipProvider delay={400}>
+      <div className="fixed top-4 left-1/2 z-100 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-border/60 bg-background/95 p-1 shadow-xl backdrop-blur-sm">
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              className={cn(
+                "h-8 w-8 border-none transition-colors",
+                isHandTool
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+              onClick={() => setToolMode("hand")}
+              size="icon-xs"
+              variant="ghost"
+            >
+              <Hand className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="px-2 py-1 text-[10px]">
+            Hand tool (H)
+          </TooltipContent>
+        </Tooltip>
 
-      <button
-        className={`group relative rounded-xl p-2.5 transition-all ${isHandTool ? "text-gray-500 hover:bg-gray-50 hover:text-gray-900" : "bg-blue-50 text-blue-600 shadow-sm"}`}
-        onClick={() => setToolMode("select")}
-        title="Select (V)"
-        type="button"
-      >
-        <MousePointer2 size={18} />
-      </button>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              className={cn(
+                "h-8 w-8 border-none transition-colors",
+                isHandTool
+                  ? "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+              onClick={() => setToolMode("select")}
+              size="icon-xs"
+              variant="ghost"
+            >
+              <MousePointer2 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="px-2 py-1 text-[10px]">
+            Select tool (V)
+          </TooltipContent>
+        </Tooltip>
 
-      <div className="mx-1 h-6 w-px bg-gray-100" />
+        <div className="mx-1 h-4 w-px bg-border/50" />
 
-      {tools.map((tool) => (
-        <button
-          className="group relative rounded-xl p-2.5 text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-900"
-          key={tool.type}
-          onClick={() => onAddElement(tool.type)}
-          title={tool.label}
-          type="button"
-        >
-          <tool.icon size={18} />
-          <span className="pointer-events-none absolute top-full left-1/2 z-50 mt-3 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1.5 font-bold text-[10px] text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-            {tool.label}
-          </span>
-        </button>
-      ))}
-    </div>
+        {tools.map((tool) => (
+          <Tooltip key={tool.type}>
+            <TooltipTrigger>
+              <Button
+                className="h-8 w-8 border-none text-muted-foreground hover:bg-accent hover:text-foreground"
+                onClick={() => onAddElement(tool.type)}
+                size="icon-xs"
+                variant="ghost"
+              >
+                <tool.icon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="px-2 py-1 text-[10px]">
+              Add {tool.label}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 }

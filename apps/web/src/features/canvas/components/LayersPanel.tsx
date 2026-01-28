@@ -7,7 +7,8 @@ import {
   Eye,
   EyeOff,
   GripHorizontal,
-  Image,
+  Image as ImageIcon,
+  Layers,
   Layout,
   MessageSquare,
   PanelLeftClose,
@@ -20,34 +21,38 @@ import {
   isLayersPanelCollapsedAtom,
   selectedIdsAtom,
 } from "@/atoms/canvas-atoms";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ElementType, type OverlayElement } from "@/features/canvas/types";
+import { cn } from "@/lib/utils";
 
 interface LayersPanelProps {
   onUpdate: (id: string, updates: Partial<OverlayElement>) => void;
 }
 
 function getIcon(type: ElementType) {
+  const iconClass = "h-3.5 w-3.5";
   switch (type) {
     case ElementType.OVERLAY:
-      return <Layout size={14} />;
+      return <Layout className={iconClass} />;
     case ElementType.TEXT:
-      return <Type size={14} />;
+      return <Type className={iconClass} />;
     case ElementType.BOX:
-      return <Square size={14} />;
+      return <Square className={iconClass} />;
     case ElementType.IMAGE:
-      return <Image size={14} />;
+      return <ImageIcon className={iconClass} />;
     case ElementType.CHAT:
-      return <MessageSquare size={14} />;
+      return <MessageSquare className={iconClass} />;
     case ElementType.EMOTE_WALL:
-      return <GripHorizontal size={14} />;
+      return <GripHorizontal className={iconClass} />;
     case ElementType.WEBCAM:
-      return <Camera size={14} />;
+      return <Camera className={iconClass} />;
     case ElementType.TIMER:
-      return <Clock size={14} />;
+      return <Clock className={iconClass} />;
     case ElementType.PROGRESS:
-      return <BarChartHorizontal size={14} />;
+      return <BarChartHorizontal className={iconClass} />;
     default:
-      return <Square size={14} />;
+      return <Square className={iconClass} />;
   }
 }
 
@@ -78,41 +83,71 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
 
     return (
       <div className="flex flex-col" key={element.id}>
-        <button
-          className={`group mx-1 flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-[12px] transition-colors ${isSelected ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:bg-gray-50"}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSelect(element.id, e.shiftKey || e.metaKey);
-          }}
-          style={{ paddingLeft: `${depth * 12 + 12}px` }}
-          type="button"
+        <div
+          className={cn(
+            "group flex h-7 w-full select-none items-center gap-2 px-2 transition-colors",
+            isSelected
+              ? "bg-primary text-primary-foreground"
+              : "text-foreground hover:bg-accent"
+          )}
         >
-          <button
-            className="opacity-0 transition-opacity hover:text-blue-600 group-hover:opacity-100"
-            onClick={(e) => {
-              e.stopPropagation();
-              onUpdate(element.id, { visible: !element.visible });
-            }}
-            type="button"
+          <div
+            className="flex min-w-0 flex-1 items-center gap-2"
+            style={{ paddingLeft: `${depth * 10}px` }}
           >
-            {element.visible ? (
-              <Eye size={14} />
-            ) : (
-              <EyeOff className="text-gray-400" size={14} />
-            )}
-          </button>
+            <button
+              className={cn(
+                "shrink-0 rounded p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100",
+                !element.visible && "opacity-60",
+                isSelected
+                  ? "text-white hover:bg-white/20"
+                  : "text-muted-foreground"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(element.id, { visible: !element.visible });
+              }}
+              title={element.visible ? "Hide layer" : "Show layer"}
+              type="button"
+            >
+              {element.visible ? (
+                <Eye className="h-3 w-3" />
+              ) : (
+                <EyeOff className="h-3 w-3" />
+              )}
+            </button>
 
-          <span className={isSelected ? "text-blue-600" : "text-gray-400"}>
-            {getIcon(element.type)}
-          </span>
-          <span className="flex-1 truncate font-medium">
-            {element.name || element.type}
-          </span>
+            <button
+              className="flex min-w-0 flex-1 items-center gap-2 border-none bg-transparent p-0 text-left outline-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect(element.id, e.shiftKey || e.metaKey);
+              }}
+              type="button"
+            >
+              <span
+                className={cn(
+                  "shrink-0",
+                  isSelected ? "text-white" : "text-muted-foreground"
+                )}
+              >
+                {getIcon(element.type)}
+              </span>
+              <span className="truncate font-medium text-[11px] leading-none">
+                {element.name || element.type}
+              </span>
+            </button>
+          </div>
 
           {children.length > 0 && (
-            <ChevronDown className="text-gray-300" size={12} />
+            <ChevronDown
+              className={cn(
+                "h-3 w-3 shrink-0 opacity-60",
+                isSelected ? "text-white" : "text-muted-foreground"
+              )}
+            />
           )}
-        </button>
+        </div>
         {children.length > 0 && (
           <div className="flex flex-col">
             {children.map((child) => renderItem(child, depth + 1))}
@@ -124,44 +159,53 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
 
   if (isCollapsed) {
     return (
-      <div className="fixed top-6 left-6 z-100 flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-xl">
-        <button
-          className="p-2 text-gray-400 transition-colors hover:text-gray-900"
+      <div className="fixed top-[60px] left-4 z-100 flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 bg-background/95 shadow-lg backdrop-blur-sm">
+        <Button
+          className="h-8 w-8 border-none text-foreground transition-colors hover:bg-accent"
           onClick={() => setIsCollapsed(false)}
-          type="button"
+          size="icon-xs"
+          variant="ghost"
         >
-          <PanelLeftOpen size={20} />
-        </button>
+          <PanelLeftOpen className="h-4 w-4" />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="fixed top-6 bottom-6 left-6 z-90 flex w-64 flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl transition-all duration-300">
-      <div className="flex h-16 items-center justify-between border-gray-100 border-b bg-gray-50/50 p-5">
-        <h3 className="font-bold text-[11px] text-gray-400 uppercase tracking-widest">
-          Layers
-        </h3>
-        <button
-          className="rounded-lg p-1.5 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-900"
+    <div className="fixed top-[60px] bottom-4 left-4 z-90 flex w-[240px] flex-col overflow-hidden rounded-xl border border-border/60 bg-background/95 shadow-2xl backdrop-blur-sm transition-all duration-300">
+      <div className="flex h-10 items-center justify-between border-border/50 border-b px-3">
+        <div className="flex items-center gap-2">
+          <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="font-bold text-[11px] text-foreground tracking-tight">
+            Layers
+          </span>
+        </div>
+        <Button
+          className="h-6 w-6 rounded border-none hover:bg-accent"
           onClick={() => setIsCollapsed(true)}
-          type="button"
+          size="icon-xs"
+          variant="ghost"
         >
-          <PanelLeftClose size={16} />
-        </button>
+          <PanelLeftClose className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
       </div>
-      <div className="custom-scrollbar flex-1 overflow-y-auto px-2 py-4">
-        {rootItems.length === 0 ? (
-          <div className="flex h-full flex-col justify-center p-8 text-center font-medium text-gray-400 text-xs">
-            <div className="mb-2">No layers yet</div>
-            <div className="text-[10px] opacity-60">
-              Add elements from the dock
+      <ScrollArea className="flex-1">
+        <div className="py-2">
+          {rootItems.length === 0 ? (
+            <div className="flex h-40 flex-col items-center justify-center p-6 text-center">
+              <span className="font-medium text-[11px] text-muted-foreground">
+                No layers yet
+              </span>
+              <p className="mt-1 text-[10px] text-muted-foreground leading-relaxed opacity-60">
+                Add elements from the toolbar to start designing.
+              </p>
             </div>
-          </div>
-        ) : (
-          rootItems.map((item) => renderItem(item))
-        )}
-      </div>
+          ) : (
+            rootItems.map((item) => renderItem(item))
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

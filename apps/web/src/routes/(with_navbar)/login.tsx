@@ -227,19 +227,23 @@ function LoginComponent() {
                 </div>
 
                 <emailForm.Subscribe>
-                  {(state) => (
-                    <Button
-                      className="w-full"
-                      disabled={!state.canSubmit || state.isSubmitting}
-                      type="submit"
-                    >
-                      {state.isSubmitting
-                        ? "Submitting..."
-                        : isSignUp
-                          ? "Sign Up"
-                          : "Sign In"}
-                    </Button>
-                  )}
+                  {(state) => {
+                    let label = "Sign In";
+                    if (state.isSubmitting) {
+                      label = "Submitting...";
+                    } else if (isSignUp) {
+                      label = "Sign Up";
+                    }
+                    return (
+                      <Button
+                        className="w-full"
+                        disabled={!state.canSubmit || state.isSubmitting}
+                        type="submit"
+                      >
+                        {label}
+                      </Button>
+                    );
+                  }}
                 </emailForm.Subscribe>
               </form>
 

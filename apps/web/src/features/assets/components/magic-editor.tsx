@@ -76,7 +76,9 @@ export function MagicEditor() {
                 <img
                   alt="To edit"
                   className="h-full w-full object-cover"
+                  height={300}
                   src={selectedImage}
+                  width={300}
                 />
               ) : (
                 <div className="p-4 text-center text-muted-foreground">
@@ -121,17 +123,20 @@ export function MagicEditor() {
         <Label>Select Asset to Edit</Label>
         <div className="grid max-h-[500px] grid-cols-3 gap-2 overflow-y-auto p-1">
           {assets.map((asset) => (
-            <div
-              className={`aspect-square cursor-pointer overflow-hidden rounded-lg border-2 ${selectedImage === asset.url ? "border-primary" : "border-transparent"}`}
+            <button
+              className={`aspect-square w-full cursor-pointer overflow-hidden rounded-lg border-2 ${selectedImage === asset.url ? "border-primary" : "border-transparent"}`}
               key={asset.id}
               onClick={() => setSelectedImage(asset.url)}
+              type="button"
             >
               <img
                 alt={asset.prompt}
                 className="h-full w-full object-cover"
+                height={200}
                 src={asset.url}
+                width={200}
               />
-            </div>
+            </button>
           ))}
           {assets.length === 0 && (
             <div className="col-span-full py-8 text-center text-muted-foreground">

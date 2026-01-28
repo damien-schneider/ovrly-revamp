@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "convex dev",
     "dev:setup": "convex dev --configure --until-success",
-    "deploy": "convex deploy"
+    "deploy": "convex deploy",
+    "check-types": "tsc --noEmit -p convex/tsconfig.json"
   },
   "author": "",
   "license": "ISC",

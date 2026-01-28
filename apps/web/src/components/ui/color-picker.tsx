@@ -2,7 +2,6 @@
 
 import { Alpha, Colorful, type ColorResult } from "@uiw/react-color";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,6 +14,7 @@ type ColorPickerProps = {
   value: string;
   onChange: (color: string) => void;
   disabled?: boolean;
+  size?: "default" | "compact";
 };
 
 const HEX_REGEX = /^#[0-9A-Fa-f]{0,8}$/;
@@ -74,7 +74,12 @@ const rgbToHsv = (r: number, g: number, b: number) => {
   };
 };
 
-export function ColorPicker({ value, onChange, disabled }: ColorPickerProps) {
+export function ColorPicker({
+  value,
+  onChange,
+  disabled,
+  size = "default",
+}: ColorPickerProps) {
   const [open, setOpen] = useState(false);
 
   // Convert RGBA to hex
@@ -164,18 +169,23 @@ export function ColorPicker({ value, onChange, disabled }: ColorPickerProps) {
     }
   };
 
+  const buttonSizeClass =
+    size === "compact"
+      ? "h-5 w-5 min-h-5 min-w-5 border p-0 rounded"
+      : "h-10 w-10 border-2 p-0";
+
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger asChild={true}>
-        <Button
+      <PopoverTrigger>
+        <button
           aria-label="Pick a color"
-          className="h-10 w-10 border-2 p-0"
+          className={`${buttonSizeClass} cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all`}
           disabled={disabled}
           style={{ backgroundColor: value }}
-          variant="outline"
+          type="button"
         >
           <span className="sr-only">Pick color</span>
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-4">
         <div className="space-y-4">

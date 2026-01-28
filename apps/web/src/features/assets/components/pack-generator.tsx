@@ -98,15 +98,18 @@ export function PackGenerator() {
           {/* Reference Upload */}
           <div className="space-y-2">
             <Label>Reference Image</Label>
-            <div
-              className="flex aspect-video cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50"
+            <button
+              className="flex aspect-video w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50"
               onClick={() => fileInputRef.current?.click()}
+              type="button"
             >
               {reference ? (
                 <img
                   alt="Reference"
                   className="h-full w-full object-contain"
+                  height={360}
                   src={reference}
+                  width={640}
                 />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -121,7 +124,7 @@ export function PackGenerator() {
                 ref={fileInputRef}
                 type="file"
               />
-            </div>
+            </button>
           </div>
 
           {/* Emote List */}
@@ -143,6 +146,7 @@ export function PackGenerator() {
                   <button
                     className="ml-2 rounded-full hover:bg-muted-foreground/20"
                     onClick={() => handleRemoveEmote(emote)}
+                    type="button"
                   >
                     <X className="h-3 w-3" />
                   </button>

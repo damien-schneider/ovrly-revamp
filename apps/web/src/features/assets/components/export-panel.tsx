@@ -163,7 +163,9 @@ export function ExportPanel() {
                   <img
                     alt={asset.prompt}
                     className="h-10 w-10 rounded bg-muted"
+                    height={40}
                     src={asset.url}
+                    width={40}
                   />
                   <span className="truncate font-medium text-sm">
                     {asset.prompt}

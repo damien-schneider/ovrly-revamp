@@ -14,7 +14,7 @@ export default function Header() {
     <div className="flex h-14 w-72 items-center gap-2">
       <div className="flex items-center">
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger>
             <Link
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-background-2 transition-colors hover:bg-background"
               to="/home"
@@ -32,7 +32,7 @@ export default function Header() {
         <nav className="flex w-full items-center gap-1">
           {pathname.includes("/overlays") && (
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <Link
                   className={cn(
                     "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",

@@ -1,7 +1,6 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,32 +17,29 @@ export default function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">{user?.name}</Button>
+      <DropdownMenuTrigger className="flex h-10 items-center rounded-xl border bg-background-2 px-4 transition-colors hover:bg-background">
+        {user?.name}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>{user?.email}</DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Button
-            className="w-full"
-            onClick={() => {
-              authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    navigate({
-                      to: "/login",
-                      search: { redirect: "/overlays" },
-                    });
-                  },
+        <DropdownMenuItem
+          className="w-full cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          onClick={() => {
+            authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  navigate({
+                    to: "/login",
+                    search: { redirect: "/overlays" },
+                  });
                 },
-              });
-            }}
-            variant="destructive"
-          >
-            Sign Out
-          </Button>
+              },
+            });
+          }}
+        >
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
