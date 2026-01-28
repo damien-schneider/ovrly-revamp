@@ -22,7 +22,18 @@ export const list = query({
 export const getById = query({
   args: { id: v.id("overlays") },
   handler: async (ctx, { id }) => {
-    return await ctx.db.get(id);
+    const user = await getProfile(ctx);
+    const overlay = await ctx.db.get(id);
+
+    if (!overlay) {
+      return null;
+    }
+
+    if (overlay.userId !== user._id) {
+      return null;
+    }
+
+    return overlay;
   },
 });
 
@@ -178,7 +189,7 @@ export const batchUpdate = mutation({
 });
 
 /**
- * Delete an overlay element (cascades to children)
+ * Delete an overlay element (cascades recursively to all descendants)
  */
 export const remove = mutation({
   args: { id: v.id("overlays") },
@@ -194,20 +205,26 @@ export const remove = mutation({
       throw new Error("Unauthorized");
     }
 
-    // Delete children first
-    const children = await ctx.db
-      .query("overlays")
-      .withIndex("by_userId_parentId", (q) =>
-        q.eq("userId", user._id).eq("parentId", id)
-      )
-      .collect();
+    // Recursive function to delete an overlay and all its descendants
+    const deleteRecursively = async (overlayId: string) => {
+      // Find all children
+      const children = await ctx.db
+        .query("overlays")
+        .withIndex("by_userId_parentId", (q) =>
+          q.eq("userId", user._id).eq("parentId", overlayId)
+        )
+        .collect();
 
-    for (const child of children) {
-      await ctx.db.delete(child._id);
-    }
+      // Recursively delete each child and its descendants
+      for (const child of children) {
+        await deleteRecursively(child._id);
+      }
 
-    // Delete the overlay itself
-    await ctx.db.delete(id);
+      // Delete the overlay itself after all descendants are deleted
+      await ctx.db.delete(overlayId);
+    };
+
+    await deleteRecursively(id);
   },
 });
 
@@ -224,10 +241,17 @@ export const generateUploadUrl = mutation({
 
 /**
  * Get a URL for a stored file
+ *
+ * SECURITY NOTE: Convex storage URLs are publicly accessible once generated.
+ * There is no built-in authorization layer for storage access. If you need
+ * private files, you must implement additional access controls or use a
+ * different storage solution. Currently, any user who knows a storageId
+ * can access the file.
  */
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, { storageId }) => {
+    await getProfile(ctx);
     return await ctx.storage.getUrl(storageId);
   },
 });
