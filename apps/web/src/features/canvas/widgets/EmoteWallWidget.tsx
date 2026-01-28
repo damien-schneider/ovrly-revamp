@@ -234,6 +234,7 @@ export function EmoteWallWidget({ element, isLiveView }: EmoteWallWidgetProps) {
         width: "100%",
         height: "100%",
         backgroundColor: isLiveView ? "transparent" : undefined,
+        opacity: element.opacity ?? 1,
       }}
     >
       {!isLiveView && (

@@ -24,11 +24,7 @@ import {
   applyElementUpdate,
   getIndependentUpdateIds,
 } from "./lib/element-utils";
-import {
-  downloadOBSHtml,
-  generateOBSDataUri,
-  generateOBSHtml,
-} from "./utils/export-generator";
+import { downloadOBSHtml } from "./utils/export-generator";
 
 interface CanvasEditorProps {
   saveStatus?: React.ReactNode;
@@ -181,29 +177,6 @@ export function CanvasEditor({ saveStatus }: CanvasEditorProps) {
     toast.success("HTML file downloaded");
   };
 
-  const handlePreview = (id: string) => {
-    const target = elements.find((e) => e.id === id);
-    if (!target) {
-      return;
-    }
-    const html = generateOBSHtml([target]);
-    const win = window.open();
-    if (win) {
-      win.document.write(html);
-      win.document.close();
-    }
-  };
-
-  const handleCopyLink = (id: string) => {
-    const target = elements.find((e) => e.id === id);
-    if (!target) {
-      return;
-    }
-    const dataUri = generateOBSDataUri([target]);
-    navigator.clipboard.writeText(dataUri);
-    toast.success("OBS Data URI copied to clipboard");
-  };
-
   return (
     <div className="flex h-screen w-full select-none overflow-hidden bg-background font-sans text-foreground">
       <NavigationSidebar saveStatus={saveStatus} />
@@ -215,10 +188,8 @@ export function CanvasEditor({ saveStatus }: CanvasEditorProps) {
       <Canvas onUpdateElement={handleUpdate} />
 
       <PropertiesPanel
-        onCopyLink={handleCopyLink}
         onDelete={handleDelete}
         onExport={handleExport}
-        onPreview={handlePreview}
         onUpdate={handleUpdate}
       />
     </div>

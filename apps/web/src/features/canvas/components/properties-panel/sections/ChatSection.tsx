@@ -1,7 +1,3 @@
-import { Wand2 } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -11,8 +7,6 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { generateChatTheme } from "@/features/canvas/services/gemini-service";
 import type {
   ChatElement,
   ChatStyle,
@@ -32,28 +26,10 @@ interface ChatSectionProps {
 }
 
 export function ChatSection({ element, onUpdate }: ChatSectionProps) {
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-
   const updateChatStyle = (updates: Partial<ChatStyle>) => {
     onUpdate(element.id, {
       style: { ...element.style, ...updates },
     } as Partial<ChatElement>);
-  };
-
-  const handleAiTheme = () => {
-    if (!aiPrompt) {
-      return;
-    }
-    setIsGenerating(true);
-    const theme = generateChatTheme(aiPrompt);
-    if (theme) {
-      onUpdate(element.id, {
-        style: { ...element.style, ...theme },
-      } as Partial<ChatElement>);
-      toast.success("Theme applied!");
-    }
-    setIsGenerating(false);
   };
 
   return (
@@ -207,25 +183,6 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
               />
             </div>
           </PropertyRow>
-        </div>
-      </PanelSection>
-
-      <PanelSection defaultOpen={false} title="AI Designer">
-        <div className="space-y-2 rounded-lg border border-purple-200 bg-purple-50 p-2 dark:border-purple-800 dark:bg-purple-950/50">
-          <Textarea
-            className="min-h-12 resize-none bg-background text-[11px]"
-            onChange={(e) => setAiPrompt(e.target.value)}
-            placeholder="e.g. 'Soft glassmorphism with blue neon text'"
-            value={aiPrompt}
-          />
-          <Button
-            className="h-7 w-full gap-1.5 text-[11px]"
-            disabled={isGenerating || !aiPrompt}
-            onClick={handleAiTheme}
-          >
-            <Wand2 className="h-3 w-3" />
-            {isGenerating ? "Designing..." : "Magic Generate"}
-          </Button>
         </div>
       </PanelSection>
     </>

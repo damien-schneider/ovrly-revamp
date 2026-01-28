@@ -17,6 +17,7 @@ export function OverlayWidget({
         border: isLiveView ? "none" : "2px solid rgba(37, 99, 235, 0.1)",
         borderRadius: isLiveView ? 0 : "4px",
         boxShadow: isLiveView ? "none" : "inset 0 0 10px rgba(0,0,0,0.02)",
+        opacity: element.opacity ?? 1,
       }}
     >
       {!isLiveView && (

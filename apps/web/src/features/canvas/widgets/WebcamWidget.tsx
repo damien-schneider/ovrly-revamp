@@ -46,6 +46,7 @@ export function WebcamWidget({ element, isLiveView }: WebcamWidgetProps) {
         borderRadius: element.shape === "circle" ? "50%" : element.borderRadius,
         border: `${element.borderWidth}px solid ${element.borderColor}`,
         boxShadow: `0 4px ${element.shadowBlur}px ${element.shadowColor}`,
+        opacity: element.opacity ?? 1,
       }}
     >
       <video

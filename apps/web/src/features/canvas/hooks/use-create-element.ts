@@ -2,6 +2,7 @@ import { api } from "@ovrly-revamp/backend/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useAtomValue } from "jotai";
 import { elementsAtom, viewportAtom } from "@/atoms/canvas-atoms";
+import { findNewParent } from "@/features/canvas/lib/element-utils";
 import { elementToOverlayCreate } from "@/features/canvas/lib/overlay-conversion";
 import {
   type BoxElement,
@@ -53,7 +54,6 @@ export function useCreateElement(
       zIndex: maxZ + 1,
       locked: false,
       visible: true,
-      parentId: null,
     };
 
     let newElement: OverlayElement | null = null;
@@ -205,13 +205,26 @@ export function useCreateElement(
 
     if (newElement) {
       try {
+        // Calculate parentId based on element position (skip for OVERLAY containers)
+        const centerX = newElement.x + newElement.width / 2;
+        const centerY = newElement.y + newElement.height / 2;
+        const parentId =
+          newElement.type === ElementType.OVERLAY
+            ? null
+            : findNewParent(elements, centerX, centerY, id);
+
+        const elementWithParent = {
+          ...newElement,
+          parentId,
+        };
+
         // Convert element to backend format and create
-        const createArgs = elementToOverlayCreate(newElement);
+        const createArgs = elementToOverlayCreate(elementWithParent);
         const backendId = await createOverlay(createArgs);
 
         // Update element with backend ID
         const elementWithBackendId = {
-          ...newElement,
+          ...elementWithParent,
           id: backendId,
         };
 

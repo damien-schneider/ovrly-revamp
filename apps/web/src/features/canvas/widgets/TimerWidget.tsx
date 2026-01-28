@@ -95,6 +95,7 @@ export function TimerWidget({ element }: TimerWidgetProps) {
         backgroundColor: style.backgroundColor,
         borderRadius: style.borderRadius,
         padding: style.padding,
+        opacity: element.opacity ?? 1,
       }}
     >
       {timeDisplay}

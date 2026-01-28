@@ -73,7 +73,6 @@ export interface ChatStyle {
   fontSize: number;
   borderRadius: number;
   messageSpacing: number;
-  showAvatars: boolean;
   usernameColor: string;
   animation: "fade" | "slide" | "none";
   // Enhanced chat styling
@@ -114,8 +113,6 @@ export interface EmoteWallStyle {
   rotationEnabled: boolean;
   maxRotation: number;
   bounceEnabled: boolean;
-  trailEnabled: boolean;
-  trailOpacity: number;
 }
 
 export interface EmoteWallElement extends BaseElement {
@@ -195,7 +192,6 @@ export const defaultChatStyle: ChatStyle = {
   fontSize: 14,
   borderRadius: 12,
   messageSpacing: 8,
-  showAvatars: true,
   usernameColor: "#a855f7",
   animation: "slide",
   messageBgColor: "rgba(255, 255, 255, 0.1)",
@@ -220,8 +216,6 @@ export const defaultEmoteWallStyle: EmoteWallStyle = {
   rotationEnabled: true,
   maxRotation: 30,
   bounceEnabled: false,
-  trailEnabled: false,
-  trailOpacity: 0.3,
 };
 
 export const defaultTimerStyle: TimerStyle = {

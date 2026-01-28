@@ -1,14 +1,12 @@
+import { Link } from "@tanstack/react-router";
 import { useAtom, useAtomValue } from "jotai";
 import {
-  Copy,
   Download,
-  ExternalLink,
   Eye,
   Link2,
   PanelRightClose,
   PanelRightOpen,
   Trash2,
-  Wand2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -31,7 +29,7 @@ import {
   type TimerElement,
   type WebcamElement,
 } from "@/features/canvas/types";
-import { IconButton, IconLink, PanelSection } from "./primitives";
+import { IconButton, PanelSection } from "./primitives";
 import { AppearanceSection } from "./sections/AppearanceSection";
 import { BoxFillSection, BoxStrokeSection } from "./sections/BoxSection";
 import { ChatSection } from "./sections/ChatSection";
@@ -49,16 +47,12 @@ interface PropertiesPanelProps {
   onUpdate: (id: string, updates: Partial<OverlayElement>) => void;
   onDelete: (id: string) => void;
   onExport: (id?: string) => void;
-  onPreview: (id: string) => void;
-  onCopyLink: (id: string) => void;
 }
 
 export function PropertiesPanel({
   onUpdate,
   onDelete,
   onExport,
-  onPreview,
-  onCopyLink,
 }: PropertiesPanelProps) {
   const elements = useAtomValue(elementsAtom);
   const selectedIds = useAtomValue(selectedIdsAtom);
@@ -87,22 +81,11 @@ export function PropertiesPanel({
   if (element) {
     return (
       <div className="fixed top-4 right-4 bottom-4 z-90 flex w-[260px] flex-col overflow-hidden rounded-xl border border-border/60 bg-background/95 shadow-2xl backdrop-blur-sm">
-        {/* Panel Header with Tabs */}
+        {/* Panel Header */}
         <div className="flex h-10 items-center justify-between border-border/50 border-b px-3">
-          <div className="flex gap-1">
-            <Button
-              className="h-7 rounded-none border-primary border-b-2 border-none bg-transparent px-2 font-semibold text-[11px] text-foreground hover:bg-accent"
-              variant="ghost"
-            >
-              Design
-            </Button>
-            <Button
-              className="h-7 rounded-none border-none bg-transparent px-2 font-medium text-[11px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              variant="ghost"
-            >
-              Export
-            </Button>
-          </div>
+          <span className="font-semibold text-[11px] text-foreground">
+            Properties
+          </span>
           <div className="flex items-center gap-1">
             <IconButton
               icon={<Trash2 className="h-3.5 w-3.5 text-destructive" />}
@@ -124,22 +107,6 @@ export function PropertiesPanel({
               <span className="font-medium text-[11px] text-foreground capitalize">
                 {element.type.toLowerCase().replace("_", " ")}
               </span>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <IconButton
-                icon={<Link2 className="h-3 w-3" />}
-                onClick={() => {
-                  const elementUrl = `${window.location.origin}/view/overlay/${element.id}`;
-                  navigator.clipboard.writeText(elementUrl);
-                  toast.success("Element URL copied!");
-                }}
-                tooltip="Copy element URL"
-              />
-              <IconLink
-                icon={<ExternalLink className="h-3 w-3" />}
-                to={`/view/overlay/${element.id}`}
-                tooltip="Open in browser"
-              />
             </div>
           </div>
 
@@ -212,46 +179,28 @@ export function PropertiesPanel({
             />
           )}
 
-          {/* Export Section */}
-          <PanelSection defaultOpen={false} title="Export">
-            <div className="space-y-2">
-              <div className="flex gap-1">
-                <Button
-                  className="h-7 flex-1 gap-1 text-[11px]"
-                  onClick={() => onPreview(element.id)}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Eye className="h-3 w-3" /> Preview
-                </Button>
-                <Button
-                  className="h-7 flex-1 gap-1 text-[11px]"
-                  onClick={() => onCopyLink(element.id)}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Copy className="h-3 w-3" /> Data URI
-                </Button>
-              </div>
-            </div>
-          </PanelSection>
-
           {/* Actions Section */}
           <PanelSection title="Actions">
             <div className="grid grid-cols-2 gap-2">
               <Button
                 className="h-8 gap-1.5 text-[11px]"
-                onClick={() => onCopyLink(element.id)}
+                onClick={() => {
+                  const elementUrl = `${window.location.origin}/view/overlay/${element.id}`;
+                  navigator.clipboard.writeText(elementUrl);
+                  toast.success("Element URL copied!");
+                }}
                 variant="outline"
               >
                 <Link2 className="h-3.5 w-3.5" /> Link
               </Button>
               <Button
+                asChild
                 className="h-8 gap-1.5 text-[11px]"
-                onClick={() => onPreview(element.id)}
                 variant="outline"
               >
-                <Eye className="h-3.5 w-3.5" /> Preview
+                <Link target="_blank" to={`/view/overlay/${element.id}`}>
+                  <Eye className="h-3.5 w-3.5" /> Preview
+                </Link>
               </Button>
               <Button
                 className="h-8 gap-1.5 text-[11px]"
@@ -260,14 +209,6 @@ export function PropertiesPanel({
               >
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
-              {element.type === ElementType.CHAT && (
-                <Button
-                  className="h-8 gap-1.5 border-primary/20 bg-primary/10 text-[11px] text-primary hover:bg-primary/20"
-                  variant="outline"
-                >
-                  <Wand2 className="h-3.5 w-3.5" /> AI Theme
-                </Button>
-              )}
             </div>
           </PanelSection>
         </ScrollArea>
