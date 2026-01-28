@@ -129,7 +129,7 @@ export function PropertiesPanel({
               <IconButton
                 icon={<Link2 className="h-3 w-3" />}
                 onClick={() => {
-                  const elementUrl = `${window.location.origin}/preview/element/${element.id}`;
+                  const elementUrl = `${window.location.origin}/overlays/view/${element.id}`;
                   navigator.clipboard.writeText(elementUrl);
                   toast.success("Element URL copied!");
                 }}
@@ -138,7 +138,7 @@ export function PropertiesPanel({
               <IconButton
                 icon={<ExternalLink className="h-3 w-3" />}
                 onClick={() => {
-                  const elementUrl = `${window.location.origin}/preview/element/${element.id}`;
+                  const elementUrl = `${window.location.origin}/overlays/view/${element.id}`;
                   window.open(elementUrl, "_blank");
                 }}
                 tooltip="Open in browser"

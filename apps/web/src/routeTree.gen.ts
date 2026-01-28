@@ -25,7 +25,6 @@ import { Route as with_navbarAssetsRouteImport } from './routes/(with_navbar)/as
 import { Route as with_navbarAccountRouteImport } from './routes/(with_navbar)/account'
 import { Route as with_navbarChatInteractionsIndexRouteImport } from './routes/(with_navbar)/chat-interactions/index'
 import { Route as with_navbarAssetsIndexRouteImport } from './routes/(with_navbar)/assets/index'
-import { Route as PreviewElementElementIdRouteImport } from './routes/preview.element.$elementId'
 import { Route as OverlaysViewElementIdRouteImport } from './routes/overlays.view.$elementId'
 import { Route as with_navbarChatInteractionsCommandsRouteImport } from './routes/(with_navbar)/chat-interactions/commands'
 import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
@@ -112,11 +111,6 @@ const with_navbarAssetsIndexRoute = with_navbarAssetsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => with_navbarAssetsRoute,
 } as any)
-const PreviewElementElementIdRoute = PreviewElementElementIdRouteImport.update({
-  id: '/element/$elementId',
-  path: '/element/$elementId',
-  getParentRoute: () => PreviewRoute,
-} as any)
 const OverlaysViewElementIdRoute = OverlaysViewElementIdRouteImport.update({
   id: '/$elementId',
   path: '/$elementId',
@@ -144,7 +138,7 @@ export interface FileRoutesByFullPath {
   '/assets': typeof with_navbarAssetsRouteWithChildren
   '/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/overlays': typeof OverlaysRouteWithChildren
-  '/preview': typeof PreviewRouteWithChildren
+  '/preview': typeof PreviewRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
   '/home': typeof with_navbarHomeRoute
@@ -156,7 +150,6 @@ export interface FileRoutesByFullPath {
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
-  '/preview/element/$elementId': typeof PreviewElementElementIdRoute
   '/assets/': typeof with_navbarAssetsIndexRoute
   '/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
 }
@@ -164,7 +157,7 @@ export interface FileRoutesByTo {
   '/assets': typeof with_navbarAssetsIndexRoute
   '/chat-interactions': typeof with_navbarChatInteractionsIndexRoute
   '/overlays': typeof OverlaysRouteWithChildren
-  '/preview': typeof PreviewRouteWithChildren
+  '/preview': typeof PreviewRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
   '/home': typeof with_navbarHomeRoute
@@ -176,7 +169,6 @@ export interface FileRoutesByTo {
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
-  '/preview/element/$elementId': typeof PreviewElementElementIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,7 +176,7 @@ export interface FileRoutesById {
   '/assets': typeof AssetsRoute
   '/chat-interactions': typeof ChatInteractionsRoute
   '/overlays': typeof OverlaysRouteWithChildren
-  '/preview': typeof PreviewRouteWithChildren
+  '/preview': typeof PreviewRoute
   '/(with_navbar)/account': typeof with_navbarAccountRoute
   '/(with_navbar)/assets': typeof with_navbarAssetsRouteWithChildren
   '/(with_navbar)/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   '/(with_navbar)/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/(with_navbar)/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
-  '/preview/element/$elementId': typeof PreviewElementElementIdRoute
   '/(with_navbar)/assets/': typeof with_navbarAssetsIndexRoute
   '/(with_navbar)/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
 }
@@ -220,7 +211,6 @@ export interface FileRouteTypes {
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
     | '/overlays/view/$elementId'
-    | '/preview/element/$elementId'
     | '/assets/'
     | '/chat-interactions/'
   fileRoutesByTo: FileRoutesByTo
@@ -240,7 +230,6 @@ export interface FileRouteTypes {
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
     | '/overlays/view/$elementId'
-    | '/preview/element/$elementId'
   id:
     | '__root__'
     | '/(with_navbar)'
@@ -261,7 +250,6 @@ export interface FileRouteTypes {
     | '/(with_navbar)/assets/sub-badges'
     | '/(with_navbar)/chat-interactions/commands'
     | '/overlays/view/$elementId'
-    | '/preview/element/$elementId'
     | '/(with_navbar)/assets/'
     | '/(with_navbar)/chat-interactions/'
   fileRoutesById: FileRoutesById
@@ -271,7 +259,7 @@ export interface RootRouteChildren {
   AssetsRoute: typeof AssetsRoute
   ChatInteractionsRoute: typeof ChatInteractionsRoute
   OverlaysRoute: typeof OverlaysRouteWithChildren
-  PreviewRoute: typeof PreviewRouteWithChildren
+  PreviewRoute: typeof PreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -388,13 +376,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarAssetsIndexRouteImport
       parentRoute: typeof with_navbarAssetsRoute
     }
-    '/preview/element/$elementId': {
-      id: '/preview/element/$elementId'
-      path: '/element/$elementId'
-      fullPath: '/preview/element/$elementId'
-      preLoaderRoute: typeof PreviewElementElementIdRouteImport
-      parentRoute: typeof PreviewRoute
-    }
     '/overlays/view/$elementId': {
       id: '/overlays/view/$elementId'
       path: '/$elementId'
@@ -509,23 +490,12 @@ const OverlaysRouteWithChildren = OverlaysRoute._addFileChildren(
   OverlaysRouteChildren,
 )
 
-interface PreviewRouteChildren {
-  PreviewElementElementIdRoute: typeof PreviewElementElementIdRoute
-}
-
-const PreviewRouteChildren: PreviewRouteChildren = {
-  PreviewElementElementIdRoute: PreviewElementElementIdRoute,
-}
-
-const PreviewRouteWithChildren =
-  PreviewRoute._addFileChildren(PreviewRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   with_navbarRouteRoute: with_navbarRouteRouteWithChildren,
   AssetsRoute: AssetsRoute,
   ChatInteractionsRoute: ChatInteractionsRoute,
   OverlaysRoute: OverlaysRouteWithChildren,
-  PreviewRoute: PreviewRouteWithChildren,
+  PreviewRoute: PreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
