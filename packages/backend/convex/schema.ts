@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   profiles: defineTable({
-    authId: v.string(), // Better Auth user ID (from authUser._id) - used to look up profile from tokenIdentifier
+    authId: v.string(),
     email: v.union(v.string(), v.null()),
     name: v.union(v.string(), v.null()),
     image: v.union(v.string(), v.null()),
@@ -13,30 +13,50 @@ export default defineSchema({
   })
     .index("by_authId", ["authId"])
     .index("by_email", ["email"]),
+
+  // Hierarchical overlay elements - each element is a row
   overlays: defineTable({
-    userId: v.id("profiles"), // Foreign key to profiles table
-    name: v.string(),
-    settings: v.any(),
-    channel: v.optional(v.string()),
-    type: v.union(v.literal("chat"), v.literal("emoji-wall"), v.literal("ad")),
-  })
-    .index("by_userId", ["userId"])
-    .index("by_channel", ["channel"]),
-  // Canvas editor projects - stores Figma-like canvas elements
-  projects: defineTable({
     userId: v.id("profiles"),
+    type: v.union(
+      v.literal("OVERLAY"),
+      v.literal("TEXT"),
+      v.literal("BOX"),
+      v.literal("IMAGE"),
+      v.literal("CHAT"),
+      v.literal("EMOTE_WALL"),
+      v.literal("WEBCAM"),
+      v.literal("TIMER"),
+      v.literal("PROGRESS")
+    ),
     name: v.string(),
-    elements: v.any(), // Array of OverlayElement objects
-    channel: v.optional(v.string()), // Twitch channel associated with this project
+    parentId: v.union(v.id("overlays"), v.null()),
+
+    // Transform properties
+    x: v.number(),
+    y: v.number(),
+    width: v.number(),
+    height: v.number(),
+    rotation: v.number(),
+    opacity: v.number(),
+    zIndex: v.number(),
+    locked: v.boolean(),
+    visible: v.boolean(),
+
+    // Type-specific properties (JSON)
+    properties: v.any(),
+
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_parentId", ["userId", "parentId"]),
+
   commands: defineTable({
-    userId: v.id("profiles"), // Owner of the command
-    trigger: v.string(), // Command trigger (e.g., "!projects")
-    response: v.string(), // Command response message
-    enabled: v.boolean(), // Whether command is active
-    cooldown: v.optional(v.number()), // Cooldown in seconds (future feature)
+    userId: v.id("profiles"),
+    trigger: v.string(),
+    response: v.string(),
+    enabled: v.boolean(),
+    cooldown: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
