@@ -136,8 +136,8 @@ export function PropertiesPanel({
                 tooltip="Copy element URL"
               />
               <IconLink
-                href={`/view/overlay/${element.id}`}
                 icon={<ExternalLink className="h-3 w-3" />}
+                to={`/view/overlay/${element.id}`}
                 tooltip="Open in browser"
               />
             </div>
