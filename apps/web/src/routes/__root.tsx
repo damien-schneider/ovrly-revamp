@@ -1,5 +1,3 @@
-import type { ConvexQueryClient } from "@convex-dev/react-query";
-import type { QueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   Outlet,
@@ -19,9 +17,7 @@ import { cn } from "@/lib/utils";
 const SESSION_TIMEOUT_MS = 5000;
 
 export interface RouterAppContext {
-  queryClient: QueryClient;
   convexClient: ConvexReactClient;
-  convexQueryClient: ConvexQueryClient;
   userId?: string;
 }
 

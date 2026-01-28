@@ -1,7 +1,7 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useQuery as useConvexQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useProviderData } from "@/hooks/use-provider-token";
+import { useProviderData } from "@/features/auth/hooks/use-provider-token";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/(with_navbar)/account")({
@@ -38,16 +38,19 @@ interface LinkedAccount {
 
 function RouteComponent() {
   const { twitchUsername, isLoading: isLoadingProvider } = useProviderData();
-  const provider = useConvexQuery(api.auth.getCurrentProvider);
+  const provider = useQuery(api.auth.getCurrentProvider);
+  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
 
-  // Fetch all linked accounts
-  const { data: linkedAccounts, refetch: refetchAccounts } = useQuery({
-    queryKey: ["linked-accounts"],
-    queryFn: async () => {
-      const response = await authClient.listAccounts();
-      return (response.data ?? []) as LinkedAccount[];
-    },
-  });
+  const fetchAccounts = useCallback(async () => {
+    const response = await authClient.listAccounts();
+    setLinkedAccounts((response.data ?? []) as LinkedAccount[]);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      await fetchAccounts();
+    })();
+  }, [fetchAccounts]);
 
   const handleConnectTwitch = async () => {
     try {
@@ -82,7 +85,7 @@ function RouteComponent() {
         return;
       }
       toast.success("Account unlinked successfully");
-      await refetchAccounts();
+      await fetchAccounts();
     } catch {
       toast.error("Failed to unlink account");
     }

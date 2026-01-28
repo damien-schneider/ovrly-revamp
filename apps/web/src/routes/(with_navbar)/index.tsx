@@ -1,8 +1,11 @@
-import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import {
+  Authenticated,
+  AuthLoading,
+  Unauthenticated,
+  useQuery,
+} from "convex/react";
 import { useEffect, useState } from "react";
 import Loader from "@/features/layout/components/loader";
 
@@ -24,7 +27,7 @@ function AuthLoadingWithTimeout() {
   }, []);
 
   if (timedOut) {
-    return <Navigate to="/login" />;
+    return <Navigate search={{ redirect: "/overlays" }} to="/login" />;
   }
 
   return <Loader />;
@@ -47,23 +50,24 @@ const TITLE_TEXT = `
  `;
 
 function HomeComponent() {
-  const healthCheck = useQuery(convexQuery(api.healthCheck.get, {}));
+  const healthCheck = useQuery(api.healthCheck.get, {});
+  const isLoading = healthCheck === undefined;
 
   const statusColor = (() => {
-    if (healthCheck.isLoading) {
+    if (isLoading) {
       return "bg-orange-400";
     }
-    if (healthCheck.data === "OK") {
+    if (healthCheck === "OK") {
       return "bg-green-500";
     }
     return "bg-red-500";
   })();
 
   const statusText = (() => {
-    if (healthCheck.isLoading) {
+    if (isLoading) {
       return "Checking...";
     }
-    if (healthCheck.data === "OK") {
+    if (healthCheck === "OK") {
       return "Connected";
     }
     return "Error";
