@@ -1,5 +1,8 @@
+import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import { useMutation } from "convex/react";
 import { useAtomValue } from "jotai";
 import { elementsAtom, viewportAtom } from "@/atoms/canvas-atoms";
+import { elementToOverlayCreate } from "@/features/canvas/lib/overlay-conversion";
 import {
   type BoxElement,
   type ChatElement,
@@ -24,8 +27,9 @@ export function useCreateElement(
 ) {
   const elements = useAtomValue(elementsAtom);
   const viewport = useAtomValue(viewportAtom);
+  const createOverlay = useMutation(api.overlays.create);
 
-  const addElement = (type: ElementType) => {
+  const addElement = async (type: ElementType) => {
     const id = crypto.randomUUID();
     const { scale, position } = viewport;
 
@@ -200,9 +204,26 @@ export function useCreateElement(
     }
 
     if (newElement) {
-      updateElements([...elements, newElement]);
-      setSelectedIds([id]);
-      setToolMode("select");
+      try {
+        // Convert element to backend format and create
+        const createArgs = elementToOverlayCreate(newElement);
+        const backendId = await createOverlay(createArgs);
+
+        // Update element with backend ID
+        const elementWithBackendId = {
+          ...newElement,
+          id: backendId,
+        };
+
+        // Add to local state
+        updateElements([...elements, elementWithBackendId]);
+        setSelectedIds([backendId]);
+        setToolMode("select");
+      } catch (error) {
+        throw new Error(
+          `Failed to create element: ${error instanceof Error ? error.message : "Unknown error"}`
+        );
+      }
     }
   };
 

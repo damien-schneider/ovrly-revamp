@@ -12,6 +12,7 @@ import {
   Square,
   Type,
 } from "lucide-react";
+import { toast } from "sonner";
 import { toolModeAtom } from "@/atoms/canvas-atoms";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ import { ElementType } from "@/features/canvas/types";
 import { cn } from "@/lib/utils";
 
 interface ToolbarProps {
-  onAddElement: (type: ElementType) => void;
+  onAddElement: (type: ElementType) => Promise<void>;
 }
 
 export function Toolbar({ onAddElement }: ToolbarProps) {
@@ -95,7 +96,15 @@ export function Toolbar({ onAddElement }: ToolbarProps) {
             <TooltipTrigger>
               <Button
                 className="h-8 w-8 border-none text-muted-foreground hover:bg-accent hover:text-foreground"
-                onClick={() => onAddElement(tool.type)}
+                onClick={() => {
+                  onAddElement(tool.type).catch((error) => {
+                    toast.error(
+                      error instanceof Error
+                        ? error.message
+                        : "Failed to add element"
+                    );
+                  });
+                }}
                 size="icon-xs"
                 variant="ghost"
               >
