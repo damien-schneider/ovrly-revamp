@@ -1,3 +1,6 @@
+import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -51,6 +54,7 @@ export function CanvasEditor({
     setSelectedIds,
     setToolMode
   );
+  const removeOverlay = useMutation(api.overlays.remove);
 
   // Auto-collapse right sidebar when selection is empty
   useEffect(() => {
@@ -160,12 +164,21 @@ export function CanvasEditor({
     updateElements(finalElements);
   };
 
-  const handleDelete = (id: string) => {
-    const newElements = elements.filter(
-      (el) => el.id !== id && el.parentId !== id
-    );
-    updateElements(newElements);
-    setSelectedIds([]);
+  const handleDelete = async (id: string) => {
+    try {
+      // Remove from backend (cascades to children)
+      await removeOverlay({ id: id as Id<"overlays"> });
+
+      // Remove from local state
+      const newElements = elements.filter(
+        (el) => el.id !== id && el.parentId !== id
+      );
+      updateElements(newElements);
+      setSelectedIds([]);
+    } catch (error) {
+      toast.error("Failed to delete element");
+      console.error(error);
+    }
   };
 
   const handleExport = (id?: string) => {
