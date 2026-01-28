@@ -31,7 +31,7 @@ import {
   type TimerElement,
   type WebcamElement,
 } from "@/features/canvas/types";
-import { IconButton, PanelSection } from "./primitives";
+import { IconButton, IconLink, PanelSection } from "./primitives";
 import { AppearanceSection } from "./sections/AppearanceSection";
 import { BoxFillSection, BoxStrokeSection } from "./sections/BoxSection";
 import { ChatSection } from "./sections/ChatSection";
@@ -129,18 +129,15 @@ export function PropertiesPanel({
               <IconButton
                 icon={<Link2 className="h-3 w-3" />}
                 onClick={() => {
-                  const elementUrl = `${window.location.origin}/overlays/view/${element.id}`;
+                  const elementUrl = `${window.location.origin}/view/overlay/${element.id}`;
                   navigator.clipboard.writeText(elementUrl);
                   toast.success("Element URL copied!");
                 }}
                 tooltip="Copy element URL"
               />
-              <IconButton
+              <IconLink
+                href={`/view/overlay/${element.id}`}
                 icon={<ExternalLink className="h-3 w-3" />}
-                onClick={() => {
-                  const elementUrl = `${window.location.origin}/overlays/view/${element.id}`;
-                  window.open(elementUrl, "_blank");
-                }}
                 tooltip="Open in browser"
               />
             </div>

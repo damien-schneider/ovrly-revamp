@@ -174,6 +174,33 @@ export function IconButton({
   );
 }
 
+export function IconLink({
+  icon,
+  href,
+  tooltip,
+  className,
+}: {
+  icon: React.ReactNode;
+  href: string;
+  tooltip?: string;
+  className?: string;
+}) {
+  return (
+    <a
+      className={cn(
+        "flex h-6 w-6 items-center justify-center rounded border-none text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+        className
+      )}
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={tooltip}
+    >
+      {icon}
+    </a>
+  );
+}
+
 export function ToggleButton({
   icon,
   checked,

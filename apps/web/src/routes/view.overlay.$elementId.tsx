@@ -9,7 +9,7 @@ import {
 import { ElementType } from "@/features/canvas/types";
 import { ElementRenderer } from "@/features/canvas/widgets/ElementRenderer";
 
-export const Route = createFileRoute("/overlays/view/$elementId")({
+export const Route = createFileRoute("/view/overlay/$elementId")({
   component: ElementViewPage,
 });
 
