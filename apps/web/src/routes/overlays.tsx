@@ -1,4 +1,5 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import {
   Authenticated,
@@ -88,7 +89,7 @@ function CanvasEditorPage() {
       try {
         // Build updates for changed elements
         const updates = elements.map((el) => ({
-          id: el.id,
+          id: el.id as Id<"overlays">,
           x: el.x,
           y: el.y,
           width: el.width,
@@ -180,7 +181,7 @@ function CanvasEditorPage() {
 
   return (
     <div className="relative h-svh w-full">
-      <CanvasEditor projectName="My Canvas" saveStatus={renderSaveStatus()} />
+      <CanvasEditor saveStatus={renderSaveStatus()} />
     </div>
   );
 }

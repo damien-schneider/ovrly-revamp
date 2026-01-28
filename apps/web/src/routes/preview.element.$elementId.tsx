@@ -1,7 +1,8 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
+import type { Id } from "@ovrly-revamp/backend/convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import type { OverlayElement } from "@/features/canvas/types";
+import { overlayRowToElement } from "@/features/canvas/lib/overlay-conversion";
 import { ElementType } from "@/features/canvas/types";
 import { ElementRenderer } from "@/features/canvas/widgets/ElementRenderer";
 
@@ -12,15 +13,19 @@ export const Route = createFileRoute("/preview/element/$elementId")({
 function ElementPreviewPage() {
   const { elementId } = Route.useParams();
 
-  const project = useQuery(api.projects.getByElementId, {
-    elementId,
+  const overlay = useQuery(api.overlays.getById, {
+    id: elementId as Id<"overlays">,
   });
 
-  if (project === undefined) {
+  const children = useQuery(api.overlays.getChildren, {
+    parentId: elementId as Id<"overlays">,
+  });
+
+  if (overlay === undefined || children === undefined) {
     return null; // Loading
   }
 
-  if (project === null) {
+  if (overlay === null) {
     return (
       <div className="flex h-screen items-center justify-center bg-transparent">
         <div className="rounded-lg bg-red-500/10 p-4 text-red-500 backdrop-blur-md">
@@ -30,27 +35,11 @@ function ElementPreviewPage() {
     );
   }
 
-  const elements = (project.elements as OverlayElement[]) || [];
-  const element = elements.find((el) => el.id === elementId);
-
-  if (!element) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-transparent">
-        <div className="rounded-lg bg-red-500/10 p-4 text-red-500 backdrop-blur-md">
-          Element not found in project
-        </div>
-      </div>
-    );
-  }
-
-  // Calculate children if this is an overlay container
-  const children =
-    element.type === ElementType.OVERLAY
-      ? elements.filter((el) => el.parentId === element.id)
-      : [];
+  const element = overlayRowToElement(overlay);
+  const childElements = children.map(overlayRowToElement);
 
   // Sort children by zIndex for proper layering
-  const sortedChildren = [...children].sort((a, b) => a.zIndex - b.zIndex);
+  const sortedChildren = [...childElements].sort((a, b) => a.zIndex - b.zIndex);
 
   return (
     <div
@@ -78,11 +67,7 @@ function ElementPreviewPage() {
             transform: `rotate(${element.rotation}deg)`,
           }}
         >
-          <ElementRenderer
-            element={element}
-            isLiveView={true}
-            projectId={project._id}
-          />
+          <ElementRenderer element={element} isLiveView={true} />
         </div>
       )}
 
@@ -110,11 +95,7 @@ function ElementPreviewPage() {
               transform: `rotate(${child.rotation}deg)`,
             }}
           >
-            <ElementRenderer
-              element={child}
-              isLiveView={true}
-              projectId={project._id}
-            />
+            <ElementRenderer element={child} isLiveView={true} />
           </div>
         );
       })}

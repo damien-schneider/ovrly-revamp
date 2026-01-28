@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getProfile } from "./auth";
 
@@ -206,7 +207,7 @@ export const remove = mutation({
     }
 
     // Recursive function to delete an overlay and all its descendants
-    const deleteRecursively = async (overlayId: string) => {
+    const deleteRecursively = async (overlayId: Id<"overlays">) => {
       // Find all children
       const children = await ctx.db
         .query("overlays")

@@ -23,10 +23,7 @@ interface EmoteWallWidgetProps {
 
 const DEFAULT_EMOTES = ["🔥", "❤️", "😂", "👍", "🎉", "💯", "⭐", "🚀"];
 
-export function EmoteWallWidget({
-  element,
-  isLiveView,
-}: EmoteWallWidgetProps) {
+export function EmoteWallWidget({ element, isLiveView }: EmoteWallWidgetProps) {
   const [floatingEmotes, setFloatingEmotes] = useState<FloatingEmote[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);

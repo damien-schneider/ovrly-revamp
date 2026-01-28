@@ -49,16 +49,25 @@ export function overlayRowToElement(row: OverlayRow): OverlayElement {
     ...base,
     type: row.type,
     ...(row.properties as object),
-  } as OverlayElement;
+  } as unknown as OverlayElement;
 }
 
 /**
  * Convert frontend OverlayElement to backend overlay creation args
  */
 export function elementToOverlayCreate(element: OverlayElement): {
-  type: string;
+  type:
+    | "OVERLAY"
+    | "TEXT"
+    | "BOX"
+    | "IMAGE"
+    | "CHAT"
+    | "EMOTE_WALL"
+    | "WEBCAM"
+    | "TIMER"
+    | "PROGRESS";
   name: string;
-  parentId: string | null;
+  parentId: Id<"overlays"> | null;
   x: number;
   y: number;
   width: number;
@@ -89,9 +98,18 @@ export function elementToOverlayCreate(element: OverlayElement): {
   } = element;
 
   return {
-    type,
+    type: type as
+      | "OVERLAY"
+      | "TEXT"
+      | "BOX"
+      | "IMAGE"
+      | "CHAT"
+      | "EMOTE_WALL"
+      | "WEBCAM"
+      | "TIMER"
+      | "PROGRESS",
     name,
-    parentId,
+    parentId: parentId as Id<"overlays"> | null,
     x,
     y,
     width,

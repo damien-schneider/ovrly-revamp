@@ -93,7 +93,13 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [previewEnabled, mockMessages, style.maxMessages, isLiveView, displayMessages]);
+  }, [
+    previewEnabled,
+    mockMessages,
+    style.maxMessages,
+    isLiveView,
+    displayMessages,
+  ]);
 
   const getAnimationClass = () => {
     switch (style.animation) {
