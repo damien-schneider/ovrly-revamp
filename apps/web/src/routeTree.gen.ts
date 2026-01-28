@@ -30,6 +30,7 @@ import { Route as with_navbarChatInteractionsIndexRouteImport } from './routes/(
 import { Route as with_navbarAssetsIndexRouteImport } from './routes/(with_navbar)/assets/index'
 import { Route as PreviewOverlayOverlayIdRouteImport } from './routes/preview.overlay.$overlayId'
 import { Route as PreviewElementElementIdRouteImport } from './routes/preview.element.$elementId'
+import { Route as OverlaysViewElementIdRouteImport } from './routes/overlays.view.$elementId'
 import { Route as OverlaysProjectIdViewRouteImport } from './routes/overlays.$projectId.view'
 import { Route as with_navbarChatInteractionsCommandsRouteImport } from './routes/(with_navbar)/chat-interactions/commands'
 import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
@@ -141,6 +142,11 @@ const PreviewElementElementIdRoute = PreviewElementElementIdRouteImport.update({
   path: '/element/$elementId',
   getParentRoute: () => PreviewRoute,
 } as any)
+const OverlaysViewElementIdRoute = OverlaysViewElementIdRouteImport.update({
+  id: '/$elementId',
+  path: '/$elementId',
+  getParentRoute: () => OverlaysViewRoute,
+} as any)
 const OverlaysProjectIdViewRoute = OverlaysProjectIdViewRouteImport.update({
   id: '/view',
   path: '/view',
@@ -175,13 +181,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
-  '/overlays/view': typeof OverlaysViewRoute
+  '/overlays/view': typeof OverlaysViewRouteWithChildren
   '/': typeof with_navbarIndexRoute
   '/overlays/': typeof OverlaysIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/$projectId/view': typeof OverlaysProjectIdViewRoute
+  '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
   '/preview/element/$elementId': typeof PreviewElementElementIdRoute
   '/preview/overlay/$overlayId': typeof PreviewOverlayOverlayIdRoute
   '/assets/': typeof with_navbarAssetsIndexRoute
@@ -198,12 +205,13 @@ export interface FileRoutesByTo {
   '/moderation': typeof with_navbarModerationRoute
   '/overlays': typeof OverlaysIndexRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
-  '/overlays/view': typeof OverlaysViewRoute
+  '/overlays/view': typeof OverlaysViewRouteWithChildren
   '/': typeof with_navbarIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/$projectId/view': typeof OverlaysProjectIdViewRoute
+  '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
   '/preview/element/$elementId': typeof PreviewElementElementIdRoute
   '/preview/overlay/$overlayId': typeof PreviewOverlayOverlayIdRoute
 }
@@ -223,13 +231,14 @@ export interface FileRoutesById {
   '/(with_navbar)/moderation': typeof with_navbarModerationRoute
   '/(with_navbar)/overlays': typeof with_navbarOverlaysRoute
   '/overlays/$projectId': typeof OverlaysProjectIdRouteWithChildren
-  '/overlays/view': typeof OverlaysViewRoute
+  '/overlays/view': typeof OverlaysViewRouteWithChildren
   '/(with_navbar)/': typeof with_navbarIndexRoute
   '/overlays/': typeof OverlaysIndexRoute
   '/(with_navbar)/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/(with_navbar)/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
   '/(with_navbar)/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/overlays/$projectId/view': typeof OverlaysProjectIdViewRoute
+  '/overlays/view/$elementId': typeof OverlaysViewElementIdRoute
   '/preview/element/$elementId': typeof PreviewElementElementIdRoute
   '/preview/overlay/$overlayId': typeof PreviewOverlayOverlayIdRoute
   '/(with_navbar)/assets/': typeof with_navbarAssetsIndexRoute
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
     | '/overlays/$projectId/view'
+    | '/overlays/view/$elementId'
     | '/preview/element/$elementId'
     | '/preview/overlay/$overlayId'
     | '/assets/'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/assets/sub-badges'
     | '/chat-interactions/commands'
     | '/overlays/$projectId/view'
+    | '/overlays/view/$elementId'
     | '/preview/element/$elementId'
     | '/preview/overlay/$overlayId'
   id:
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/(with_navbar)/assets/sub-badges'
     | '/(with_navbar)/chat-interactions/commands'
     | '/overlays/$projectId/view'
+    | '/overlays/view/$elementId'
     | '/preview/element/$elementId'
     | '/preview/overlay/$overlayId'
     | '/(with_navbar)/assets/'
@@ -465,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewElementElementIdRouteImport
       parentRoute: typeof PreviewRoute
     }
+    '/overlays/view/$elementId': {
+      id: '/overlays/view/$elementId'
+      path: '/$elementId'
+      fullPath: '/overlays/view/$elementId'
+      preLoaderRoute: typeof OverlaysViewElementIdRouteImport
+      parentRoute: typeof OverlaysViewRoute
+    }
     '/overlays/$projectId/view': {
       id: '/overlays/$projectId/view'
       path: '/view'
@@ -568,15 +587,27 @@ const OverlaysProjectIdRouteChildren: OverlaysProjectIdRouteChildren = {
 const OverlaysProjectIdRouteWithChildren =
   OverlaysProjectIdRoute._addFileChildren(OverlaysProjectIdRouteChildren)
 
+interface OverlaysViewRouteChildren {
+  OverlaysViewElementIdRoute: typeof OverlaysViewElementIdRoute
+}
+
+const OverlaysViewRouteChildren: OverlaysViewRouteChildren = {
+  OverlaysViewElementIdRoute: OverlaysViewElementIdRoute,
+}
+
+const OverlaysViewRouteWithChildren = OverlaysViewRoute._addFileChildren(
+  OverlaysViewRouteChildren,
+)
+
 interface OverlaysRouteChildren {
   OverlaysProjectIdRoute: typeof OverlaysProjectIdRouteWithChildren
-  OverlaysViewRoute: typeof OverlaysViewRoute
+  OverlaysViewRoute: typeof OverlaysViewRouteWithChildren
   OverlaysIndexRoute: typeof OverlaysIndexRoute
 }
 
 const OverlaysRouteChildren: OverlaysRouteChildren = {
   OverlaysProjectIdRoute: OverlaysProjectIdRouteWithChildren,
-  OverlaysViewRoute: OverlaysViewRoute,
+  OverlaysViewRoute: OverlaysViewRouteWithChildren,
   OverlaysIndexRoute: OverlaysIndexRoute,
 }
 
