@@ -71,9 +71,7 @@ function LayoutComponent() {
   const isIndexRoute = pathname === "/" || pathname === "";
   const isAccountRoute = pathname === "/account";
 
-  const isChatRoute = pathname.startsWith("/overlays/chat/");
-  const isWallEmoteRoute = pathname.startsWith("/overlays/wall-emote/");
-  const hasSettings = isChatRoute || isWallEmoteRoute;
+  const hasSettings = false;
   const isHomeRoute = pathname === "/home";
   const isHubRoute =
     isHomeRoute || pathname === "/overlays" || pathname === "/overlays/";
