@@ -39,6 +39,17 @@ export const getById = query({
 });
 
 /**
+ * Get a single overlay by ID (public - no auth required)
+ * Used for OBS browser sources and public view URLs
+ */
+export const getByIdPublic = query({
+  args: { id: v.id("overlays") },
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id);
+  },
+});
+
+/**
  * Get child overlays of a parent
  */
 export const getChildren = query({
@@ -49,6 +60,28 @@ export const getChildren = query({
       .query("overlays")
       .withIndex("by_userId_parentId", (q) =>
         q.eq("userId", user._id).eq("parentId", parentId)
+      )
+      .collect();
+  },
+});
+
+/**
+ * Get child overlays of a parent (public - no auth required)
+ * Used for OBS browser sources and public view URLs
+ */
+export const getChildrenPublic = query({
+  args: { parentId: v.id("overlays") },
+  handler: async (ctx, { parentId }) => {
+    // First get the parent to find the userId
+    const parent = await ctx.db.get(parentId);
+    if (!parent) {
+      return [];
+    }
+
+    return await ctx.db
+      .query("overlays")
+      .withIndex("by_userId_parentId", (q) =>
+        q.eq("userId", parent.userId).eq("parentId", parentId)
       )
       .collect();
   },
@@ -156,6 +189,7 @@ export const batchUpdate = mutation({
     updates: v.array(
       v.object({
         id: v.id("overlays"),
+        parentId: v.optional(v.union(v.id("overlays"), v.null())),
         x: v.optional(v.number()),
         y: v.optional(v.number()),
         width: v.optional(v.number()),

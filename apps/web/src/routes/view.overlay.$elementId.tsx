@@ -16,11 +16,12 @@ export const Route = createFileRoute("/view/overlay/$elementId")({
 function ElementViewPage() {
   const { elementId } = Route.useParams();
 
-  const overlay = useQuery(api.overlays.getById, {
+  // Use public queries (no auth required) for OBS browser sources
+  const overlay = useQuery(api.overlays.getByIdPublic, {
     id: elementId as Id<"overlays">,
   });
 
-  const children = useQuery(api.overlays.getChildren, {
+  const children = useQuery(api.overlays.getChildrenPublic, {
     parentId: elementId as Id<"overlays">,
   });
 

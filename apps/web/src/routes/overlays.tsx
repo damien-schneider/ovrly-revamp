@@ -90,6 +90,7 @@ function CanvasEditorPage() {
         // Build updates for changed elements
         const updates = elements.map((el) => ({
           id: el.id as Id<"overlays">,
+          parentId: (el.parentId as Id<"overlays">) ?? null,
           x: el.x,
           y: el.y,
           width: el.width,
