@@ -19,6 +19,8 @@ import {
 import { ElementRenderer } from "../widgets/ElementRenderer";
 import { TransformBox } from "./TransformBox";
 
+const CLICK_MOVEMENT_THRESHOLD = 3; // pixels
+
 interface CanvasProps {
   onUpdateElement: (id: string, updates: Partial<OverlayElement>) => void;
 }
@@ -38,6 +40,8 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const selectionStartRef = useRef<{ x: number; y: number } | null>(null);
   const selectionStartSelectedIds = useRef<string[]>([]);
+  const canvasPointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const canvasPointerMovedRef = useRef(false);
 
   const handleSelect = useCallback(
     (id: string, multi: boolean) => {
@@ -132,6 +136,51 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
     setViewport({ scale: newScale, position: { x: newX, y: newY } });
   }, [elements, setViewport]);
 
+  const trackPointerMovement = useCallback((event: PointerEvent) => {
+    if (canvasPointerStartRef.current) {
+      const dx = Math.abs(event.clientX - canvasPointerStartRef.current.x);
+      const dy = Math.abs(event.clientY - canvasPointerStartRef.current.y);
+      if (dx > CLICK_MOVEMENT_THRESHOLD || dy > CLICK_MOVEMENT_THRESHOLD) {
+        canvasPointerMovedRef.current = true;
+      }
+    }
+  }, []);
+
+  const handleCanvasPointerDown = (e: React.PointerEvent) => {
+    // Only handle left button on canvas background
+    if (e.button !== 0) {
+      return;
+    }
+
+    const target = e.target as HTMLElement;
+    const isCanvasArea =
+      target.classList.contains("canvas-area") ||
+      target.classList.contains("canvas-content");
+
+    if (isCanvasArea) {
+      canvasPointerStartRef.current = { x: e.clientX, y: e.clientY };
+      canvasPointerMovedRef.current = false;
+    }
+  };
+
+  const handleCanvasPointerUp = () => {
+    if (!canvasPointerStartRef.current) {
+      return;
+    }
+
+    // Check if this was a click (minimal movement)
+    const isClick = !canvasPointerMovedRef.current;
+
+    // Reset tracking state
+    canvasPointerStartRef.current = null;
+    canvasPointerMovedRef.current = false;
+
+    // If pointer down was on canvas and no movement occurred, clear selection
+    if (isClick && selectedIds.length > 0) {
+      setSelectedIds([]);
+    }
+  };
+
   useWheel(
     ({ event, delta: [dx, dy], ctrlKey, metaKey }) => {
       event.preventDefault();
@@ -221,6 +270,9 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
         return;
       }
 
+      // Track movement for click detection
+      trackPointerMovement(event as PointerEvent);
+
       if (isHandTool) {
         setViewport((prev) => ({
           ...prev,
@@ -253,6 +305,8 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
 
   return (
     <div
+      onPointerDownCapture={handleCanvasPointerDown}
+      onPointerUpCapture={handleCanvasPointerUp}
       ref={canvasRef}
       {...bindDrag()}
       className={`canvas-area relative h-full w-full overflow-hidden outline-none ${

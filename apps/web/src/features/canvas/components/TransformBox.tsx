@@ -30,30 +30,151 @@ interface ResizeResult {
   height: number;
 }
 
+const MIN_SIZE = 10;
+
+function applyHorizontalResize(
+  handle: string,
+  dx: number,
+  initial: { x: number; width: number }
+): { x: number; width: number } {
+  if (handle.includes("e")) {
+    return {
+      x: initial.x,
+      width: Math.max(MIN_SIZE, initial.width + dx),
+    };
+  }
+  const width = Math.max(MIN_SIZE, initial.width - dx);
+  return {
+    x: initial.x + (initial.width - width),
+    width,
+  };
+}
+
+function applyVerticalResize(
+  handle: string,
+  dy: number,
+  initial: { y: number; height: number }
+): { y: number; height: number } {
+  if (handle.includes("s")) {
+    return {
+      y: initial.y,
+      height: Math.max(MIN_SIZE, initial.height + dy),
+    };
+  }
+  const height = Math.max(MIN_SIZE, initial.height - dy);
+  return {
+    y: initial.y + (initial.height - height),
+    height,
+  };
+}
+
+function applyAspectRatioToEdgeHandle(
+  handle: string,
+  width: number,
+  height: number,
+  initial: { x: number; y: number; width: number; height: number },
+  aspectRatio: number
+): ResizeResult {
+  const isHorizontalEdge = handle === "e" || handle === "w";
+
+  if (isHorizontalEdge) {
+    return {
+      x: handle === "w" ? initial.x + initial.width - width : initial.x,
+      y: initial.y,
+      width,
+      height: width / aspectRatio,
+    };
+  }
+
+  return {
+    x: initial.x,
+    y: handle === "n" ? initial.y + initial.height - height : initial.y,
+    width: height * aspectRatio,
+    height,
+  };
+}
+
+function applyAspectRatioToCornerHandle(
+  handle: string,
+  width: number,
+  height: number,
+  initial: { x: number; y: number; width: number; height: number },
+  aspectRatio: number
+): ResizeResult {
+  const widthChange = Math.abs(width - initial.width) / initial.width;
+  const heightChange = Math.abs(height - initial.height) / initial.height;
+
+  if (widthChange > heightChange) {
+    const adjustedHeight = width / aspectRatio;
+    return {
+      x: handle.includes("w") ? initial.x + initial.width - width : initial.x,
+      y: handle.includes("n")
+        ? initial.y + initial.height - adjustedHeight
+        : initial.y,
+      width,
+      height: adjustedHeight,
+    };
+  }
+
+  const adjustedWidth = height * aspectRatio;
+  return {
+    x: handle.includes("w")
+      ? initial.x + initial.width - adjustedWidth
+      : initial.x,
+    y: handle.includes("n") ? initial.y + initial.height - height : initial.y,
+    width: adjustedWidth,
+    height,
+  };
+}
+
 function calculateResize(
   handle: string,
   dx: number,
   dy: number,
-  initial: { x: number; y: number; width: number; height: number }
+  initial: { x: number; y: number; width: number; height: number },
+  shiftPressed: boolean,
+  aspectRatio: number
 ): ResizeResult {
-  const minSize = 10;
-  let { x, y, width, height } = initial;
+  let result = { ...initial };
 
-  if (handle.includes("e")) {
-    width = Math.max(minSize, initial.width + dx);
-  } else if (handle.includes("w")) {
-    width = Math.max(minSize, initial.width - dx);
-    x = initial.x + (initial.width - width);
+  if (handle.includes("e") || handle.includes("w")) {
+    const horizontal = applyHorizontalResize(handle, dx, initial);
+    result = { ...result, ...horizontal };
   }
 
-  if (handle.includes("s")) {
-    height = Math.max(minSize, initial.height + dy);
-  } else if (handle.includes("n")) {
-    height = Math.max(minSize, initial.height - dy);
-    y = initial.y + (initial.height - height);
+  if (handle.includes("s") || handle.includes("n")) {
+    const vertical = applyVerticalResize(handle, dy, initial);
+    result = { ...result, ...vertical };
   }
 
-  return { x, y, width, height };
+  if (!shiftPressed) {
+    return result;
+  }
+
+  const isCorner = handle.length === 2;
+  const isEdge = handle.length === 1;
+
+  if (isEdge) {
+    return applyAspectRatioToEdgeHandle(
+      handle,
+      result.width,
+      result.height,
+      initial,
+      aspectRatio
+    );
+  }
+
+  if (isCorner) {
+    return applyAspectRatioToCornerHandle(
+      handle,
+      result.width,
+      result.height,
+      initial,
+      aspectRatio
+    );
+  }
+
+  return result;
 }
 
 interface TransformBoxProps {
@@ -99,6 +220,7 @@ export function TransformBox({
     initialW: number;
     initialH: number;
     handle: string | null;
+    aspectRatio: number;
   }>({
     startX: 0,
     startY: 0,
@@ -107,6 +229,7 @@ export function TransformBox({
     initialW: 0,
     initialH: 0,
     handle: null,
+    aspectRatio: 1,
   });
 
   const hasMoved = useRef(false);
@@ -152,6 +275,7 @@ export function TransformBox({
       initialW: width,
       initialH: height,
       handle: null,
+      aspectRatio: width / height,
     };
   };
 
@@ -175,6 +299,7 @@ export function TransformBox({
       initialW: width,
       initialH: height,
       handle,
+      aspectRatio: width / height,
     };
   };
 
@@ -194,17 +319,24 @@ export function TransformBox({
       const dx = (e.clientX - initialDragState.current.startX) / currentZoom;
       const dy = (e.clientY - initialDragState.current.startY) / currentZoom;
 
-      const { initialX, initialY, initialW, initialH, handle } =
+      const { initialX, initialY, initialW, initialH, handle, aspectRatio } =
         initialDragState.current;
       const updateFn = onUpdateRef.current;
 
       if (handle) {
-        const result = calculateResize(handle, dx, dy, {
-          x: initialX,
-          y: initialY,
-          width: initialW,
-          height: initialH,
-        });
+        const result = calculateResize(
+          handle,
+          dx,
+          dy,
+          {
+            x: initialX,
+            y: initialY,
+            width: initialW,
+            height: initialH,
+          },
+          e.shiftKey,
+          aspectRatio
+        );
         updateFn(id, result);
       } else {
         updateFn(id, { x: initialX + dx, y: initialY + dy });
