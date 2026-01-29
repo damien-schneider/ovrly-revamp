@@ -12,6 +12,8 @@ export const ElementType = {
 
 export type ElementType = (typeof ElementType)[keyof typeof ElementType];
 
+export type SizeMode = "fixed" | "fill";
+
 export interface BaseElement {
   id: string;
   type: ElementType;
@@ -20,6 +22,9 @@ export interface BaseElement {
   y: number;
   width: number;
   height: number;
+  // Sizing modes - "fixed" uses px value, "fill" takes 100% of parent/viewport
+  widthMode: SizeMode;
+  heightMode: SizeMode;
   rotation: number;
   opacity: number;
   zIndex: number;
@@ -48,10 +53,19 @@ export interface TextElement extends BaseElement {
 
 export interface BoxElement extends BaseElement {
   type: typeof ElementType.BOX;
-  backgroundColor: string;
-  borderColor: string;
-  borderWidth: number;
-  borderRadius: number;
+  // Fill - null means no fill
+  backgroundColor: string | null;
+  // Stroke - null means no stroke (different from 0px stroke)
+  borderColor: string | null;
+  borderWidth: number | null;
+  // Individual corner radii
+  borderRadiusTL: number;
+  borderRadiusTR: number;
+  borderRadiusBL: number;
+  borderRadiusBR: number;
+  // Whether corner radii are linked
+  borderRadiusLinked: boolean;
+  // Effects
   boxShadow?: string;
   gradient?: string;
 }

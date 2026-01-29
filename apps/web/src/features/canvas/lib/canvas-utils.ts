@@ -1,4 +1,4 @@
-import type { OverlayElement } from "@/features/canvas/types";
+import { ElementType, type OverlayElement } from "@/features/canvas/types";
 
 /**
  * Sort elements for rendering based on parent-child relationships and z-index
@@ -28,6 +28,53 @@ export function getRenderSortedElements(elements: OverlayElement[]) {
 
   traverse("root");
   return result;
+}
+
+/**
+ * Calculate effective layout (position and size) for an element based on fill modes
+ * When widthMode/heightMode is "fill", the element should expand to fill its parent overlay
+ */
+export function getEffectiveLayout(
+  element: OverlayElement,
+  elements: OverlayElement[]
+): { x: number; y: number; width: number; height: number } {
+  const widthMode = element.widthMode ?? "fixed";
+  const heightMode = element.heightMode ?? "fixed";
+
+  // If both modes are fixed, use element's own dimensions
+  if (widthMode === "fixed" && heightMode === "fixed") {
+    return {
+      x: element.x,
+      y: element.y,
+      width: element.width,
+      height: element.height,
+    };
+  }
+
+  // Find parent overlay container
+  const parent = element.parentId
+    ? elements.find(
+        (e) => e.id === element.parentId && e.type === ElementType.OVERLAY
+      )
+    : null;
+
+  // If no parent overlay, fall back to element dimensions
+  if (!parent) {
+    return {
+      x: element.x,
+      y: element.y,
+      width: element.width,
+      height: element.height,
+    };
+  }
+
+  // Calculate effective dimensions based on fill modes
+  return {
+    x: widthMode === "fill" ? parent.x : element.x,
+    y: heightMode === "fill" ? parent.y : element.y,
+    width: widthMode === "fill" ? parent.width : element.width,
+    height: heightMode === "fill" ? parent.height : element.height,
+  };
 }
 
 /**

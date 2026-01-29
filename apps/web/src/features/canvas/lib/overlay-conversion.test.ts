@@ -112,9 +112,13 @@ describe("overlay-conversion", () => {
         visible: true,
         properties: {
           backgroundColor: "#3b82f6",
-          borderColor: "transparent",
-          borderWidth: 0,
-          borderRadius: 8,
+          borderColor: null,
+          borderWidth: null,
+          borderRadiusTL: 8,
+          borderRadiusTR: 8,
+          borderRadiusBL: 8,
+          borderRadiusBR: 8,
+          borderRadiusLinked: true,
         },
         createdAt: 1_234_567_890,
         updatedAt: 1_234_567_890,
@@ -137,6 +141,8 @@ describe("overlay-conversion", () => {
         y: 100,
         width: 200,
         height: 40,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 15,
         opacity: 0.8,
         zIndex: 3,
@@ -192,6 +198,8 @@ describe("overlay-conversion", () => {
         y: 0,
         width: 100,
         height: 100,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 0,
         opacity: 1,
         zIndex: 0,
@@ -200,7 +208,11 @@ describe("overlay-conversion", () => {
         backgroundColor: "#3b82f6",
         borderColor: "#1d4ed8",
         borderWidth: 2,
-        borderRadius: 12,
+        borderRadiusTL: 12,
+        borderRadiusTR: 12,
+        borderRadiusBL: 12,
+        borderRadiusBR: 12,
+        borderRadiusLinked: true,
       };
 
       const createArgs = elementToOverlayCreate(element);
@@ -208,10 +220,10 @@ describe("overlay-conversion", () => {
       expect(createArgs.type).toBe("BOX");
       const props = createArgs.properties as {
         backgroundColor: string;
-        borderRadius: number;
+        borderRadiusTL: number;
       };
       expect(props.backgroundColor).toBe("#3b82f6");
-      expect(props.borderRadius).toBe(12);
+      expect(props.borderRadiusTL).toBe(12);
     });
   });
 
@@ -226,6 +238,8 @@ describe("overlay-conversion", () => {
         y: 200,
         width: 300,
         height: 50,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 0,
         opacity: 1,
         zIndex: 1,
@@ -255,15 +269,21 @@ describe("overlay-conversion", () => {
         y: 200,
         width: 300,
         height: 100,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 0,
         opacity: 1,
         zIndex: 1,
         locked: false,
         visible: true,
         backgroundColor: "#000",
-        borderColor: "transparent",
-        borderWidth: 0,
-        borderRadius: 0,
+        borderColor: null,
+        borderWidth: null,
+        borderRadiusTL: 0,
+        borderRadiusTR: 0,
+        borderRadiusBL: 0,
+        borderRadiusBR: 0,
+        borderRadiusLinked: true,
       };
 
       const changedFields = {
@@ -292,6 +312,8 @@ describe("overlay-conversion", () => {
         y: 200,
         width: 300,
         height: 50,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 0,
         opacity: 1,
         zIndex: 1,
@@ -329,6 +351,8 @@ describe("overlay-conversion", () => {
         y: 200,
         width: 300,
         height: 50,
+        widthMode: "fixed",
+        heightMode: "fixed",
         rotation: 0,
         opacity: 1,
         zIndex: 1,

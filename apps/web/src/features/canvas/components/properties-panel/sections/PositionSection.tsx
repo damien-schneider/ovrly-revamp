@@ -1,6 +1,6 @@
 import { FlipHorizontal, FlipVertical, RotateCw } from "lucide-react";
 import type { OverlayElement } from "@/features/canvas/types";
-import { CompactInput, IconButton, PanelSection } from "../primitives";
+import { IconButton, PanelSection, ScrubInput } from "../primitives";
 
 interface PositionSectionProps {
   element: OverlayElement;
@@ -13,14 +13,14 @@ export function PositionSection({ element, onUpdate }: PositionSectionProps) {
       <div className="space-y-2">
         {/* X/Y Row */}
         <div className="grid grid-cols-2 gap-1.5">
-          <CompactInput
+          <ScrubInput
             label="X"
-            onChange={(v) => onUpdate(element.id, { x: Number(v) })}
+            onChange={(v) => onUpdate(element.id, { x: v })}
             value={Math.round(element.x)}
           />
-          <CompactInput
+          <ScrubInput
             label="Y"
-            onChange={(v) => onUpdate(element.id, { y: Number(v) })}
+            onChange={(v) => onUpdate(element.id, { y: v })}
             value={Math.round(element.y)}
           />
         </div>
@@ -28,13 +28,16 @@ export function PositionSection({ element, onUpdate }: PositionSectionProps) {
         {/* Rotation Row */}
         <div className="flex items-center gap-1.5">
           <div className="flex-1">
-            <CompactInput
+            <ScrubInput
               icon={<RotateCw className="h-3 w-3" />}
-              onChange={(v) => onUpdate(element.id, { rotation: Number(v) })}
+              max={360}
+              min={-360}
+              onChange={(v) => onUpdate(element.id, { rotation: v })}
+              suffix="°"
               value={element.rotation ?? 0}
             />
           </div>
-          <div className="flex overflow-hidden rounded border border-border/60">
+          <div className="flex overflow-hidden rounded-md border border-border/60">
             <IconButton
               className="rounded-none border-border/40 border-r"
               icon={

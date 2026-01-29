@@ -31,7 +31,11 @@ import {
 } from "@/features/canvas/types";
 import { IconButton, PanelSection } from "./primitives";
 import { AppearanceSection } from "./sections/AppearanceSection";
-import { BoxFillSection, BoxStrokeSection } from "./sections/BoxSection";
+import {
+  BoxCornerRadiusSection,
+  BoxFillSection,
+  BoxStrokeSection,
+} from "./sections/BoxSection";
 import { ChatSection } from "./sections/ChatSection";
 import { EmoteWallSection } from "./sections/EmoteWallSection";
 import { ImageSection } from "./sections/ImageSection";
@@ -134,6 +138,10 @@ export function PropertiesPanel({
                 onUpdate={onUpdate}
               />
               <BoxStrokeSection
+                element={element as BoxElement}
+                onUpdate={onUpdate}
+              />
+              <BoxCornerRadiusSection
                 element={element as BoxElement}
                 onUpdate={onUpdate}
               />

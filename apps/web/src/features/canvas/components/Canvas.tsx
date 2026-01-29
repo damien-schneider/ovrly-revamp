@@ -11,7 +11,11 @@ import {
   viewportAtom,
 } from "@/atoms/canvas-atoms";
 import type { OverlayElement } from "@/features/canvas/types";
-import { getRenderSortedElements, getRotatedAABB } from "../lib/canvas-utils";
+import {
+  getEffectiveLayout,
+  getRenderSortedElements,
+  getRotatedAABB,
+} from "../lib/canvas-utils";
 import { ElementRenderer } from "../widgets/ElementRenderer";
 import { TransformBox } from "./TransformBox";
 
@@ -69,7 +73,10 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
           if (!el.visible || el.locked) {
             return false;
           }
-          const bounds = getRotatedAABB(el);
+          // Use effective layout for fill mode elements
+          const layout = getEffectiveLayout(el, elements);
+          const effectiveEl = { ...el, ...layout };
+          const bounds = getRotatedAABB(effectiveEl);
           return (
             worldLeft < bounds.maxX &&
             worldRight > bounds.minX &&
@@ -101,10 +108,12 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
     }
 
     const padding = 100;
-    const minX = Math.min(...elements.map((e) => e.x));
-    const minY = Math.min(...elements.map((e) => e.y));
-    const maxX = Math.max(...elements.map((e) => e.x + e.width));
-    const maxY = Math.max(...elements.map((e) => e.y + e.height));
+    // Use effective layouts for fill mode elements
+    const layouts = elements.map((e) => getEffectiveLayout(e, elements));
+    const minX = Math.min(...layouts.map((l) => l.x));
+    const minY = Math.min(...layouts.map((l) => l.y));
+    const maxX = Math.max(...layouts.map((l) => l.x + l.width));
+    const maxY = Math.max(...layouts.map((l) => l.y + l.height));
 
     const width = maxX - minX;
     const height = maxY - minY;
@@ -264,24 +273,29 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
           transformOrigin: "0 0",
         }}
       >
-        {getRenderSortedElements(elements).map((el) => (
-          <TransformBox
-            height={el.height}
-            id={el.id}
-            isSelected={selectedIds.includes(el.id)}
-            key={el.id}
-            locked={el.locked}
-            onSelect={handleSelect}
-            onUpdate={onUpdateElement}
-            rotation={el.rotation}
-            width={el.width}
-            x={el.x}
-            y={el.y}
-            zoom={scale}
-          >
-            <ElementRenderer element={el} />
-          </TransformBox>
-        ))}
+        {getRenderSortedElements(elements).map((el) => {
+          // Calculate effective layout based on fill modes
+          const layout = getEffectiveLayout(el, elements);
+
+          return (
+            <TransformBox
+              height={layout.height}
+              id={el.id}
+              isSelected={selectedIds.includes(el.id)}
+              key={el.id}
+              locked={el.locked}
+              onSelect={handleSelect}
+              onUpdate={onUpdateElement}
+              rotation={el.rotation}
+              width={layout.width}
+              x={layout.x}
+              y={layout.y}
+              zoom={scale}
+            >
+              <ElementRenderer element={el} />
+            </TransformBox>
+          );
+        })}
       </div>
 
       {selectionBox && (

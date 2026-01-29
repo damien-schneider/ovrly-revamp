@@ -6,12 +6,30 @@ import {
   type OverlayRow,
   overlayRowToElement,
 } from "@/features/canvas/lib/overlay-conversion";
-import { ElementType } from "@/features/canvas/types";
+import { ElementType, type OverlayElement } from "@/features/canvas/types";
 import { ElementRenderer } from "@/features/canvas/widgets/ElementRenderer";
 
 export const Route = createFileRoute("/view/overlay/$elementId")({
   component: ElementViewPage,
 });
+
+/**
+ * Get the computed width/height style based on sizing mode
+ * - "fill" mode: 100% of parent/viewport
+ * - "fixed" mode: px value
+ */
+function getSizeStyle(element: OverlayElement): {
+  width: string | number;
+  height: string | number;
+} {
+  const widthMode = element.widthMode ?? "fixed";
+  const heightMode = element.heightMode ?? "fixed";
+
+  return {
+    width: widthMode === "fill" ? "100%" : element.width,
+    height: heightMode === "fill" ? "100%" : element.height,
+  };
+}
 
 function ElementViewPage() {
   const { elementId } = Route.useParams();
@@ -41,12 +59,15 @@ function ElementViewPage() {
   // Sort children by zIndex for proper layering
   const sortedChildren = [...childElements].sort((a, b) => a.zIndex - b.zIndex);
 
+  // Get size styles respecting fill mode
+  const containerSize = getSizeStyle(element);
+
   return (
     <div
       className="relative overflow-hidden"
       style={{
-        width: element.width,
-        height: element.height,
+        width: containerSize.width,
+        height: containerSize.height,
         backgroundColor:
           element.type === ElementType.OVERLAY
             ? (element as { backgroundColor?: string }).backgroundColor
@@ -60,8 +81,8 @@ function ElementViewPage() {
           style={{
             left: 0,
             top: 0,
-            width: element.width,
-            height: element.height,
+            width: containerSize.width,
+            height: containerSize.height,
             opacity: element.opacity,
             zIndex: element.zIndex,
             transform: `rotate(${element.rotation}deg)`,
@@ -81,15 +102,22 @@ function ElementViewPage() {
         const relativeX = child.x - element.x;
         const relativeY = child.y - element.y;
 
+        // Get child size respecting fill mode
+        const childSize = getSizeStyle(child);
+        const childWidthMode = child.widthMode ?? "fixed";
+        const childHeightMode = child.heightMode ?? "fixed";
+
         return (
           <div
             className="absolute"
             key={child.id}
             style={{
-              left: relativeX,
-              top: relativeY,
-              width: child.width,
-              height: child.height,
+              // Position: if fill mode, position at 0; otherwise use relative position
+              left: childWidthMode === "fill" ? 0 : relativeX,
+              top: childHeightMode === "fill" ? 0 : relativeY,
+              // Size respects fill mode
+              width: childSize.width,
+              height: childSize.height,
               opacity: child.opacity,
               zIndex: child.zIndex,
               transform: `rotate(${child.rotation}deg)`,

@@ -87,7 +87,7 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
           className={cn(
             "group flex h-7 w-full select-none items-center gap-2 px-2 transition-colors",
             isSelected
-              ? "bg-primary text-primary-foreground"
+              ? "bg-secondary text-secondary-foreground"
               : "text-foreground hover:bg-accent"
           )}
         >
@@ -97,10 +97,10 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
           >
             <button
               className={cn(
-                "shrink-0 rounded p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100",
+                "shrink-0 rounded p-0.5 opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100",
                 !element.visible && "opacity-60",
                 isSelected
-                  ? "text-white hover:bg-white/20"
+                  ? "text-secondary-foreground hover:bg-accent"
                   : "text-muted-foreground"
               )}
               onClick={(e) => {
@@ -128,7 +128,9 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
               <span
                 className={cn(
                   "shrink-0",
-                  isSelected ? "text-white" : "text-muted-foreground"
+                  isSelected
+                    ? "text-secondary-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 {getIcon(element.type)}
@@ -143,7 +145,9 @@ export function LayersPanel({ onUpdate }: LayersPanelProps) {
             <ChevronDown
               className={cn(
                 "h-3 w-3 shrink-0 opacity-60",
-                isSelected ? "text-white" : "text-muted-foreground"
+                isSelected
+                  ? "text-secondary-foreground"
+                  : "text-muted-foreground"
               )}
             />
           )}

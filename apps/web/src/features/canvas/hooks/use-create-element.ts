@@ -49,6 +49,8 @@ export function useCreateElement(
       y: worldY - 100,
       width: 200,
       height: 200,
+      widthMode: "fixed" as const,
+      heightMode: "fixed" as const,
       rotation: 0,
       opacity: 1,
       zIndex: maxZ + 1,
@@ -92,9 +94,15 @@ export function useCreateElement(
           ...base,
           type: ElementType.BOX,
           backgroundColor: "#3b82f6",
-          borderColor: "#1d4ed8",
-          borderWidth: 0,
-          borderRadius: 16,
+          // No stroke by default - user clicks "+" to add
+          borderColor: null,
+          borderWidth: null,
+          // Individual corner radii
+          borderRadiusTL: 16,
+          borderRadiusTR: 16,
+          borderRadiusBL: 16,
+          borderRadiusBR: 16,
+          borderRadiusLinked: true,
         } as BoxElement;
         break;
       case ElementType.IMAGE:
