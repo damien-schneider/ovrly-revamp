@@ -112,6 +112,7 @@ export interface ChatMessage {
 
 export interface ChatElement extends BaseElement {
   type: typeof ElementType.CHAT;
+  channel: string;
   style: ChatStyle;
   mockMessages: ChatMessage[];
   previewEnabled: boolean;

@@ -6,7 +6,7 @@ import { useTwitchChat } from "@/features/twitch/hooks/use-twitch-chat";
 const mockPreviewMessages = [
   {
     user: "StreamFan",
-    text: "This looks amazing! 🔥",
+    text: "This looks amazing!",
     color: "#ff5555",
     badges: ["subscriber"],
   },
@@ -38,48 +38,83 @@ function getBadgeIcon(badge: string): string {
   }
 }
 
+interface DisplayMessage {
+  user: string;
+  text: string;
+  color: string;
+  badges?: string[];
+}
+
 interface ChatWidgetProps {
   element: ChatElement;
   isLiveView: boolean;
 }
 
 export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
-  const { style, mockMessages, previewEnabled } = element;
+  const { style, mockMessages, previewEnabled, channel } = element;
 
-  const { messages: liveMessages } = useTwitchChat({
-    channel: undefined,
+  // Connect to Twitch chat when channel is configured
+  // In live view (OBS), always connect if channel is set
+  // In editor, connect for preview purposes when channel is set
+  const shouldConnectToTwitch = Boolean(channel);
+
+  const {
+    messages: liveMessages,
+    isConnected,
+    error: connectionError,
+  } = useTwitchChat({
+    channel: shouldConnectToTwitch ? channel : null,
+    // Anonymous connection - we just want to read chat, not send messages
     accessToken: null,
     username: null,
-    enabled: false,
+    enabled: shouldConnectToTwitch,
   });
 
-  let displayMessages = previewEnabled ? mockPreviewMessages : mockMessages;
-  if (isLiveView) {
+  // Determine what messages to display
+  let displayMessages: DisplayMessage[];
+
+  if (shouldConnectToTwitch && liveMessages.length > 0) {
+    // Show real Twitch messages when connected and have messages
     displayMessages = liveMessages.map((m) => ({
       user: m.displayName || m.username,
       text: m.message,
       color: m.color || "#a855f7",
       badges: [],
     }));
+  } else if (previewEnabled) {
+    // Show preview animation when enabled
+    displayMessages = mockPreviewMessages;
+  } else {
+    // Show static mock messages
+    displayMessages = mockMessages;
   }
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Animation for preview messages
-  const [visibleMessages, setVisibleMessages] = useState(displayMessages);
+  const [visibleMessages, setVisibleMessages] =
+    useState<DisplayMessage[]>(displayMessages);
 
   useEffect(() => {
-    if (isLiveView) {
+    // When connected to Twitch, always show live messages
+    if (shouldConnectToTwitch && liveMessages.length > 0) {
       setVisibleMessages(displayMessages);
       return;
     }
 
+    // In live view with no messages yet, show empty or waiting state
+    if (isLiveView && shouldConnectToTwitch) {
+      setVisibleMessages([]);
+      return;
+    }
+
+    // In editor without channel, show mock or preview
     if (!previewEnabled) {
       setVisibleMessages(mockMessages);
       return;
     }
 
-    // Cycle through messages for preview
+    // Cycle through messages for preview animation
     let index = 0;
     const interval = setInterval(() => {
       index = (index + 1) % mockPreviewMessages.length;
@@ -99,6 +134,8 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
     style.maxMessages,
     isLiveView,
     displayMessages,
+    shouldConnectToTwitch,
+    liveMessages.length,
   ]);
 
   const getAnimationClass = () => {
@@ -190,10 +227,31 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
           </div>
         </div>
       ))}
-      {previewEnabled && !isLiveView && (
-        <div className="absolute top-2 right-2 rounded bg-green-500 px-2 py-0.5 font-bold text-[9px] text-white uppercase tracking-widest">
-          Preview
-        </div>
+      {/* Status indicators - only show in editor, not in OBS live view */}
+      {!isLiveView && (
+        <>
+          {shouldConnectToTwitch && isConnected && (
+            <div className="absolute top-2 right-2 flex items-center gap-1 rounded bg-green-500 px-2 py-0.5 font-bold text-[9px] text-white uppercase tracking-widest">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+              Live
+            </div>
+          )}
+          {shouldConnectToTwitch && !isConnected && !connectionError && (
+            <div className="absolute top-2 right-2 rounded bg-yellow-500 px-2 py-0.5 font-bold text-[9px] text-white uppercase tracking-widest">
+              Connecting...
+            </div>
+          )}
+          {shouldConnectToTwitch && connectionError && (
+            <div className="absolute top-2 right-2 rounded bg-red-500 px-2 py-0.5 font-bold text-[9px] text-white uppercase tracking-widest">
+              Error
+            </div>
+          )}
+          {!shouldConnectToTwitch && previewEnabled && (
+            <div className="absolute top-2 right-2 rounded bg-purple-500 px-2 py-0.5 font-bold text-[9px] text-white uppercase tracking-widest">
+              Preview
+            </div>
+          )}
+        </>
       )}
     </div>
   );

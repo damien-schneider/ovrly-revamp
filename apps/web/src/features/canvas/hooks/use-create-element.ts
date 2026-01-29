@@ -121,6 +121,7 @@ export function useCreateElement(
           height: 500,
           x: worldX - 200,
           y: worldY - 250,
+          channel: "",
           style: { ...defaultChatStyle },
           mockMessages: [
             {

@@ -53,7 +53,7 @@ describe("overlay-conversion", () => {
       expect((element as { fontSize: number }).fontSize).toBe(24);
     });
 
-    it("converts a CHAT overlay row with style properties", () => {
+    it("converts a CHAT overlay row with style properties and channel", () => {
       const row: OverlayRow = {
         _id: "j456def" as OverlayRow["_id"],
         _creationTime: 1_234_567_890,
@@ -71,6 +71,7 @@ describe("overlay-conversion", () => {
         locked: false,
         visible: true,
         properties: {
+          channel: "ninja",
           style: {
             backgroundColor: "rgba(0, 0, 0, 0.7)",
             textColor: "#ffffff",
@@ -88,6 +89,7 @@ describe("overlay-conversion", () => {
       expect(element.id).toBe("j456def");
       expect(element.type).toBe("CHAT");
       expect(element.opacity).toBe(0.9);
+      expect((element as { channel: string }).channel).toBe("ninja");
       expect(
         (element as { style: { textColor: string } }).style.textColor
       ).toBe("#ffffff");

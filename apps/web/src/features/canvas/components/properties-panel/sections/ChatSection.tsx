@@ -1,3 +1,6 @@
+import { User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -7,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { useProviderData } from "@/features/auth/hooks/use-provider-token";
 import type {
   ChatElement,
   ChatStyle,
@@ -26,17 +30,70 @@ interface ChatSectionProps {
 }
 
 export function ChatSection({ element, onUpdate }: ChatSectionProps) {
+  const { twitchUsername, isLoading: isLoadingAuth } = useProviderData();
+
   const updateChatStyle = (updates: Partial<ChatStyle>) => {
     onUpdate(element.id, {
       style: { ...element.style, ...updates },
     } as Partial<ChatElement>);
   };
 
+  const handleAutoFillChannel = () => {
+    if (twitchUsername) {
+      onUpdate(element.id, {
+        channel: twitchUsername,
+      } as Partial<ChatElement>);
+    }
+  };
+
   return (
     <>
-      <PanelSection title="Chat">
+      <PanelSection title="Channel">
         <div className="space-y-2">
-          <PropertyRow label="Preview">
+          <PropertyRow label="Username">
+            <div className="flex flex-1 gap-1">
+              <Input
+                className="h-6 flex-1 text-[11px]"
+                onChange={(e) =>
+                  onUpdate(element.id, {
+                    channel: e.target.value.toLowerCase().trim(),
+                  } as Partial<ChatElement>)
+                }
+                placeholder="twitch_username"
+                value={element.channel ?? ""}
+              />
+              <Button
+                className="h-6 w-6 shrink-0 p-0"
+                disabled={!twitchUsername || isLoadingAuth}
+                onClick={handleAutoFillChannel}
+                size="icon"
+                title={
+                  twitchUsername
+                    ? `Use your channel: ${twitchUsername}`
+                    : "Connect Twitch to auto-fill"
+                }
+                variant="outline"
+              >
+                <User className="h-3 w-3" />
+              </Button>
+            </div>
+          </PropertyRow>
+          {!element.channel && (
+            <p className="text-[10px] text-muted-foreground">
+              Enter a Twitch username to display live chat
+            </p>
+          )}
+          {element.channel && (
+            <p className="text-[10px] text-green-500">
+              Connected to #{element.channel}
+            </p>
+          )}
+        </div>
+      </PanelSection>
+
+      <PanelSection title="Display">
+        <div className="space-y-2">
+          <PropertyRow className="justify-between" label="Preview">
             <Switch
               checked={element.previewEnabled ?? false}
               onCheckedChange={(checked) =>
@@ -152,7 +209,7 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
               </SelectContent>
             </Select>
           </PropertyRow>
-          <PropertyRow label="Show Badges">
+          <PropertyRow className="justify-between" label="Show Badges">
             <Switch
               checked={element.style?.showBadges ?? true}
               onCheckedChange={(checked) =>
