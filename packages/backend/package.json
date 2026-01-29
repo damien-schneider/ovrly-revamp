@@ -16,8 +16,12 @@
   },
   "dependencies": {
     "@convex-dev/better-auth": "catalog:",
+    "@convex-dev/agent": "^0.3.2",
+    "@openrouter/ai-sdk-provider": "^1.5.4",
+    "ai": "^6.0.0",
     "better-auth": "catalog:",
     "convex": "catalog:",
-    "convex-helpers": "^0.1.109"
+    "convex-helpers": "^0.1.109",
+    "zod": "^3.23.8"
   }
 }

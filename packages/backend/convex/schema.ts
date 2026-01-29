@@ -62,4 +62,47 @@ export default defineSchema({
   })
     .index("by_userId", ["userId"])
     .index("by_userId_trigger", ["userId", "trigger"]),
+
+  // Version history for AI modifications
+  overlay_history: defineTable({
+    userId: v.id("profiles"),
+    overlayId: v.id("overlays"),
+    snapshot: v.any(), // Complete overlay state before AI modification
+    changeDescription: v.string(), // AI summary of changes
+    prompt: v.string(), // Original user prompt
+    modelUsed: v.string(), // e.g., "anthropic/claude-3.5-sonnet"
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_overlayId", ["overlayId"])
+    .index("by_userId_createdAt", ["userId", "createdAt"]),
+
+  // AI conversation threads
+  ai_threads: defineTable({
+    userId: v.id("profiles"),
+    threadId: v.string(), // From @convex-dev/agent
+    title: v.string(),
+    lastMessageAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_threadId", ["threadId"]),
+
+  // Usage tracking for rate limiting
+  ai_usage: defineTable({
+    userId: v.id("profiles"),
+    operation: v.union(
+      v.literal("design_generation"),
+      v.literal("image_generation"),
+      v.literal("overlay_modification")
+    ),
+    model: v.string(),
+    tokensUsed: v.number(),
+    cost: v.number(), // In cents
+    success: v.boolean(),
+    errorMessage: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_createdAt", ["userId", "createdAt"]),
 });
