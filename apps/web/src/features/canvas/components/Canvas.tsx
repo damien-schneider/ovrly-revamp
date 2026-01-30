@@ -17,6 +17,7 @@ import {
   getRotatedAABB,
 } from "../lib/canvas-utils";
 import { ElementRenderer } from "../widgets/ElementRenderer";
+import { CanvasContextMenu } from "./CanvasContextMenu";
 import { TransformBox } from "./TransformBox";
 
 const CLICK_MOVEMENT_THRESHOLD = 3; // pixels
@@ -304,79 +305,82 @@ export function Canvas({ onUpdateElement }: CanvasProps) {
   );
 
   return (
-    <div
-      onPointerDownCapture={handleCanvasPointerDown}
-      onPointerUpCapture={handleCanvasPointerUp}
-      ref={canvasRef}
-      {...bindDrag()}
-      className={`canvas-area relative h-full w-full overflow-hidden outline-none ${
-        isHandTool ? "cursor-grab active:cursor-grabbing" : "cursor-default"
-      }`}
-      style={{
-        backgroundColor: "var(--background)",
-        backgroundImage: "radial-gradient(var(--border) 1px, transparent 1px)",
-        backgroundSize: `${20 * scale}px ${20 * scale}px`,
-        backgroundPosition: `${position.x}px ${position.y}px`,
-        touchAction: "none",
-      }}
-    >
+    <CanvasContextMenu selectedIds={selectedIds}>
       <div
-        className="canvas-content absolute"
+        onPointerDownCapture={handleCanvasPointerDown}
+        onPointerUpCapture={handleCanvasPointerUp}
+        ref={canvasRef}
+        {...bindDrag()}
+        className={`canvas-area relative h-full w-full overflow-hidden outline-none ${
+          isHandTool ? "cursor-grab active:cursor-grabbing" : "cursor-default"
+        }`}
         style={{
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-          transformOrigin: "0 0",
+          backgroundColor: "var(--background)",
+          backgroundImage:
+            "radial-gradient(var(--border) 1px, transparent 1px)",
+          backgroundSize: `${20 * scale}px ${20 * scale}px`,
+          backgroundPosition: `${position.x}px ${position.y}px`,
+          touchAction: "none",
         }}
       >
-        {getRenderSortedElements(elements).map((el) => {
-          // Calculate effective layout based on fill modes
-          const layout = getEffectiveLayout(el, elements);
-
-          return (
-            <TransformBox
-              height={layout.height}
-              id={el.id}
-              isSelected={selectedIds.includes(el.id)}
-              key={el.id}
-              locked={el.locked}
-              onSelect={handleSelect}
-              onUpdate={onUpdateElement}
-              rotation={el.rotation}
-              width={layout.width}
-              x={layout.x}
-              y={layout.y}
-              zoom={scale}
-            >
-              <ElementRenderer element={el} />
-            </TransformBox>
-          );
-        })}
-      </div>
-
-      {selectionBox && (
         <div
-          className="pointer-events-none fixed z-[1000] border-2 border-blue-500 bg-blue-500/10"
+          className="canvas-content absolute"
           style={{
-            left: Math.min(selectionBox.startX, selectionBox.currentX),
-            top: Math.min(selectionBox.startY, selectionBox.currentY),
-            width: Math.abs(selectionBox.currentX - selectionBox.startX),
-            height: Math.abs(selectionBox.currentY - selectionBox.startY),
+            transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+            transformOrigin: "0 0",
           }}
-        />
-      )}
-
-      <div className="absolute bottom-6 left-1/2 z-90 flex -translate-x-1/2 items-center gap-2">
-        <button
-          className="rounded-full border border-border bg-background/80 p-2 text-muted-foreground shadow-lg backdrop-blur-md transition-all hover:bg-accent hover:text-foreground"
-          onClick={fitToView}
-          title="Fit to Layers"
-          type="button"
         >
-          <Scan size={16} />
-        </button>
-        <div className="min-w-15 rounded-full border border-border bg-background/80 px-4 py-2 text-center font-bold text-[11px] text-muted-foreground shadow-lg backdrop-blur-md">
-          {Math.round(scale * 100)}%
+          {getRenderSortedElements(elements).map((el) => {
+            // Calculate effective layout based on fill modes
+            const layout = getEffectiveLayout(el, elements);
+
+            return (
+              <TransformBox
+                height={layout.height}
+                id={el.id}
+                isSelected={selectedIds.includes(el.id)}
+                key={el.id}
+                locked={el.locked}
+                onSelect={handleSelect}
+                onUpdate={onUpdateElement}
+                rotation={el.rotation}
+                width={layout.width}
+                x={layout.x}
+                y={layout.y}
+                zoom={scale}
+              >
+                <ElementRenderer element={el} />
+              </TransformBox>
+            );
+          })}
+        </div>
+
+        {selectionBox && (
+          <div
+            className="pointer-events-none fixed z-[1000] border-2 border-blue-500 bg-blue-500/10"
+            style={{
+              left: Math.min(selectionBox.startX, selectionBox.currentX),
+              top: Math.min(selectionBox.startY, selectionBox.currentY),
+              width: Math.abs(selectionBox.currentX - selectionBox.startX),
+              height: Math.abs(selectionBox.currentY - selectionBox.startY),
+            }}
+          />
+        )}
+
+        <div className="absolute bottom-6 left-1/2 z-90 flex -translate-x-1/2 items-center gap-2">
+          <button
+            className="rounded-full border border-border bg-background/80 p-2 text-muted-foreground shadow-lg backdrop-blur-md transition-all hover:bg-accent hover:text-foreground"
+            onClick={fitToView}
+            title="Fit to Layers"
+            type="button"
+          >
+            <Scan size={16} />
+          </button>
+          <div className="min-w-15 rounded-full border border-border bg-background/80 px-4 py-2 text-center font-bold text-[11px] text-muted-foreground shadow-lg backdrop-blur-md">
+            {Math.round(scale * 100)}%
+          </div>
         </div>
       </div>
-    </div>
+    </CanvasContextMenu>
   );
 }

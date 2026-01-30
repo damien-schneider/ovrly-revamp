@@ -1,28 +1,20 @@
-import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import {
-  Authenticated,
-  AuthLoading,
-  Unauthenticated,
-  useQuery,
-} from "convex/react";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import Loader from "@/features/layout/components/loader";
 
 const AUTH_LOADING_TIMEOUT_MS = 8000;
 
 export const Route = createFileRoute("/(with_navbar)/")({
-  component: HomeComponent,
+  component: LandingPage,
 });
 
 function AuthLoadingWithTimeout() {
   const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimedOut(true);
-    }, AUTH_LOADING_TIMEOUT_MS);
-
+    const timer = setTimeout(() => setTimedOut(true), AUTH_LOADING_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, []);
 
@@ -33,46 +25,7 @@ function AuthLoadingWithTimeout() {
   return <Loader />;
 }
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
-function HomeComponent() {
-  const healthCheck = useQuery(api.healthCheck.get, {});
-  const isLoading = healthCheck === undefined;
-
-  const statusColor = (() => {
-    if (isLoading) {
-      return "bg-orange-400";
-    }
-    if (healthCheck === "OK") {
-      return "bg-green-500";
-    }
-    return "bg-red-500";
-  })();
-
-  const statusText = (() => {
-    if (isLoading) {
-      return "Checking...";
-    }
-    if (healthCheck === "OK") {
-      return "Connected";
-    }
-    return "Error";
-  })();
-
+function LandingPage() {
   return (
     <>
       <AuthLoading>
@@ -82,19 +35,62 @@ function HomeComponent() {
         <Navigate to="/overlays" />
       </Authenticated>
       <Unauthenticated>
-        <div className="container mx-auto max-w-3xl px-4 py-2">
-          <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-          <div className="grid gap-6">
-            <section className="rounded-lg border p-4">
-              <h2 className="mb-2 font-medium">API Status</h2>
-              <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${statusColor}`} />
-                <span className="text-muted-foreground text-sm">
-                  {statusText}
-                </span>
+        <div className="min-h-svh bg-background text-foreground">
+          <header className="border-border/40 border-b">
+            <div className="container mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+              <span className="font-semibold text-lg tracking-tight">
+                Ovrly
+              </span>
+              <Button asChild size="sm" variant="ghost">
+                <Link to="/login">Log in</Link>
+              </Button>
+            </div>
+          </header>
+          <main className="container mx-auto max-w-6xl px-4 py-16 sm:py-24">
+            <section className="mx-auto max-w-2xl text-center">
+              <h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+                Stream overlays made simple
+              </h1>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Create chat widgets, emote walls, alerts and more for Twitch.
+                Customize in the browser and add your overlay URL to OBS.
+              </p>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                <Button asChild size="lg">
+                  <Link search={{ redirect: "/overlays" }} to="/login">
+                    Get started
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/login">Log in</Link>
+                </Button>
               </div>
             </section>
-          </div>
+            <section className="mt-24 grid gap-8 sm:grid-cols-3">
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-6">
+                <h3 className="font-semibold text-foreground">Chat & emotes</h3>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Show chat, emote walls and sub badges on stream.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-6">
+                <h3 className="font-semibold text-foreground">
+                  One URL for OBS
+                </h3>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Add your overlay URL as a browser source—no local install.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-6">
+                <h3 className="font-semibold text-foreground">
+                  Customize live
+                </h3>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Resize, restyle and arrange widgets in the canvas editor.
+                </p>
+              </div>
+            </section>
+          </main>
         </div>
       </Unauthenticated>
     </>

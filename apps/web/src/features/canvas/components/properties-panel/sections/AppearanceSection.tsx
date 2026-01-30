@@ -1,10 +1,11 @@
 import { Eye, EyeOff } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import type { OverlayElement } from "@/features/canvas/types";
 import {
+  getSliderValue,
   IconButton,
   PanelSection,
   PropertyRow,
-  ScrubInput,
 } from "../primitives";
 
 interface AppearanceSectionProps {
@@ -40,14 +41,16 @@ export function AppearanceSection({
       <div className="space-y-2">
         {/* Opacity Row */}
         <PropertyRow label="Opacity">
-          <ScrubInput
-            className="flex-1"
-            max={100}
-            min={0}
-            onChange={(v) => onUpdate(element.id, { opacity: v / 100 })}
-            suffix="%"
-            value={opacityPercent}
-          />
+          <div className="flex-1">
+            <Slider
+              max={100}
+              min={0}
+              onValueChange={(v) =>
+                onUpdate(element.id, { opacity: getSliderValue(v) / 100 })
+              }
+              value={[opacityPercent]}
+            />
+          </div>
         </PropertyRow>
       </div>
     </PanelSection>
