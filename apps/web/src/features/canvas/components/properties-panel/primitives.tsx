@@ -624,3 +624,158 @@ export function ColorSwatch({
 // Utility to safely extract first value from slider change
 export const getSliderValue = (value: number | readonly number[]): number =>
   typeof value === "number" ? value : value[0];
+
+/**
+ * BoxModelInput - Figma/DevTools style box model visualization
+ * Shows nested boxes for spacing (padding, border radius, etc.)
+ */
+export function BoxModelInput({
+  padding,
+  borderRadius,
+  spacing,
+  onPaddingChange,
+  onBorderRadiusChange,
+  onSpacingChange,
+}: {
+  padding: number;
+  borderRadius?: number;
+  spacing?: number;
+  onPaddingChange: (value: number) => void;
+  onBorderRadiusChange?: (value: number) => void;
+  onSpacingChange?: (value: number) => void;
+}) {
+  const showSpacing = spacing !== undefined && onSpacingChange !== undefined;
+  const showBorderRadius =
+    borderRadius !== undefined && onBorderRadiusChange !== undefined;
+
+  return (
+    <div className="space-y-2">
+      {/* Visual box model representation */}
+      <div className="relative rounded-md bg-[#8b6914]/20 p-2">
+        {/* Spacing (outer) layer - tan/brown */}
+        {showSpacing && (
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-[#8b6914] text-[9px]">spacing</span>
+            <MiniInput
+              max={48}
+              min={0}
+              onChange={onSpacingChange}
+              value={spacing}
+            />
+          </div>
+        )}
+
+        {/* Border radius layer - olive/green */}
+        <div className="rounded bg-[#6b8e23]/30 p-2">
+          {showBorderRadius && (
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[#6b8e23] text-[9px]">radius</span>
+              <MiniInput
+                max={48}
+                min={0}
+                onChange={onBorderRadiusChange}
+                value={borderRadius}
+              />
+            </div>
+          )}
+
+          {/* Padding layer - teal/blue-green */}
+          <div className="rounded bg-[#5f9ea0]/30 p-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[#5f9ea0] text-[9px]">padding</span>
+              <MiniInput
+                max={48}
+                min={0}
+                onChange={onPaddingChange}
+                value={padding}
+              />
+            </div>
+
+            {/* Content area - blue */}
+            <div className="flex h-6 items-center justify-center rounded bg-[#6495ed]/40">
+              <span className="text-[#4169e1] text-[9px]">content</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * MiniInput - Tiny inline number input for box model
+ */
+function MiniInput({
+  value,
+  onChange,
+  min = 0,
+  max = 100,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <input
+      className="h-4 w-8 rounded border border-white/20 bg-white/10 px-1 text-center text-[9px] text-foreground outline-none [appearance:textfield] focus:border-primary/50 focus:ring-1 focus:ring-primary/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+      max={max}
+      min={min}
+      onChange={(e) => {
+        const val = Number.parseInt(e.target.value, 10);
+        if (!Number.isNaN(val)) {
+          onChange(Math.max(min, Math.min(max, val)));
+        }
+      }}
+      type="number"
+      value={value}
+    />
+  );
+}
+
+/**
+ * SpacingInput - Compact 4-sided spacing input (like Figma's padding input)
+ */
+export function SpacingInput({
+  value,
+  onChange,
+  label,
+  min = 0,
+  max = 100,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  label?: string;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {label && (
+        <span className="w-16 shrink-0 text-[11px] text-muted-foreground">
+          {label}
+        </span>
+      )}
+      <div className="flex flex-1 items-center gap-1">
+        <div className="group relative flex h-7 flex-1 items-center rounded-md bg-secondary/50 transition-all focus-within:ring-1 focus-within:ring-primary/50 hover:bg-secondary/80">
+          <input
+            className="h-full w-full bg-transparent px-2 text-center text-[11px] text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            max={max}
+            min={min}
+            onChange={(e) => {
+              const val = Number.parseInt(e.target.value, 10);
+              if (!Number.isNaN(val)) {
+                onChange(Math.max(min, Math.min(max, val)));
+              }
+            }}
+            type="number"
+            value={value}
+          />
+          <span className="pointer-events-none absolute right-2 text-[10px] text-muted-foreground">
+            px
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}

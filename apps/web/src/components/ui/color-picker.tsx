@@ -2,7 +2,7 @@
 
 import { Alpha, Colorful, type ColorResult } from "@uiw/react-color";
 import { Pipette } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -58,6 +58,23 @@ const PRESET_COLORS = [
   "#8E8E93",
 ];
 
+// Default color to use when value is transparent/invalid
+const DEFAULT_PICKER_COLOR = "#000000";
+
+// Check if a color value is transparent or invalid
+const isTransparentOrInvalid = (color: string): boolean => {
+  if (!color) {
+    return true;
+  }
+  const normalized = color.toLowerCase().trim();
+  return (
+    normalized === "transparent" ||
+    normalized === "none" ||
+    normalized === "" ||
+    !normalized.startsWith("#")
+  );
+};
+
 // Helper to normalize hex string
 const normalizeHex = (hex: string) => {
   let cleanHex = hex.replace("#", "");
@@ -104,7 +121,18 @@ export function ColorPicker({
   size = "default",
 }: ColorPickerProps) {
   const [open, setOpen] = useState(false);
-  const [hexInput, setHexInput] = useState(value);
+
+  // Use a valid hex for the picker when value is transparent
+  const isTransparent = isTransparentOrInvalid(value);
+  const pickerColor = isTransparent ? DEFAULT_PICKER_COLOR : value;
+  const [hexInput, setHexInput] = useState(pickerColor);
+
+  // Sync hexInput when external value changes
+  useEffect(() => {
+    if (!isTransparent) {
+      setHexInput(value);
+    }
+  }, [value, isTransparent]);
 
   // Convert RGBA to hex
   const rgbaToHex = useCallback(
@@ -154,7 +182,7 @@ export function ColorPicker({
     return { h, s, v, a };
   }, []);
 
-  const currentHsva = parseHexToHsva(value);
+  const currentHsva = parseHexToHsva(pickerColor);
 
   const handleColorChange = useCallback(
     (color: ColorResult) => {
@@ -172,8 +200,8 @@ export function ColorPicker({
 
   const handleAlphaChange = useCallback(
     (newAlpha: { a: number }) => {
-      // Parse current color to get RGB values
-      const cleanHex = value.replace("#", "");
+      // Parse current color to get RGB values (use pickerColor which is always valid)
+      const cleanHex = pickerColor.replace("#", "");
       const r =
         Number.parseInt(
           cleanHex.substring(HEX_PAIR_START_R, HEX_PAIR_LENGTH),
@@ -194,7 +222,7 @@ export function ColorPicker({
       onChange(newColor);
       setHexInput(newColor);
     },
-    [onChange, rgbaToHex, value]
+    [onChange, rgbaToHex, pickerColor]
   );
 
   const handleHexInput = useCallback(

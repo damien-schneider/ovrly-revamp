@@ -23,7 +23,7 @@ function Slider({
 
   return (
     <SliderPrimitive.Root
-      className={cn("data-horizontal:w-full data-vertical:h-full", className)}
+      className={cn("w-full", className)}
       data-slot="slider"
       defaultValue={defaultValue}
       max={max}
@@ -32,19 +32,19 @@ function Slider({
       value={value}
       {...props}
     >
-      <SliderPrimitive.Control className="data-vertical:min-h-40 relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col">
+      <SliderPrimitive.Control className="relative flex h-4 w-full touch-none items-center select-none data-[disabled]:opacity-50">
         <SliderPrimitive.Track
-          className="bg-muted rounded-full data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1 relative grow overflow-hidden select-none"
+          className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-muted select-none"
           data-slot="slider-track"
         >
           <SliderPrimitive.Indicator
-            className="bg-primary select-none data-horizontal:h-full data-vertical:w-full"
+            className="absolute h-full bg-primary select-none"
             data-slot="slider-range"
           />
         </SliderPrimitive.Track>
         {Array.from({ length: _values.length }, (_, index) => (
           <SliderPrimitive.Thumb
-            className="border-ring ring-ring/50 relative size-3 rounded-full border bg-white transition-[color,box-shadow] after:absolute after:-inset-2 hover:ring-[3px] focus-visible:ring-[3px] focus-visible:outline-hidden active:ring-[3px] block shrink-0 select-none disabled:pointer-events-none disabled:opacity-50"
+            className="block size-4 shrink-0 cursor-pointer rounded-full border-2 border-primary bg-background shadow-md transition-shadow select-none after:absolute after:-inset-2 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
             data-slot="slider-thumb"
             key={index}
           />

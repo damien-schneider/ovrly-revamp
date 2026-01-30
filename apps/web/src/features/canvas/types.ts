@@ -96,6 +96,7 @@ export interface ChatStyle {
   borderWidth: number;
   borderColor: string;
   showBadges: boolean;
+  showAvatar: boolean;
   badgeSize: number;
   textShadow: string;
   maxMessages: number;
@@ -201,7 +202,7 @@ export type OverlayElement =
 
 // Default styles for new elements
 export const defaultChatStyle: ChatStyle = {
-  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  backgroundColor: "transparent",
   textColor: "#ffffff",
   fontFamily: "Inter",
   fontSize: 14,
@@ -209,12 +210,13 @@ export const defaultChatStyle: ChatStyle = {
   messageSpacing: 8,
   usernameColor: "#a855f7",
   animation: "slide",
-  messageBgColor: "rgba(255, 255, 255, 0.1)",
+  messageBgColor: "transparent",
   messageBorderRadius: 8,
   messagePadding: 8,
   borderWidth: 0,
   borderColor: "transparent",
   showBadges: true,
+  showAvatar: true,
   badgeSize: 18,
   textShadow: "none",
   maxMessages: 10,

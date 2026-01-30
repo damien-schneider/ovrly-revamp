@@ -69,6 +69,7 @@ function LayoutComponent() {
   const navigate = useNavigate();
   const isLoginRoute = pathname === "/login";
   const isIndexRoute = pathname === "/" || pathname === "";
+  const isFeedbackRoute = pathname === "/feedback";
   const isAccountRoute = pathname === "/account";
 
   const hasSettings = false;
@@ -83,8 +84,8 @@ function LayoutComponent() {
 
   const navigateToOverlays = () => navigate({ to: "/overlays" });
 
-  // Login route and index (landing) route handle their own authentication state
-  if (isLoginRoute || isIndexRoute) {
+  // Public routes that don't require authentication
+  if (isLoginRoute || isIndexRoute || isFeedbackRoute) {
     return <Outlet />;
   }
 

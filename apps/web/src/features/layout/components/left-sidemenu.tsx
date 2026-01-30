@@ -1,4 +1,4 @@
-import { UserIcon } from "@phosphor-icons/react";
+import { ChatCircleDots, UserIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "@/features/layout/components/theme-switcher";
@@ -13,6 +13,15 @@ export default function LeftSidemenu() {
       </div>
       <div className="flex w-72 min-w-72 flex-col gap-1">
         <ThemeSwitcher />
+        <Link className="w-full" to="/feedback">
+          <Button
+            className="h-12 w-full justify-start gap-2 rounded-xl bg-background-2"
+            variant="ghost"
+          >
+            <ChatCircleDots size={20} weight="regular" />
+            <span>Feedback</span>
+          </Button>
+        </Link>
         <Link className="w-full" to="/account">
           <Button
             className="h-12 w-full justify-start gap-2 rounded-xl bg-background-2"
