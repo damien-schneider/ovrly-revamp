@@ -1,4 +1,5 @@
 import { User } from "lucide-react";
+import FontPicker from "react-fontpicker-ts-lite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -146,6 +147,17 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
 
       <PanelSection title="Styling">
         <div className="space-y-2">
+          <PropertyRow label="Font">
+            <div className="flex-1">
+              <FontPicker
+                autoLoad
+                defaultValue={
+                  element.style?.fontFamily ?? defaultChatStyle.fontFamily
+                }
+                value={(fontFamily) => updateChatStyle({ fontFamily })}
+              />
+            </div>
+          </PropertyRow>
           <PropertyRow label="Font Size">
             <div className="flex-1">
               <Slider

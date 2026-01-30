@@ -19,6 +19,7 @@ import { Route as ViewCanvasRouteImport } from './routes/view.canvas'
 import { Route as with_navbarModerationRouteImport } from './routes/(with_navbar)/moderation'
 import { Route as with_navbarLoginRouteImport } from './routes/(with_navbar)/login'
 import { Route as with_navbarHomeRouteImport } from './routes/(with_navbar)/home'
+import { Route as with_navbarFeedbackRouteImport } from './routes/(with_navbar)/feedback'
 import { Route as with_navbarDashboardRouteImport } from './routes/(with_navbar)/dashboard'
 import { Route as with_navbarChatInteractionsRouteImport } from './routes/(with_navbar)/chat-interactions'
 import { Route as with_navbarAssetsRouteImport } from './routes/(with_navbar)/assets'
@@ -77,6 +78,11 @@ const with_navbarLoginRoute = with_navbarLoginRouteImport.update({
 const with_navbarHomeRoute = with_navbarHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
+const with_navbarFeedbackRoute = with_navbarFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
   getParentRoute: () => with_navbarRouteRoute,
 } as any)
 const with_navbarDashboardRoute = with_navbarDashboardRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/preview': typeof PreviewRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
+  '/feedback': typeof with_navbarFeedbackRoute
   '/home': typeof with_navbarHomeRoute
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/preview': typeof PreviewRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
+  '/feedback': typeof with_navbarFeedbackRoute
   '/home': typeof with_navbarHomeRoute
   '/login': typeof with_navbarLoginRoute
   '/moderation': typeof with_navbarModerationRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/(with_navbar)/assets': typeof with_navbarAssetsRouteWithChildren
   '/(with_navbar)/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/(with_navbar)/dashboard': typeof with_navbarDashboardRoute
+  '/(with_navbar)/feedback': typeof with_navbarFeedbackRoute
   '/(with_navbar)/home': typeof with_navbarHomeRoute
   '/(with_navbar)/login': typeof with_navbarLoginRoute
   '/(with_navbar)/moderation': typeof with_navbarModerationRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/preview'
     | '/account'
     | '/dashboard'
+    | '/feedback'
     | '/home'
     | '/login'
     | '/moderation'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/preview'
     | '/account'
     | '/dashboard'
+    | '/feedback'
     | '/home'
     | '/login'
     | '/moderation'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/(with_navbar)/assets'
     | '/(with_navbar)/chat-interactions'
     | '/(with_navbar)/dashboard'
+    | '/(with_navbar)/feedback'
     | '/(with_navbar)/home'
     | '/(with_navbar)/login'
     | '/(with_navbar)/moderation'
@@ -334,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof with_navbarHomeRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
+    '/(with_navbar)/feedback': {
+      id: '/(with_navbar)/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof with_navbarFeedbackRouteImport
       parentRoute: typeof with_navbarRouteRoute
     }
     '/(with_navbar)/dashboard': {
@@ -447,6 +466,7 @@ interface with_navbarRouteRouteChildren {
   with_navbarAssetsRoute: typeof with_navbarAssetsRouteWithChildren
   with_navbarChatInteractionsRoute: typeof with_navbarChatInteractionsRouteWithChildren
   with_navbarDashboardRoute: typeof with_navbarDashboardRoute
+  with_navbarFeedbackRoute: typeof with_navbarFeedbackRoute
   with_navbarHomeRoute: typeof with_navbarHomeRoute
   with_navbarLoginRoute: typeof with_navbarLoginRoute
   with_navbarModerationRoute: typeof with_navbarModerationRoute
@@ -459,6 +479,7 @@ const with_navbarRouteRouteChildren: with_navbarRouteRouteChildren = {
   with_navbarChatInteractionsRoute:
     with_navbarChatInteractionsRouteWithChildren,
   with_navbarDashboardRoute: with_navbarDashboardRoute,
+  with_navbarFeedbackRoute: with_navbarFeedbackRoute,
   with_navbarHomeRoute: with_navbarHomeRoute,
   with_navbarLoginRoute: with_navbarLoginRoute,
   with_navbarModerationRoute: with_navbarModerationRoute,

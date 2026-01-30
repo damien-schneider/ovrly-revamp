@@ -3,6 +3,7 @@ import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { ConvexReactClient } from "convex/react";
 import { env } from "@/env";
 import { AuthErrorBoundary } from "@/features/auth/components/auth-error-boundary";
+import { RefletAuthProvider } from "@/features/feedback/lib/reflet-provider";
 import Loader from "@/features/layout/components/loader";
 import { authClient } from "@/lib/auth-client";
 import { routeTree } from "./routeTree.gen";
@@ -21,7 +22,7 @@ export function getRouter() {
     Wrap: ({ children }) => (
       <AuthErrorBoundary>
         <ConvexBetterAuthProvider authClient={authClient} client={convex}>
-          {children}
+          <RefletAuthProvider>{children}</RefletAuthProvider>
         </ConvexBetterAuthProvider>
       </AuthErrorBoundary>
     ),

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-fontpicker-ts-lite/dist/index.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -256,5 +257,72 @@ body {
   .figma-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-border/50 rounded-full;
     @apply hover:bg-border;
+  }
+
+  /* Font Picker Override Styles */
+  .fontpicker {
+    @apply bg-secondary/50 border-border/60 rounded-md text-[11px];
+    border-width: 1px;
+  }
+
+  .fontpicker:hover {
+    @apply border-border;
+  }
+
+  .fontpicker:focus-within {
+    @apply border-primary/50 ring-1 ring-primary/20;
+  }
+
+  .fontpicker__preview {
+    @apply h-6;
+    filter: none;
+  }
+
+  .dark .fontpicker__preview {
+    filter: invert(100%);
+  }
+
+  .fontpicker__search {
+    @apply bg-secondary/50 text-foreground text-[11px] h-6 px-2;
+    font-size: 11px;
+  }
+
+  .fontpicker__search:focus {
+    @apply bg-background;
+  }
+
+  .fontpicker__popout {
+    @apply bg-popover border-border rounded-md shadow-lg mt-1;
+    max-height: 200px;
+    z-index: 50;
+  }
+
+  .fontpicker__popout.fontpicker__active {
+    @apply opacity-100;
+  }
+
+  .fontpicker__listbox {
+    @apply bg-popover;
+  }
+
+  .fontpicker__option {
+    filter: none;
+    @apply cursor-pointer;
+  }
+
+  .dark .fontpicker__option {
+    filter: invert(100%);
+  }
+
+  .fontpicker__option.current {
+    @apply bg-accent;
+  }
+
+  .fontpicker__option.selected {
+    @apply bg-primary/20;
+  }
+
+  .fontpicker__nomatches {
+    @apply bg-popover text-muted-foreground text-[11px];
   }
 }
