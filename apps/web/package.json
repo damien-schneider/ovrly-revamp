@@ -49,6 +49,7 @@
     "react-resizable-panels": "^4.4.1",
     "react-use-measure": "^2.1.7",
     "recharts": "2.15.4",
+    "reflet-sdk": "^0.1.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",

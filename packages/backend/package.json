@@ -15,8 +15,8 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@convex-dev/better-auth": "catalog:",
     "@convex-dev/agent": "^0.3.2",
+    "@convex-dev/better-auth": "catalog:",
     "@openrouter/ai-sdk-provider": "^1.5.4",
     "ai": "^6.0.0",
     "better-auth": "catalog:",

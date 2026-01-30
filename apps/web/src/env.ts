@@ -14,6 +14,7 @@ export const env = createEnv({
     VITE_TWITCH_CLIENT_ID: z.string().min(1, "Twitch Client ID is required"),
     VITE_BOT_SERVER_URL: z.string().url().optional(),
     VITE_BOT_API_SECRET: z.string().optional(),
+    VITE_REFLET_KEY: z.string().min(1).optional(),
   },
 
   /**
