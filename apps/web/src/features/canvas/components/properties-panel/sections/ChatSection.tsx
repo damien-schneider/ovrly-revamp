@@ -20,8 +20,10 @@ import { defaultChatStyle } from "@/features/canvas/types";
 import {
   ColorSwatch,
   getSliderValue,
+  OptionalPropertySection,
   PanelSection,
   PropertyRow,
+  ScrubInput,
 } from "../primitives";
 
 interface ChatSectionProps {
@@ -220,28 +222,34 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection title="Border">
+      <OptionalPropertySection
+        isSet={(element.style?.borderWidth ?? 0) > 0}
+        onAdd={() =>
+          updateChatStyle({ borderWidth: 2, borderColor: "#3b82f6" })
+        }
+        onRemove={() =>
+          updateChatStyle({ borderWidth: 0, borderColor: "transparent" })
+        }
+        title="Border"
+      >
         <div className="space-y-2">
           <PropertyRow label="Color">
             <ColorSwatch
-              color={element.style?.borderColor ?? "transparent"}
+              color={element.style?.borderColor ?? "#3b82f6"}
               onChange={(color) => updateChatStyle({ borderColor: color })}
             />
           </PropertyRow>
           <PropertyRow label="Width">
-            <div className="flex-1">
-              <Slider
-                max={8}
-                min={0}
-                onValueChange={(v) =>
-                  updateChatStyle({ borderWidth: getSliderValue(v) })
-                }
-                value={[element.style?.borderWidth ?? 0]}
-              />
-            </div>
+            <ScrubInput
+              max={8}
+              min={1}
+              onChange={(v) => updateChatStyle({ borderWidth: v })}
+              suffix="px"
+              value={element.style?.borderWidth ?? 2}
+            />
           </PropertyRow>
         </div>
-      </PanelSection>
+      </OptionalPropertySection>
     </>
   );
 }

@@ -1,5 +1,4 @@
 import { RotateCw } from "lucide-react";
-import { ColorPicker } from "@/components/ui/color-picker";
 import {
   Select,
   SelectContent,
@@ -7,13 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import type { OverlayElement, WebcamElement } from "@/features/canvas/types";
 import {
+  ColorSwatch,
   CompactInput,
-  getSliderValue,
+  OptionalPropertySection,
   PanelSection,
   PropertyRow,
+  ScrubInput,
 } from "../primitives";
 
 interface WebcamSectionProps {
@@ -43,27 +43,6 @@ export function WebcamSection({ element, onUpdate }: WebcamSectionProps) {
             </Select>
           </PropertyRow>
 
-          <PropertyRow label="Border">
-            <div className="flex items-center gap-2">
-              <ColorPicker
-                onChange={(color) =>
-                  onUpdate(element.id, { borderColor: color })
-                }
-                size="compact"
-                value={element.borderColor}
-              />
-              <CompactInput
-                className="w-16"
-                onChange={(v) =>
-                  onUpdate(element.id, {
-                    borderWidth: Number.parseInt(v, 10) || 0,
-                  })
-                }
-                value={element.borderWidth}
-              />
-            </div>
-          </PropertyRow>
-
           <PropertyRow label="Radius">
             <CompactInput
               className="w-full"
@@ -79,30 +58,66 @@ export function WebcamSection({ element, onUpdate }: WebcamSectionProps) {
         </div>
       </PanelSection>
 
-      <PanelSection title="Shadow">
-        <div className="space-y-3">
+      <OptionalPropertySection
+        isSet={element.borderWidth > 0}
+        onAdd={() =>
+          onUpdate(element.id, { borderWidth: 4, borderColor: "#ffffff" })
+        }
+        onRemove={() =>
+          onUpdate(element.id, { borderWidth: 0, borderColor: "transparent" })
+        }
+        title="Border"
+      >
+        <div className="space-y-2">
           <PropertyRow label="Color">
-            <ColorPicker
-              onChange={(color) => onUpdate(element.id, { shadowColor: color })}
-              size="compact"
-              value={element.shadowColor}
+            <ColorSwatch
+              color={element.borderColor}
+              onChange={(color) => onUpdate(element.id, { borderColor: color })}
             />
           </PropertyRow>
-          <PropertyRow label="Size">
-            <Slider
-              className="w-full"
-              max={50}
-              min={0}
-              onValueChange={(v) =>
-                onUpdate(element.id, {
-                  shadowBlur: getSliderValue(v),
-                })
-              }
-              value={[element.shadowBlur]}
+          <PropertyRow label="Width">
+            <ScrubInput
+              max={16}
+              min={1}
+              onChange={(v) => onUpdate(element.id, { borderWidth: v })}
+              suffix="px"
+              value={element.borderWidth}
             />
           </PropertyRow>
         </div>
-      </PanelSection>
+      </OptionalPropertySection>
+
+      <OptionalPropertySection
+        isSet={element.shadowBlur > 0}
+        onAdd={() =>
+          onUpdate(element.id, {
+            shadowBlur: 20,
+            shadowColor: "rgba(0,0,0,0.5)",
+          })
+        }
+        onRemove={() =>
+          onUpdate(element.id, { shadowBlur: 0, shadowColor: "transparent" })
+        }
+        title="Shadow"
+      >
+        <div className="space-y-2">
+          <PropertyRow label="Color">
+            <ColorSwatch
+              color={element.shadowColor}
+              onChange={(color) => onUpdate(element.id, { shadowColor: color })}
+            />
+          </PropertyRow>
+          <PropertyRow label="Blur">
+            <ScrubInput
+              max={50}
+              min={1}
+              onChange={(v) => onUpdate(element.id, { shadowBlur: v })}
+              suffix="px"
+              value={element.shadowBlur}
+            />
+          </PropertyRow>
+        </div>
+      </OptionalPropertySection>
     </>
   );
 }

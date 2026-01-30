@@ -51,7 +51,7 @@ interface ChatWidgetProps {
 }
 
 export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
-  const { style, mockMessages, previewEnabled, channel } = element;
+  const { style, previewEnabled, channel } = element;
 
   // Connect to Twitch chat when channel is configured
   // In live view (OBS), always connect if channel is set
@@ -85,8 +85,8 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
     // Show preview animation when enabled
     displayMessages = mockPreviewMessages;
   } else {
-    // Show static mock messages
-    displayMessages = mockMessages;
+    // No preview mode - show empty (no mock data when channel is set or preview is off)
+    displayMessages = [];
   }
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -108,9 +108,9 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
       return;
     }
 
-    // In editor without channel, show mock or preview
+    // In editor without preview mode - show empty (no mock data)
     if (!previewEnabled) {
-      setVisibleMessages(mockMessages);
+      setVisibleMessages([]);
       return;
     }
 
@@ -130,7 +130,6 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
     return () => clearInterval(interval);
   }, [
     previewEnabled,
-    mockMessages,
     style.maxMessages,
     isLiveView,
     displayMessages,
