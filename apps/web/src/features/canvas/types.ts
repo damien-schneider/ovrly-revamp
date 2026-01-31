@@ -138,9 +138,8 @@ export interface ChatStyle {
   textShadow: string;
   maxMessages: number;
   messageDirection: "bottom-up" | "top-down";
-  // Gradient mask options
-  maskTop: boolean;
-  maskBottom: boolean;
+  // Gradient mask (auto-positioned based on direction)
+  maskEnabled: boolean;
   maskSize: number;
 }
 
@@ -262,8 +261,7 @@ export const defaultChatStyle: ChatStyle = {
   textShadow: "none",
   maxMessages: 10,
   messageDirection: "bottom-up",
-  maskTop: false,
-  maskBottom: false,
+  maskEnabled: false,
   maskSize: 40,
 };
 

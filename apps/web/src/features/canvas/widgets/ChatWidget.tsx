@@ -1,5 +1,7 @@
+import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import type { ChatElement } from "@/features/canvas/types";
+import { defaultChatStyle } from "@/features/canvas/types";
 import { useTwitchChat } from "@/features/twitch/hooks/use-twitch-chat";
 
 // Mock messages for chat preview
@@ -148,6 +150,29 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
     }
   };
 
+  // Auto-position mask based on direction
+  // bottom-up: mask at top (old messages fade out at top)
+  // top-down: mask at bottom (old messages fade out at bottom)
+  const getMaskStyle = (): React.CSSProperties | undefined => {
+    const maskEnabled = style.maskEnabled ?? defaultChatStyle.maskEnabled;
+    if (!maskEnabled) {
+      return undefined;
+    }
+
+    const maskSize = style.maskSize ?? defaultChatStyle.maskSize;
+    const isTopDown = style.messageDirection === "top-down";
+
+    // Mask where old messages disappear
+    const gradient = isTopDown
+      ? `linear-gradient(to top, transparent 0%, black ${maskSize}px)`
+      : `linear-gradient(to bottom, transparent 0%, black ${maskSize}px)`;
+
+    return {
+      maskImage: gradient,
+      WebkitMaskImage: gradient,
+    };
+  };
+
   return (
     <div
       ref={containerRef}
@@ -171,6 +196,7 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
         gap: style.messageSpacing,
         opacity: element.opacity ?? 1,
+        ...getMaskStyle(),
       }}
     >
       <style>
