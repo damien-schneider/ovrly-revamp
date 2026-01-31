@@ -20,6 +20,7 @@ import { ProgressBarWidget } from "./ProgressBarWidget";
 import { TextWidget } from "./TextWidget";
 import { TimerWidget } from "./TimerWidget";
 import { WebcamWidget } from "./WebcamWidget";
+import { WidgetWrapper } from "./WidgetWrapper";
 
 interface ElementRendererProps {
   element: OverlayElement;
@@ -34,43 +35,50 @@ export function ElementRenderer({
     return null;
   }
 
-  switch (element.type) {
-    case ElementType.OVERLAY:
-      return (
-        <OverlayWidget
-          element={element as OverlayContainerElement}
-          isLiveView={isLiveView}
-        />
-      );
-    case ElementType.BOX:
-      return <BoxWidget element={element as BoxElement} />;
-    case ElementType.TEXT:
-      return <TextWidget element={element as TextElement} />;
-    case ElementType.IMAGE:
-      return <ImageWidget element={element as ImageElement} />;
-    case ElementType.CHAT:
-      return (
-        <ChatWidget element={element as ChatElement} isLiveView={isLiveView} />
-      );
-    case ElementType.EMOTE_WALL:
-      return (
-        <EmoteWallWidget
-          element={element as EmoteWallElement}
-          isLiveView={isLiveView}
-        />
-      );
-    case ElementType.WEBCAM:
-      return (
-        <WebcamWidget
-          element={element as WebcamElement}
-          isLiveView={isLiveView}
-        />
-      );
-    case ElementType.TIMER:
-      return <TimerWidget element={element as TimerElement} />;
-    case ElementType.PROGRESS:
-      return <ProgressBarWidget element={element as ProgressBarElement} />;
-    default:
-      return null;
-  }
+  const renderWidget = () => {
+    switch (element.type) {
+      case ElementType.OVERLAY:
+        return (
+          <OverlayWidget
+            element={element as OverlayContainerElement}
+            isLiveView={isLiveView}
+          />
+        );
+      case ElementType.BOX:
+        return <BoxWidget element={element as BoxElement} />;
+      case ElementType.TEXT:
+        return <TextWidget element={element as TextElement} />;
+      case ElementType.IMAGE:
+        return <ImageWidget element={element as ImageElement} />;
+      case ElementType.CHAT:
+        return (
+          <ChatWidget
+            element={element as ChatElement}
+            isLiveView={isLiveView}
+          />
+        );
+      case ElementType.EMOTE_WALL:
+        return (
+          <EmoteWallWidget
+            element={element as EmoteWallElement}
+            isLiveView={isLiveView}
+          />
+        );
+      case ElementType.WEBCAM:
+        return (
+          <WebcamWidget
+            element={element as WebcamElement}
+            isLiveView={isLiveView}
+          />
+        );
+      case ElementType.TIMER:
+        return <TimerWidget element={element as TimerElement} />;
+      case ElementType.PROGRESS:
+        return <ProgressBarWidget element={element as ProgressBarElement} />;
+      default:
+        return null;
+    }
+  };
+
+  return <WidgetWrapper element={element}>{renderWidget()}</WidgetWrapper>;
 }
