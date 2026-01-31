@@ -14,6 +14,33 @@ export type ElementType = (typeof ElementType)[keyof typeof ElementType];
 
 export type SizeMode = "fixed" | "fill";
 
+export type OverflowMode = "visible" | "hidden" | "clip";
+
+export type BlendMode =
+  | "normal"
+  | "multiply"
+  | "screen"
+  | "overlay"
+  | "darken"
+  | "lighten"
+  | "color-dodge"
+  | "color-burn"
+  | "hard-light"
+  | "soft-light"
+  | "difference"
+  | "exclusion";
+
+export interface FilterSettings {
+  blur?: number; // px
+  brightness?: number; // 0-200, default 100
+  contrast?: number; // 0-200, default 100
+  grayscale?: number; // 0-100
+  saturate?: number; // 0-200, default 100
+  hueRotate?: number; // 0-360 degrees
+  invert?: number; // 0-100
+  sepia?: number; // 0-100
+}
+
 export interface BaseElement {
   id: string;
   type: ElementType;
@@ -31,6 +58,10 @@ export interface BaseElement {
   locked: boolean;
   visible: boolean;
   parentId: string | null;
+  // Shared visual properties
+  overflow?: OverflowMode;
+  blendMode?: BlendMode;
+  filters?: FilterSettings;
 }
 
 export interface OverlayContainerElement extends BaseElement {
@@ -92,14 +123,25 @@ export interface ChatStyle {
   // Enhanced chat styling
   messageBgColor: string;
   messageBorderRadius: number;
+  // Individual corner radii (optional, falls back to messageBorderRadius if not set)
+  messageBorderRadiusTL?: number;
+  messageBorderRadiusTR?: number;
+  messageBorderRadiusBL?: number;
+  messageBorderRadiusBR?: number;
+  messageBorderRadiusLinked?: boolean;
   messagePadding: number;
   borderWidth: number;
   borderColor: string;
   showBadges: boolean;
+  showAvatar: boolean;
   badgeSize: number;
   textShadow: string;
   maxMessages: number;
   messageDirection: "bottom-up" | "top-down";
+  // Gradient mask options
+  maskTop: boolean;
+  maskBottom: boolean;
+  maskSize: number;
 }
 
 export interface ChatMessage {
@@ -201,7 +243,7 @@ export type OverlayElement =
 
 // Default styles for new elements
 export const defaultChatStyle: ChatStyle = {
-  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  backgroundColor: "transparent",
   textColor: "#ffffff",
   fontFamily: "Inter",
   fontSize: 14,
@@ -209,16 +251,20 @@ export const defaultChatStyle: ChatStyle = {
   messageSpacing: 8,
   usernameColor: "#a855f7",
   animation: "slide",
-  messageBgColor: "rgba(255, 255, 255, 0.1)",
+  messageBgColor: "transparent",
   messageBorderRadius: 8,
   messagePadding: 8,
   borderWidth: 0,
   borderColor: "transparent",
   showBadges: true,
+  showAvatar: true,
   badgeSize: 18,
   textShadow: "none",
   maxMessages: 10,
   messageDirection: "bottom-up",
+  maskTop: false,
+  maskBottom: false,
+  maskSize: 40,
 };
 
 export const defaultEmoteWallStyle: EmoteWallStyle = {
