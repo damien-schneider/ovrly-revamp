@@ -31,13 +31,16 @@ import {
 } from "@/features/canvas/types";
 import { IconButton, PanelSection } from "./primitives";
 import { AppearanceSection } from "./sections/AppearanceSection";
+import { BlendModeSection } from "./sections/BlendModeSection";
 import {
   BoxCornerRadiusSection,
   BoxFillSection,
   BoxStrokeSection,
 } from "./sections/BoxSection";
 import { ChatSection } from "./sections/ChatSection";
+import { ClipSection } from "./sections/ClipSection";
 import { EmoteWallSection } from "./sections/EmoteWallSection";
+import { FiltersSection } from "./sections/FiltersSection";
 import { ImageSection } from "./sections/ImageSection";
 import { LayoutSection } from "./sections/LayoutSection";
 import { OverlaySection } from "./sections/OverlaySection";
@@ -118,6 +121,9 @@ export function PropertiesPanel({
           <PositionSection element={element} onUpdate={onUpdate} />
           <LayoutSection element={element} onUpdate={onUpdate} />
           <AppearanceSection element={element} onUpdate={onUpdate} />
+          <ClipSection element={element} onUpdate={onUpdate} />
+          <BlendModeSection element={element} onUpdate={onUpdate} />
+          <FiltersSection element={element} onUpdate={onUpdate} />
 
           {/* Element-specific sections */}
           {element.type === ElementType.OVERLAY && (
