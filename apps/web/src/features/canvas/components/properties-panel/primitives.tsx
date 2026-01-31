@@ -624,3 +624,428 @@ export function ColorSwatch({
 // Utility to safely extract first value from slider change
 export const getSliderValue = (value: number | readonly number[]): number =>
   typeof value === "number" ? value : value[0];
+
+/**
+ * DraggableValue - A small draggable/editable number
+ * Used for corner radius handles and spacing indicators
+ */
+function DraggableValue({
+  value,
+  onChange,
+  min = 0,
+  max = 48,
+  className,
+  position,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  className?: string;
+  position?: "tl" | "tr" | "bl" | "br" | "center";
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [inputValue, setInputValue] = useState(String(value));
+  const startXRef = useRef(0);
+  const startValueRef = useRef(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const clampValue = useCallback(
+    (val: number) => Math.max(min, Math.min(max, Math.round(val))),
+    [min, max]
+  );
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      startXRef.current = e.clientX;
+      startValueRef.current = value;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const delta = moveEvent.clientX - startXRef.current;
+        let multiplier = 0.5;
+        if (moveEvent.shiftKey) {
+          multiplier = 0.1;
+        } else if (moveEvent.altKey) {
+          multiplier = 2;
+        }
+        const newValue = clampValue(startValueRef.current + delta * multiplier);
+        onChange(newValue);
+      };
+
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "ew-resize";
+      document.body.style.userSelect = "none";
+    },
+    [value, clampValue, onChange]
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    setIsFocused(false);
+    const parsed = Number.parseInt(inputValue, 10);
+    if (!Number.isNaN(parsed)) {
+      onChange(clampValue(parsed));
+    }
+    setInputValue(String(value));
+  };
+
+  const handleInputFocus = () => {
+    setIsFocused(true);
+    setInputValue(String(value));
+    inputRef.current?.select();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      inputRef.current?.blur();
+    } else if (e.key === "Escape") {
+      setInputValue(String(value));
+      inputRef.current?.blur();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      onChange(clampValue(value + 1));
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      onChange(clampValue(value - 1));
+    }
+  };
+
+  const displayValue = isFocused ? inputValue : String(value);
+
+  // Position-based cursor style for corner handles
+  const getCursor = () => {
+    if (position === "tl" || position === "br") {
+      return "cursor-nwse-resize";
+    }
+    if (position === "tr" || position === "bl") {
+      return "cursor-nesw-resize";
+    }
+    return "cursor-ew-resize";
+  };
+
+  return (
+    <div
+      aria-label="Drag to adjust value"
+      aria-valuemax={max}
+      aria-valuemin={min}
+      aria-valuenow={value}
+      className={cn(
+        "group relative flex h-4 w-6 items-center justify-center rounded-sm transition-all",
+        "bg-background/80 text-[9px] text-muted-foreground",
+        "border border-border/50 hover:border-primary/50 hover:bg-background",
+        isDragging && "border-primary bg-background ring-1 ring-primary/30",
+        isFocused && "border-primary bg-background ring-1 ring-primary/30",
+        getCursor(),
+        className
+      )}
+      onMouseDown={handleMouseDown}
+      role="slider"
+      tabIndex={-1}
+    >
+      <input
+        className="h-full w-full bg-transparent text-center text-[9px] outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        onBlur={handleInputBlur}
+        onChange={handleInputChange}
+        onClick={(e) => e.stopPropagation()}
+        onFocus={handleInputFocus}
+        onKeyDown={handleKeyDown}
+        onMouseDown={(e) => e.stopPropagation()}
+        ref={inputRef}
+        type="text"
+        value={displayValue}
+      />
+    </div>
+  );
+}
+
+/**
+ * MessagePlaceholder - A minimal message shape with corner radius handles
+ */
+function MessagePlaceholder({
+  corners,
+  onCornerChange,
+  linked,
+  showHandles = true,
+}: {
+  corners: { tl: number; tr: number; bl: number; br: number };
+  onCornerChange: (corner: "tl" | "tr" | "bl" | "br", value: number) => void;
+  linked: boolean;
+  showHandles?: boolean;
+}) {
+  const handleChange = (corner: "tl" | "tr" | "bl" | "br", value: number) => {
+    if (linked) {
+      onCornerChange("tl", value);
+      onCornerChange("tr", value);
+      onCornerChange("bl", value);
+      onCornerChange("br", value);
+    } else {
+      onCornerChange(corner, value);
+    }
+  };
+
+  // Calculate visual radius (scaled down for the small preview)
+  const visualRadius = (val: number) => Math.min(val * 0.4, 12);
+
+  return (
+    <div className="relative">
+      {/* The message shape */}
+      <div
+        className="h-5 w-full bg-muted/60 transition-all"
+        style={{
+          borderTopLeftRadius: visualRadius(corners.tl),
+          borderTopRightRadius: visualRadius(corners.tr),
+          borderBottomLeftRadius: visualRadius(corners.bl),
+          borderBottomRightRadius: visualRadius(corners.br),
+        }}
+      />
+
+      {/* Corner handles */}
+      {showHandles && (
+        <>
+          <div className="absolute -top-2 -left-3">
+            <DraggableValue
+              onChange={(v) => handleChange("tl", v)}
+              position="tl"
+              value={corners.tl}
+            />
+          </div>
+          <div className="absolute -top-2 -right-3">
+            <DraggableValue
+              onChange={(v) => handleChange("tr", v)}
+              position="tr"
+              value={corners.tr}
+            />
+          </div>
+          <div className="absolute -bottom-2 -left-3">
+            <DraggableValue
+              onChange={(v) => handleChange("bl", v)}
+              position="bl"
+              value={corners.bl}
+            />
+          </div>
+          <div className="absolute -right-3 -bottom-2">
+            <DraggableValue
+              onChange={(v) => handleChange("br", v)}
+              position="br"
+              value={corners.br}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * BoxModelInput - Visual message layout editor
+ * Shows 2 message placeholders with draggable corner radius, spacing, and padding
+ */
+export function BoxModelInput({
+  padding,
+  borderRadius,
+  spacing,
+  onPaddingChange,
+  onBorderRadiusChange,
+  onSpacingChange,
+  corners,
+  onCornersChange,
+  linked,
+  onLinkedChange,
+}: {
+  padding: number;
+  borderRadius?: number;
+  spacing?: number;
+  onPaddingChange: (value: number) => void;
+  onBorderRadiusChange?: (value: number) => void;
+  onSpacingChange?: (value: number) => void;
+  corners?: { tl: number; tr: number; bl: number; br: number };
+  onCornersChange?: (corner: "tl" | "tr" | "bl" | "br", value: number) => void;
+  linked?: boolean;
+  onLinkedChange?: (linked: boolean) => void;
+}) {
+  const showSpacing = spacing !== undefined && onSpacingChange !== undefined;
+
+  // If individual corners are provided, use them; otherwise derive from single borderRadius
+  const effectiveCorners = corners ?? {
+    tl: borderRadius ?? 8,
+    tr: borderRadius ?? 8,
+    bl: borderRadius ?? 8,
+    br: borderRadius ?? 8,
+  };
+
+  const handleCornerChange = (
+    corner: "tl" | "tr" | "bl" | "br",
+    value: number
+  ) => {
+    if (onCornersChange) {
+      onCornersChange(corner, value);
+    } else if (onBorderRadiusChange) {
+      // Fallback: update single borderRadius value
+      onBorderRadiusChange(value);
+    }
+  };
+
+  const isLinked = linked ?? true;
+
+  return (
+    <div className="space-y-2">
+      {/* Visual editor */}
+      <div className="relative rounded-lg border border-border/50 bg-secondary/30 p-1">
+        {/* Padding zone indicator */}
+        <div
+          className="relative rounded-md bg-[#5f9ea0]/15 transition-all"
+          style={{ padding: `${Math.max(padding * 0.3, 4)}px` }}
+        >
+          {/* Padding label + value (top-left) */}
+          <div className="absolute top-0.5 left-1 flex items-center gap-1">
+            <span className="text-[#5f9ea0]/70 text-[8px]">pad</span>
+            <DraggableValue
+              className="h-3.5 w-5 text-[8px]"
+              max={48}
+              min={0}
+              onChange={onPaddingChange}
+              value={padding}
+            />
+          </div>
+
+          {/* Messages container */}
+          <div className="pt-4">
+            {/* First message placeholder */}
+            <div className="px-3">
+              <MessagePlaceholder
+                corners={effectiveCorners}
+                linked={isLinked}
+                onCornerChange={handleCornerChange}
+              />
+            </div>
+
+            {/* Spacing zone between messages */}
+            {showSpacing && (
+              <div
+                className="relative mx-3 flex items-center justify-center bg-[#8b6914]/10 transition-all"
+                style={{ height: `${Math.max(spacing * 0.5, 8)}px` }}
+              >
+                {/* Spacing value indicator */}
+                <div className="absolute inset-x-0 flex items-center justify-center">
+                  <div className="flex items-center gap-1 rounded-full bg-background/80 px-1">
+                    <span className="text-[#8b6914]/70 text-[8px]">gap</span>
+                    <DraggableValue
+                      className="h-3.5 w-5 text-[8px]"
+                      max={48}
+                      min={0}
+                      onChange={onSpacingChange}
+                      value={spacing}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Second message placeholder (no handles, just shows the shape) */}
+            <div className="px-3">
+              <MessagePlaceholder
+                corners={effectiveCorners}
+                linked={isLinked}
+                onCornerChange={handleCornerChange}
+                showHandles={false}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Link/unlink corners toggle */}
+      {onLinkedChange && (
+        <button
+          className={cn(
+            "flex h-5 w-full items-center justify-center gap-1 rounded text-[9px] transition-colors",
+            isLinked
+              ? "bg-primary/10 text-primary"
+              : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
+          )}
+          onClick={() => onLinkedChange(!isLinked)}
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            className="h-2.5 w-2.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            viewBox="0 0 12 12"
+          >
+            {isLinked ? (
+              <path d="M4 6h4M3 4v4M9 4v4" />
+            ) : (
+              <path d="M2 6h2M8 6h2M5 6h2" strokeDasharray="1 1" />
+            )}
+          </svg>
+          {isLinked ? "Corners linked" : "Corners independent"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * SpacingInput - Compact 4-sided spacing input (like Figma's padding input)
+ */
+export function SpacingInput({
+  value,
+  onChange,
+  label,
+  min = 0,
+  max = 100,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  label?: string;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {label && (
+        <span className="w-16 shrink-0 text-[11px] text-muted-foreground">
+          {label}
+        </span>
+      )}
+      <div className="flex flex-1 items-center gap-1">
+        <div className="group relative flex h-7 flex-1 items-center rounded-md bg-secondary/50 transition-all focus-within:ring-1 focus-within:ring-primary/50 hover:bg-secondary/80">
+          <input
+            className="h-full w-full bg-transparent px-2 text-center text-[11px] text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            max={max}
+            min={min}
+            onChange={(e) => {
+              const val = Number.parseInt(e.target.value, 10);
+              if (!Number.isNaN(val)) {
+                onChange(Math.max(min, Math.min(max, val)));
+              }
+            }}
+            type="number"
+            value={value}
+          />
+          <span className="pointer-events-none absolute right-2 text-[10px] text-muted-foreground">
+            px
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
