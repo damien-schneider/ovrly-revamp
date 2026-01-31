@@ -10,7 +10,6 @@ export function ImageWidget({ element }: { element: ImageElement }) {
         width: "100%",
         height: "100%",
         objectFit: element.objectFit,
-        opacity: element.opacity,
         pointerEvents: "none",
         borderRadius: element.borderRadius ?? 0,
         borderWidth: element.borderWidth ?? 0,

@@ -51,6 +51,7 @@ export function WidgetWrapper({ element, children }: WidgetWrapperProps) {
       style={{
         width: "100%",
         height: "100%",
+        opacity: element.opacity ?? 1,
         overflow: element.overflow ?? "visible",
         mixBlendMode: element.blendMode ?? "normal",
         filter: filterString,

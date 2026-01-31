@@ -23,7 +23,6 @@ export function TextWidget({ element }: { element: TextElement }) {
         fontFamily: element.fontFamily,
         fontSize: element.fontSize,
         fontWeight: element.fontWeight,
-        opacity: element.opacity,
         whiteSpace: "pre-wrap",
         overflow: "hidden",
         textShadow: element.textShadow || "none",

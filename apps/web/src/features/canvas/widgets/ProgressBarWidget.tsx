@@ -14,10 +14,7 @@ export function ProgressBarWidget({ element }: ProgressBarWidgetProps) {
   } = element;
 
   return (
-    <div
-      className="relative flex h-full w-full flex-col"
-      style={{ opacity: element.opacity ?? 1 }}
-    >
+    <div className="relative flex h-full w-full flex-col">
       {showLabel && labelPosition === "above" && (
         <span className="mb-1 font-bold text-xs" style={{ color: labelColor }}>
           {Math.round(element.progress)}%

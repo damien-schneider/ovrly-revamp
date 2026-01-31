@@ -19,7 +19,6 @@ export function BoxWidget({ element }: { element: BoxElement }) {
         borderWidth: hasStroke ? (element.borderWidth ?? undefined) : undefined,
         borderStyle: hasStroke ? "solid" : "none",
         borderRadius,
-        opacity: element.opacity,
         boxShadow: element.boxShadow ?? "none",
         background:
           element.gradient ?? element.backgroundColor ?? "transparent",

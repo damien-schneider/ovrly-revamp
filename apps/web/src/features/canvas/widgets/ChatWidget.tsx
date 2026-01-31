@@ -195,7 +195,6 @@ export function ChatWidget({ element, isLiveView }: ChatWidgetProps) {
         color: style.textColor,
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
         gap: style.messageSpacing,
-        opacity: element.opacity ?? 1,
         ...getMaskStyle(),
       }}
     >
