@@ -24,9 +24,11 @@ export function ClipSection({ element, onUpdate }: ClipSectionProps) {
     <PanelSection title="Clip">
       <PropertyRow label="Overflow">
         <Select
-          onValueChange={(value: OverflowMode) =>
-            onUpdate(element.id, { overflow: value })
-          }
+          onValueChange={(value) => {
+            if (value) {
+              onUpdate(element.id, { overflow: value as OverflowMode });
+            }
+          }}
           value={element.overflow ?? "visible"}
         >
           <SelectTrigger className="h-7 flex-1 text-[11px]">

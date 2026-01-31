@@ -33,9 +33,11 @@ export function BlendModeSection({ element, onUpdate }: BlendModeSectionProps) {
     <PanelSection title="Blend">
       <PropertyRow label="Mode">
         <Select
-          onValueChange={(value: BlendMode) =>
-            onUpdate(element.id, { blendMode: value })
-          }
+          onValueChange={(value) => {
+            if (value) {
+              onUpdate(element.id, { blendMode: value as BlendMode });
+            }
+          }}
           value={element.blendMode ?? "normal"}
         >
           <SelectTrigger className="h-7 flex-1 text-[11px]">
