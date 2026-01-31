@@ -19,8 +19,10 @@ import type {
 } from "@/features/canvas/types";
 import { defaultChatStyle } from "@/features/canvas/types";
 import {
+  BoxModelInput,
   ColorSwatch,
   getSliderValue,
+  MessageBorderRadiusInput,
   OptionalPropertySection,
   PanelSection,
   PropertyRow,
@@ -70,9 +72,9 @@ function ColorsSection({ style, onUpdateStyle }: StyleProps) {
   );
 }
 
-function StylingSection({ style, onUpdateStyle }: StyleProps) {
+function TextSection({ style, onUpdateStyle }: StyleProps) {
   return (
-    <PanelSection title="Styling">
+    <PanelSection title="Text">
       <div className="space-y-2">
         <PropertyRow label="Font">
           <div className="flex-1">
@@ -95,7 +97,7 @@ function StylingSection({ style, onUpdateStyle }: StyleProps) {
             />
           </div>
         </PropertyRow>
-        <PropertyRow label="Radius">
+        <PropertyRow label="Container Radius">
           <div className="flex-1">
             <Slider
               max={32}
@@ -107,30 +109,71 @@ function StylingSection({ style, onUpdateStyle }: StyleProps) {
             />
           </div>
         </PropertyRow>
-        <PropertyRow label="Padding">
-          <div className="flex-1">
-            <Slider
-              max={24}
-              min={0}
-              onValueChange={(v) =>
-                onUpdateStyle({ messagePadding: getSliderValue(v) })
-              }
-              value={[style?.messagePadding ?? 8]}
-            />
-          </div>
-        </PropertyRow>
-        <PropertyRow label="Spacing">
-          <div className="flex-1">
-            <Slider
-              max={24}
-              min={0}
-              onValueChange={(v) =>
-                onUpdateStyle({ messageSpacing: getSliderValue(v) })
-              }
-              value={[style?.messageSpacing ?? 8]}
-            />
-          </div>
-        </PropertyRow>
+      </div>
+    </PanelSection>
+  );
+}
+
+function LayoutSection({ style, onUpdateStyle }: StyleProps) {
+  return (
+    <PanelSection title="Message Layout">
+      <BoxModelInput
+        borderRadius={
+          style?.messageBorderRadius ?? defaultChatStyle.messageBorderRadius
+        }
+        onPaddingChange={(v) => onUpdateStyle({ messagePadding: v })}
+        onSpacingChange={(v) => onUpdateStyle({ messageSpacing: v })}
+        padding={style?.messagePadding ?? defaultChatStyle.messagePadding}
+        spacing={style?.messageSpacing ?? defaultChatStyle.messageSpacing}
+      />
+    </PanelSection>
+  );
+}
+
+function BorderRadiusSection({ style, onUpdateStyle }: StyleProps) {
+  return (
+    <PanelSection title="Message Border Radius">
+      <MessageBorderRadiusInput
+        corners={{
+          tl:
+            style?.messageBorderRadiusTL ??
+            style?.messageBorderRadius ??
+            defaultChatStyle.messageBorderRadius,
+          tr:
+            style?.messageBorderRadiusTR ??
+            style?.messageBorderRadius ??
+            defaultChatStyle.messageBorderRadius,
+          bl:
+            style?.messageBorderRadiusBL ??
+            style?.messageBorderRadius ??
+            defaultChatStyle.messageBorderRadius,
+          br:
+            style?.messageBorderRadiusBR ??
+            style?.messageBorderRadius ??
+            defaultChatStyle.messageBorderRadius,
+        }}
+        linked={style?.messageBorderRadiusLinked ?? true}
+        onCornerChange={(corner, value) => {
+          const cornerKey = {
+            tl: "messageBorderRadiusTL",
+            tr: "messageBorderRadiusTR",
+            bl: "messageBorderRadiusBL",
+            br: "messageBorderRadiusBR",
+          }[corner] as keyof ChatStyle;
+          onUpdateStyle({ [cornerKey]: value });
+        }}
+        onLinkedChange={(linked) =>
+          onUpdateStyle({ messageBorderRadiusLinked: linked })
+        }
+      />
+    </PanelSection>
+  );
+}
+
+function OptionsSection({ style, onUpdateStyle }: StyleProps) {
+  return (
+    <PanelSection title="Options">
+      <div className="space-y-2">
         <PropertyRow label="Animation">
           <Select
             onValueChange={(v) =>
@@ -310,7 +353,13 @@ export function ChatSection({ element, onUpdate }: ChatSectionProps) {
       </PanelSection>
 
       <ColorsSection onUpdateStyle={updateChatStyle} style={element.style} />
-      <StylingSection onUpdateStyle={updateChatStyle} style={element.style} />
+      <TextSection onUpdateStyle={updateChatStyle} style={element.style} />
+      <LayoutSection onUpdateStyle={updateChatStyle} style={element.style} />
+      <BorderRadiusSection
+        onUpdateStyle={updateChatStyle}
+        style={element.style}
+      />
+      <OptionsSection onUpdateStyle={updateChatStyle} style={element.style} />
       <BorderSection onUpdateStyle={updateChatStyle} style={element.style} />
     </>
   );
