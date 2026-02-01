@@ -1,11 +1,6 @@
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  redirect,
-  useNavigate,
-  useSearch,
-} from "@tanstack/react-router";
-import { AuthLoading, Unauthenticated } from "convex/react";
+import { createFileRoute, Navigate, useSearch } from "@tanstack/react-router";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
@@ -25,36 +20,26 @@ export const Route = createFileRoute("/(with_navbar)/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: (search.redirect as string) || "/overlays",
   }),
-  beforeLoad: async ({ search }) => {
-    try {
-      const session = await authClient.getSession();
-      if (session.data?.user) {
-        throw redirect({ to: search.redirect || "/overlays" });
-      }
-    } catch (error) {
-      // If it's a redirect, re-throw it
-      if (
-        error instanceof Response ||
-        (error && typeof error === "object" && "to" in error)
-      ) {
-        throw error;
-      }
-      // Otherwise, allow access to login page (user not authenticated or error checking)
-    }
-  },
+  // Don't use beforeLoad for auth checks - let Convex handle auth state reactively
+  // This prevents issues with HMR and ensures consistent auth state
   component: LoginComponent,
 });
 
 function LoginComponent() {
-  const { redirect } = useSearch({ from: Route.id });
-  const navigate = useNavigate();
+  const { redirect: redirectPath } = useSearch({ from: Route.id });
   const [isSignUp, setIsSignUp] = useState(false);
+
+  // Use full page reload after auth to ensure session state is properly established
+  // This is the recommended approach per Better Auth docs for sign-in/sign-out cycles
+  const redirectAfterAuth = (path: string) => {
+    window.location.href = path;
+  };
 
   const handleTwitchSignIn = async () => {
     try {
       await authClient.signIn.social({
         provider: "twitch",
-        callbackURL: `${window.location.origin}${redirect || "/overlays"}`,
+        callbackURL: `${window.location.origin}${redirectPath || "/overlays"}`,
       });
     } catch {
       // Error handling is done by authClient
@@ -77,10 +62,8 @@ function LoginComponent() {
           },
           {
             onSuccess: () => {
-              navigate({
-                to: redirect || "/overlays",
-              });
               toast.success("Sign up successful");
+              redirectAfterAuth(redirectPath || "/overlays");
             },
             onError: (error) => {
               toast.error(error.error.message || error.error.statusText);
@@ -95,10 +78,8 @@ function LoginComponent() {
           },
           {
             onSuccess: () => {
-              navigate({
-                to: redirect || "/overlays",
-              });
               toast.success("Sign in successful");
+              redirectAfterAuth(redirectPath || "/overlays");
             },
             onError: (error) => {
               toast.error(error.error.message || error.error.statusText);
@@ -128,6 +109,9 @@ function LoginComponent() {
 
   return (
     <>
+      <Authenticated>
+        <Navigate to={redirectPath || "/overlays"} />
+      </Authenticated>
       <Unauthenticated>
         <div className="flex min-h-screen items-center justify-center">
           <Card className="w-full max-w-md">

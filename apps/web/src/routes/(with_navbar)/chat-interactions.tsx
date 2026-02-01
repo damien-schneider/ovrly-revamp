@@ -1,22 +1,12 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(with_navbar)/chat-interactions")({
-  beforeLoad: ({ context, location }) => {
-    // Access userId from parent route context (set in __root.tsx beforeLoad)
-    const userId = (context as { userId?: string }).userId;
-
-    if (!userId) {
-      throw redirect({
-        to: "/login",
-        search: {
-          redirect: location.href,
-        },
-      });
-    }
+  beforeLoad: ({ location }) => {
+    throw redirect({
+      to: "/bot",
+      search: location.search,
+      replace: true,
+    });
   },
-  component: RouteComponent,
+  component: () => null,
 });
-
-function RouteComponent() {
-  return <Outlet />;
-}

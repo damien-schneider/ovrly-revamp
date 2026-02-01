@@ -73,14 +73,16 @@ function LayoutComponent() {
   const isAccountRoute = pathname === "/account";
 
   const hasSettings = false;
-  const isHomeRoute = pathname === "/home";
   const isHubRoute =
-    isHomeRoute || pathname === "/overlays" || pathname === "/overlays/";
+    pathname === "/overlays" ||
+    pathname === "/overlays/" ||
+    pathname.startsWith("/assets") ||
+    pathname.startsWith("/bot");
 
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const shouldCollapse = isAccountRoute || isHubRoute;
-  const interactive = shouldCollapse && !isHomeRoute;
+  const interactive = shouldCollapse;
 
   const navigateToOverlays = () => navigate({ to: "/overlays" });
 

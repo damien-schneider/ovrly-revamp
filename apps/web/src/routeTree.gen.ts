@@ -22,12 +22,15 @@ import { Route as with_navbarHomeRouteImport } from './routes/(with_navbar)/home
 import { Route as with_navbarFeedbackRouteImport } from './routes/(with_navbar)/feedback'
 import { Route as with_navbarDashboardRouteImport } from './routes/(with_navbar)/dashboard'
 import { Route as with_navbarChatInteractionsRouteImport } from './routes/(with_navbar)/chat-interactions'
+import { Route as with_navbarBotRouteImport } from './routes/(with_navbar)/bot'
 import { Route as with_navbarAssetsRouteImport } from './routes/(with_navbar)/assets'
 import { Route as with_navbarAccountRouteImport } from './routes/(with_navbar)/account'
 import { Route as with_navbarChatInteractionsIndexRouteImport } from './routes/(with_navbar)/chat-interactions/index'
+import { Route as with_navbarBotIndexRouteImport } from './routes/(with_navbar)/bot/index'
 import { Route as with_navbarAssetsIndexRouteImport } from './routes/(with_navbar)/assets/index'
 import { Route as ViewOverlayElementIdRouteImport } from './routes/view.overlay.$elementId'
 import { Route as with_navbarChatInteractionsCommandsRouteImport } from './routes/(with_navbar)/chat-interactions/commands'
+import { Route as with_navbarBotCommandsRouteImport } from './routes/(with_navbar)/bot/commands'
 import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
 import { Route as with_navbarAssetsEmotesRouteImport } from './routes/(with_navbar)/assets/emotes'
 
@@ -96,6 +99,11 @@ const with_navbarChatInteractionsRoute =
     path: '/chat-interactions',
     getParentRoute: () => with_navbarRouteRoute,
   } as any)
+const with_navbarBotRoute = with_navbarBotRouteImport.update({
+  id: '/bot',
+  path: '/bot',
+  getParentRoute: () => with_navbarRouteRoute,
+} as any)
 const with_navbarAssetsRoute = with_navbarAssetsRouteImport.update({
   id: '/assets',
   path: '/assets',
@@ -112,6 +120,11 @@ const with_navbarChatInteractionsIndexRoute =
     path: '/',
     getParentRoute: () => with_navbarChatInteractionsRoute,
   } as any)
+const with_navbarBotIndexRoute = with_navbarBotIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => with_navbarBotRoute,
+} as any)
 const with_navbarAssetsIndexRoute = with_navbarAssetsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,6 +141,11 @@ const with_navbarChatInteractionsCommandsRoute =
     path: '/commands',
     getParentRoute: () => with_navbarChatInteractionsRoute,
   } as any)
+const with_navbarBotCommandsRoute = with_navbarBotCommandsRouteImport.update({
+  id: '/commands',
+  path: '/commands',
+  getParentRoute: () => with_navbarBotRoute,
+} as any)
 const with_navbarAssetsSubBadgesRoute =
   with_navbarAssetsSubBadgesRouteImport.update({
     id: '/sub-badges',
@@ -146,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/overlays': typeof OverlaysRoute
   '/preview': typeof PreviewRoute
   '/account': typeof with_navbarAccountRoute
+  '/bot': typeof with_navbarBotRouteWithChildren
   '/dashboard': typeof with_navbarDashboardRoute
   '/feedback': typeof with_navbarFeedbackRoute
   '/home': typeof with_navbarHomeRoute
@@ -155,9 +174,11 @@ export interface FileRoutesByFullPath {
   '/': typeof with_navbarIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/bot/commands': typeof with_navbarBotCommandsRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/view/overlay/$elementId': typeof ViewOverlayElementIdRoute
   '/assets/': typeof with_navbarAssetsIndexRoute
+  '/bot/': typeof with_navbarBotIndexRoute
   '/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -175,8 +196,10 @@ export interface FileRoutesByTo {
   '/': typeof with_navbarIndexRoute
   '/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/bot/commands': typeof with_navbarBotCommandsRoute
   '/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/view/overlay/$elementId': typeof ViewOverlayElementIdRoute
+  '/bot': typeof with_navbarBotIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -187,6 +210,7 @@ export interface FileRoutesById {
   '/preview': typeof PreviewRoute
   '/(with_navbar)/account': typeof with_navbarAccountRoute
   '/(with_navbar)/assets': typeof with_navbarAssetsRouteWithChildren
+  '/(with_navbar)/bot': typeof with_navbarBotRouteWithChildren
   '/(with_navbar)/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/(with_navbar)/dashboard': typeof with_navbarDashboardRoute
   '/(with_navbar)/feedback': typeof with_navbarFeedbackRoute
@@ -197,9 +221,11 @@ export interface FileRoutesById {
   '/(with_navbar)/': typeof with_navbarIndexRoute
   '/(with_navbar)/assets/emotes': typeof with_navbarAssetsEmotesRoute
   '/(with_navbar)/assets/sub-badges': typeof with_navbarAssetsSubBadgesRoute
+  '/(with_navbar)/bot/commands': typeof with_navbarBotCommandsRoute
   '/(with_navbar)/chat-interactions/commands': typeof with_navbarChatInteractionsCommandsRoute
   '/view/overlay/$elementId': typeof ViewOverlayElementIdRoute
   '/(with_navbar)/assets/': typeof with_navbarAssetsIndexRoute
+  '/(with_navbar)/bot/': typeof with_navbarBotIndexRoute
   '/(with_navbar)/chat-interactions/': typeof with_navbarChatInteractionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -210,6 +236,7 @@ export interface FileRouteTypes {
     | '/overlays'
     | '/preview'
     | '/account'
+    | '/bot'
     | '/dashboard'
     | '/feedback'
     | '/home'
@@ -219,9 +246,11 @@ export interface FileRouteTypes {
     | '/'
     | '/assets/emotes'
     | '/assets/sub-badges'
+    | '/bot/commands'
     | '/chat-interactions/commands'
     | '/view/overlay/$elementId'
     | '/assets/'
+    | '/bot/'
     | '/chat-interactions/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -239,8 +268,10 @@ export interface FileRouteTypes {
     | '/'
     | '/assets/emotes'
     | '/assets/sub-badges'
+    | '/bot/commands'
     | '/chat-interactions/commands'
     | '/view/overlay/$elementId'
+    | '/bot'
   id:
     | '__root__'
     | '/(with_navbar)'
@@ -250,6 +281,7 @@ export interface FileRouteTypes {
     | '/preview'
     | '/(with_navbar)/account'
     | '/(with_navbar)/assets'
+    | '/(with_navbar)/bot'
     | '/(with_navbar)/chat-interactions'
     | '/(with_navbar)/dashboard'
     | '/(with_navbar)/feedback'
@@ -260,9 +292,11 @@ export interface FileRouteTypes {
     | '/(with_navbar)/'
     | '/(with_navbar)/assets/emotes'
     | '/(with_navbar)/assets/sub-badges'
+    | '/(with_navbar)/bot/commands'
     | '/(with_navbar)/chat-interactions/commands'
     | '/view/overlay/$elementId'
     | '/(with_navbar)/assets/'
+    | '/(with_navbar)/bot/'
     | '/(with_navbar)/chat-interactions/'
   fileRoutesById: FileRoutesById
 }
@@ -369,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarChatInteractionsRouteImport
       parentRoute: typeof with_navbarRouteRoute
     }
+    '/(with_navbar)/bot': {
+      id: '/(with_navbar)/bot'
+      path: '/bot'
+      fullPath: '/bot'
+      preLoaderRoute: typeof with_navbarBotRouteImport
+      parentRoute: typeof with_navbarRouteRoute
+    }
     '/(with_navbar)/assets': {
       id: '/(with_navbar)/assets'
       path: '/assets'
@@ -390,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof with_navbarChatInteractionsIndexRouteImport
       parentRoute: typeof with_navbarChatInteractionsRoute
     }
+    '/(with_navbar)/bot/': {
+      id: '/(with_navbar)/bot/'
+      path: '/'
+      fullPath: '/bot/'
+      preLoaderRoute: typeof with_navbarBotIndexRouteImport
+      parentRoute: typeof with_navbarBotRoute
+    }
     '/(with_navbar)/assets/': {
       id: '/(with_navbar)/assets/'
       path: '/'
@@ -410,6 +458,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chat-interactions/commands'
       preLoaderRoute: typeof with_navbarChatInteractionsCommandsRouteImport
       parentRoute: typeof with_navbarChatInteractionsRoute
+    }
+    '/(with_navbar)/bot/commands': {
+      id: '/(with_navbar)/bot/commands'
+      path: '/commands'
+      fullPath: '/bot/commands'
+      preLoaderRoute: typeof with_navbarBotCommandsRouteImport
+      parentRoute: typeof with_navbarBotRoute
     }
     '/(with_navbar)/assets/sub-badges': {
       id: '/(with_navbar)/assets/sub-badges'
@@ -443,6 +498,20 @@ const with_navbarAssetsRouteChildren: with_navbarAssetsRouteChildren = {
 const with_navbarAssetsRouteWithChildren =
   with_navbarAssetsRoute._addFileChildren(with_navbarAssetsRouteChildren)
 
+interface with_navbarBotRouteChildren {
+  with_navbarBotCommandsRoute: typeof with_navbarBotCommandsRoute
+  with_navbarBotIndexRoute: typeof with_navbarBotIndexRoute
+}
+
+const with_navbarBotRouteChildren: with_navbarBotRouteChildren = {
+  with_navbarBotCommandsRoute: with_navbarBotCommandsRoute,
+  with_navbarBotIndexRoute: with_navbarBotIndexRoute,
+}
+
+const with_navbarBotRouteWithChildren = with_navbarBotRoute._addFileChildren(
+  with_navbarBotRouteChildren,
+)
+
 interface with_navbarChatInteractionsRouteChildren {
   with_navbarChatInteractionsCommandsRoute: typeof with_navbarChatInteractionsCommandsRoute
   with_navbarChatInteractionsIndexRoute: typeof with_navbarChatInteractionsIndexRoute
@@ -464,6 +533,7 @@ const with_navbarChatInteractionsRouteWithChildren =
 interface with_navbarRouteRouteChildren {
   with_navbarAccountRoute: typeof with_navbarAccountRoute
   with_navbarAssetsRoute: typeof with_navbarAssetsRouteWithChildren
+  with_navbarBotRoute: typeof with_navbarBotRouteWithChildren
   with_navbarChatInteractionsRoute: typeof with_navbarChatInteractionsRouteWithChildren
   with_navbarDashboardRoute: typeof with_navbarDashboardRoute
   with_navbarFeedbackRoute: typeof with_navbarFeedbackRoute
@@ -476,6 +546,7 @@ interface with_navbarRouteRouteChildren {
 const with_navbarRouteRouteChildren: with_navbarRouteRouteChildren = {
   with_navbarAccountRoute: with_navbarAccountRoute,
   with_navbarAssetsRoute: with_navbarAssetsRouteWithChildren,
+  with_navbarBotRoute: with_navbarBotRouteWithChildren,
   with_navbarChatInteractionsRoute:
     with_navbarChatInteractionsRouteWithChildren,
   with_navbarDashboardRoute: with_navbarDashboardRoute,
