@@ -42,7 +42,9 @@ function LandingPage() {
                 Ovrly
               </span>
               <Button asChild size="sm" variant="ghost">
-                <Link to="/login">Log in</Link>
+                <Link search={{ redirect: "/overlays" }} to="/login">
+                  Log in
+                </Link>
               </Button>
             </div>
           </header>
@@ -62,7 +64,9 @@ function LandingPage() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link to="/login">Log in</Link>
+                  <Link search={{ redirect: "/overlays" }} to="/login">
+                    Log in
+                  </Link>
                 </Button>
               </div>
             </section>

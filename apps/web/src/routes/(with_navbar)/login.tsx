@@ -1,11 +1,11 @@
 import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
-  Navigate,
+  redirect,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import { AuthLoading, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
@@ -25,6 +25,20 @@ export const Route = createFileRoute("/(with_navbar)/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: (search.redirect as string) || "/overlays",
   }),
+  beforeLoad: async ({ search }) => {
+    try {
+      const session = await authClient.getSession();
+      if (session.data?.user) {
+        throw redirect({ to: search.redirect || "/overlays" });
+      }
+    } catch (error) {
+      // If it's a redirect, re-throw it
+      if (error instanceof Response || (error && typeof error === "object" && "to" in error)) {
+        throw error;
+      }
+      // Otherwise, allow access to login page (user not authenticated or error checking)
+    }
+  },
   component: LoginComponent,
 });
 
@@ -111,9 +125,6 @@ function LoginComponent() {
 
   return (
     <>
-      <Authenticated>
-        <Navigate to={redirect || "/overlays"} />
-      </Authenticated>
       <Unauthenticated>
         <div className="flex min-h-screen items-center justify-center">
           <Card className="w-full max-w-md">
