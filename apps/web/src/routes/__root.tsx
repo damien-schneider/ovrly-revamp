@@ -6,40 +6,16 @@ import { useEffect } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { authClient } from "@/lib/auth-client";
 import { forceLogout } from "@/lib/clear-auth-state";
-
-const SESSION_TIMEOUT_MS = 5000;
 
 export interface RouterAppContext {
   convexClient: ConvexReactClient;
-  userId?: string;
 }
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-  beforeLoad: async () => {
-    try {
-      // Try to get the current session with a timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        SESSION_TIMEOUT_MS
-      );
-
-      const session = await authClient.getSession({
-        fetchOptions: { signal: controller.signal },
-      });
-
-      clearTimeout(timeoutId);
-
-      return {
-        userId: session.data?.user?.id,
-      };
-    } catch {
-      // If session fetch fails or times out, return no userId
-      return { userId: undefined };
-    }
-  },
+  // Auth state is managed reactively by ConvexBetterAuthProvider
+  // Don't check session in beforeLoad as it can cause issues during HMR
+  // and create race conditions with the Convex auth state
   component: RootDocument,
 });
 
