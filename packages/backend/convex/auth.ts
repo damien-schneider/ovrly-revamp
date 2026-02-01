@@ -184,6 +184,13 @@ export const createAuth = (
         path: "/",
       },
     },
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // 5 minutes - cache session data in cookie
+        refreshCache: true, // Auto-refresh before expiry without DB query
+      },
+    },
     // crossDomain plugin is REQUIRED for SPAs where frontend and backend are on different origins
     plugins: [crossDomain({ siteUrl }), convex({ authConfig })],
   });

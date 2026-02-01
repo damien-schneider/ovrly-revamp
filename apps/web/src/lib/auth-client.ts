@@ -15,5 +15,7 @@ export const authClient = createAuthClient({
   fetchOptions: {
     // Add timeout to prevent infinite hanging requests
     signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
+    // Ensure cookies are sent cross-origin for session persistence
+    credentials: "include",
   },
 });
