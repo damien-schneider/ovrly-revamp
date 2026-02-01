@@ -1,5 +1,4 @@
 import { api } from "@ovrly-revamp/backend/convex/_generated/api";
-import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import {
   DropdownMenu,
@@ -12,7 +11,6 @@ import {
 import { authClient } from "@/lib/auth-client";
 
 export default function UserMenu() {
-  const navigate = useNavigate();
   const user = useQuery(api.auth.getCurrentUser);
 
   return (
@@ -30,10 +28,9 @@ export default function UserMenu() {
             authClient.signOut({
               fetchOptions: {
                 onSuccess: () => {
-                  navigate({
-                    to: "/login",
-                    search: { redirect: "/overlays" },
-                  });
+                  // Full page reload is required after sign-out per Better Auth docs
+                  // to properly reset auth state before signing back in
+                  window.location.href = "/login?redirect=/overlays";
                 },
               },
             });
