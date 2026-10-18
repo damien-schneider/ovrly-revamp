@@ -58,6 +58,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["apps/web/src/features/studio/**/*.{ts,tsx}"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
     }
   ]
 }

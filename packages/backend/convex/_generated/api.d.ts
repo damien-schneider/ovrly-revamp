@@ -22,6 +22,7 @@ import type * as overlays from "../overlays.js";
 import type * as privateData from "../privateData.js";
 import type * as profiles from "../profiles.js";
 import type * as seed from "../seed.js";
+import type * as studio from "../studio.js";
 
 import type {
   ApiFromModules,
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   privateData: typeof privateData;
   profiles: typeof profiles;
   seed: typeof seed;
+  studio: typeof studio;
 }>;
 
 /**

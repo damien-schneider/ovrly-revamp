@@ -13,6 +13,7 @@
 # ═══════════════════════════════════════════════════════════════════
 #   Web: app.yourdomain.com
 #   Bot: bot.yourdomain.com
+#   Stream Relay: relay.yourdomain.com
 
 services:
   # ===========================================
@@ -27,6 +28,7 @@ services:
         - VITE_TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
         - VITE_BOT_SERVER_URL=${BOT_URL}
         - VITE_BOT_API_SECRET=${BOT_API_SECRET:-$SERVICE_PASSWORD_BOT}
+        - VITE_STREAM_RELAY_URL=${STREAM_RELAY_URL}
     expose:
       - "3001"
     healthcheck:
@@ -46,6 +48,8 @@ services:
     depends_on:
       bot:
         condition: service_started
+      stream-relay:
+        condition: service_started
     restart: unless-stopped
 
   # ===========================================
@@ -64,4 +68,33 @@ services:
       - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
       - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
       - PORT=3002
+    restart: unless-stopped
+
+  # ===========================================
+  # Stream Relay Server (FFmpeg + WebSocket)
+  # ===========================================
+  stream-relay:
+    build:
+      context: .
+      dockerfile: packages/stream-relay/Dockerfile
+    expose:
+      - "3003"
+    environment:
+      - NODE_ENV=production
+      - BOT_API_SECRET=${BOT_API_SECRET:-$SERVICE_PASSWORD_BOT}
+      - PORT=3003
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3003/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped

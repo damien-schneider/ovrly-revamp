@@ -88,6 +88,18 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_threadId", ["threadId"]),
 
+  // Studio streaming settings
+  studio_settings: defineTable({
+    userId: v.id("profiles"),
+    streamKey: v.string(), // Twitch stream key (stored as-is, user provides it)
+    resolution: v.union(v.literal("1080p"), v.literal("720p")),
+    framerate: v.union(v.literal(30), v.literal(60)),
+    bitrate: v.number(), // kbps
+    lastScene: v.string(), // Name of last active scene preset
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_userId", ["userId"]),
+
   // Usage tracking for rate limiting
   ai_usage: defineTable({
     userId: v.id("profiles"),

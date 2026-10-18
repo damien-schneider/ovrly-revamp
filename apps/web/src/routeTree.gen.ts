@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as PreviewRouteImport } from './routes/preview'
 import { Route as OverlaysRouteImport } from './routes/overlays'
 import { Route as ChatInteractionsRouteImport } from './routes/chat-interactions'
@@ -31,6 +32,11 @@ import { Route as with_navbarChatInteractionsCommandsRouteImport } from './route
 import { Route as with_navbarAssetsSubBadgesRouteImport } from './routes/(with_navbar)/assets/sub-badges'
 import { Route as with_navbarAssetsEmotesRouteImport } from './routes/(with_navbar)/assets/emotes'
 
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PreviewRoute = PreviewRouteImport.update({
   id: '/preview',
   path: '/preview',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
   '/overlays': typeof OverlaysRoute
   '/preview': typeof PreviewRoute
+  '/studio': typeof StudioRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
   '/feedback': typeof with_navbarFeedbackRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/chat-interactions': typeof with_navbarChatInteractionsIndexRoute
   '/overlays': typeof OverlaysRoute
   '/preview': typeof PreviewRoute
+  '/studio': typeof StudioRoute
   '/account': typeof with_navbarAccountRoute
   '/dashboard': typeof with_navbarDashboardRoute
   '/feedback': typeof with_navbarFeedbackRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/chat-interactions': typeof ChatInteractionsRoute
   '/overlays': typeof OverlaysRoute
   '/preview': typeof PreviewRoute
+  '/studio': typeof StudioRoute
   '/(with_navbar)/account': typeof with_navbarAccountRoute
   '/(with_navbar)/assets': typeof with_navbarAssetsRouteWithChildren
   '/(with_navbar)/chat-interactions': typeof with_navbarChatInteractionsRouteWithChildren
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/chat-interactions'
     | '/overlays'
     | '/preview'
+    | '/studio'
     | '/account'
     | '/dashboard'
     | '/feedback'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/chat-interactions'
     | '/overlays'
     | '/preview'
+    | '/studio'
     | '/account'
     | '/dashboard'
     | '/feedback'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/chat-interactions'
     | '/overlays'
     | '/preview'
+    | '/studio'
     | '/(with_navbar)/account'
     | '/(with_navbar)/assets'
     | '/(with_navbar)/chat-interactions'
@@ -272,12 +284,20 @@ export interface RootRouteChildren {
   ChatInteractionsRoute: typeof ChatInteractionsRoute
   OverlaysRoute: typeof OverlaysRoute
   PreviewRoute: typeof PreviewRoute
+  StudioRoute: typeof StudioRoute
   ViewCanvasRoute: typeof ViewCanvasRoute
   ViewOverlayElementIdRoute: typeof ViewOverlayElementIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/preview': {
       id: '/preview'
       path: '/preview'
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatInteractionsRoute: ChatInteractionsRoute,
   OverlaysRoute: OverlaysRoute,
   PreviewRoute: PreviewRoute,
+  StudioRoute: StudioRoute,
   ViewCanvasRoute: ViewCanvasRoute,
   ViewOverlayElementIdRoute: ViewOverlayElementIdRoute,
 }
