@@ -47,7 +47,7 @@ export function ChangelogView() {
               </div>
               {entry.version && (
                 <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-primary text-xs">
-                  v{entry.version}
+                  {entry.version}
                 </span>
               )}
             </div>
@@ -58,13 +58,13 @@ export function ChangelogView() {
                 {entry.description}
               </div>
             )}
-            {entry.feedback?.length ? (
+            {entry.items.length ? (
               <div className="mt-4 border-t pt-4">
                 <p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
                   Related Feedback
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {entry.feedback.map((item) => (
+                  {entry.items.map((item) => (
                     <span
                       className="rounded bg-muted px-2 py-1 text-sm"
                       key={item.id}
